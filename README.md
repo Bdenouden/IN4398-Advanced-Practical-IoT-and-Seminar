@@ -75,3 +75,38 @@ The user interface has to authenticate a username and password.
 The user interface has to allow adding and removing of sensors.  
 The user interface has to show sensor data in (adjustable) graphs.  
 The user interface has to allow for setting of notifications in certain circumstances (e.g. pH of sensor X lower than value Y)
+
+# Implementation ideas
+## network layout
+mDNS could be used to name the pi and easily find in on the local network (e.g. raspberrypi.local)
+- port 80 would serve as the location of the webApp or api for the mobile app
+- port 5050 could be used for the network of known ESP's
+- port 5051 could be used for the 'new device' network. A correctly flashed ESP would connect over this port to the specified server hostname or make a broadcast call on this port. This action would let the server know there is a new device on the network, add it to the 'known devices' table in a database and, after confirmation by poth parties, let the ESP switch to port 5050 for regular operation.
+-> alternatively the new device could also connect to the specified server hostname and, since it is not currently in the 'known devices' table, be recognised as new. Initalisation will follow and both devices will operate normally after.
+
+## database tables
+tables will be added as headers followed by a short description. 
+Column names will be between square brackets followed by their function
+#### known_devices
+This table tracks the currently known devices and their status, any dew devices will be added to this table.
+- [id] this table contains a unique id (UID/UUID) of the device. This id could be given to new devices when they first connect to the server.
+- [created_at] when was this device first discovered on the network
+- [updated_at] when was the last update received from this device
+
+#### location
+since the sensors will be spread throughout a certain area, this table keeps track of where they are. Its intended use is either providing an alias in case of individual sensors (e.g. 'passion flower balcony') or coordinates (e.g. in a greenhouse).
+- [device_id] this is a foreign key to the 'known devices' table
+- [alias/location] an alias in case of individual sensors (e.g. 'passion flower balcony') or coordinates (e.g. in a greenhouse). ***this must be reviewed/decided before actual implementation due to variable type*** It is also possible to move the 'alias' column to the 'known_devices' table or even it's own table and use location in an arbitrary coordinate system here.
+
+#### settings
+will the user use a coordinate system, inidvidual aliases, both, dark mode, etc
+
+#### users
+this table will hold all users allowed to login to the system. 
+- [id] UID for the user
+- [first_name]
+- [last_name]
+- [authorisation]
+- [username]
+- [email_address]
+- [password]
