@@ -1,6 +1,6 @@
 # IN4398-Advanced-Practical-IoT-and-Seminar
 ## Trello
-link: (https://trello.com/invite/b/GhypkAjK/dcb3dd4f2a6eb79fe1761c5296c4056a/in4398-advanced-iot)[https://trello.com/invite/b/GhypkAjK/dcb3dd4f2a6eb79fe1761c5296c4056a/in4398-advanced-iot]
+link: https://trello.com/invite/b/GhypkAjK/dcb3dd4f2a6eb79fe1761c5296c4056a/in4398-advanced-iot
 
 Trello is a Kanban style list structure where the progress of this project can be monitored
 
