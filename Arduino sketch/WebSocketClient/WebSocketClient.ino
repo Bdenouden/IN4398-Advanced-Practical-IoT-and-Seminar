@@ -8,26 +8,30 @@
 #include <Arduino.h>
 
 #include <ESP8266WiFi.h>
-#include <ESP8266WiFiMulti.h>
+
+//needed for wifimanager library
+#include <DNSServer.h>
+#include <ESP8266WebServer.h>
+#include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
+/* IMPORTANT
+   in order to make the wifimanager work with the webserver, HTTP_HEAD must be renamed to something linke HTTP_HEAD_HTML
+   This must be done in both the wifimanager.cpp and wifimanager.h files
+*/
+
 
 #include <WebSocketsClient.h>
 
 #include <Hash.h>
 
-ESP8266WiFiMulti WiFiMulti;
 WebSocketsClient * webSocket;
 
 #define USE_SERIAL Serial
 
-const char * ssid = "SSID";
-const char * password = "Password";
 
 const char *SERVER_ADDR = "laptop-bram.local";
 const uint16_t PORT = 8765;
 
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
-
-  USE_SERIAL.print(type);
   switch (type) {
     case WStype_DISCONNECTED:
       USE_SERIAL.printf("[WSc] Disconnected!\n");
@@ -39,13 +43,8 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
       break;
     case WStype_TEXT:
       USE_SERIAL.printf("[WSc] get text: %s\n", payload);
-//
-//      USE_SERIAL.printf("exit message: %s\n ",((char*)payload == "bye") ? "true":"false");
-//        if ((char*)payload ==(char*)"bye"){
-//          USE_SERIAL.print("test");
-          disconnect(); // disconnect after transmission
-//        }
-
+      
+      disconnect(); // disconnect after transmission
       // send message to server
       // webSocket.sendTXT("message here");
       break;
@@ -69,7 +68,6 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 }
 
 void setup() {
-  // USE_SERIAL.begin(921600);
   USE_SERIAL.begin(115200);
 
   //Serial.setDebugOutput(true);
@@ -85,12 +83,18 @@ void setup() {
     delay(1000);
   }
 
-  WiFiMulti.addAP(ssid, password);
+  //WiFiManager
+  //Local intialization. Once its business is done, there is no need to keep it around
+  WiFiManager wifiManager;
+  //reset saved settings
+  //  wifiManager.resetSettings();
 
-  //WiFi.disconnect();
-  while (WiFiMulti.run() != WL_CONNECTED) {
-    delay(100);
-  }
+  String config_ssid = "ESP_" + String(ESP.getChipId());
+  char buf[13];
+  config_ssid.toCharArray(buf, 13);
+  wifiManager.autoConnect(buf);
+
+  USE_SERIAL.println(jsonify(1, 2, 3, 4, 5));
 
   //  // server address, port and URL
   connect();
