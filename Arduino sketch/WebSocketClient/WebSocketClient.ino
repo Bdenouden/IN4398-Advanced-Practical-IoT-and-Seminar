@@ -25,42 +25,43 @@ WebSocketsClient * webSocket;
 
 #define USE_SERIAL Serial
 
+
 const char *SERVER_ADDR = "laptop-bram.local";
 const uint16_t PORT = 8765;
 
 unsigned int reconnect_interval = 0;
 unsigned int disconnect_timestamp = 0;
-char * exit_msg = "bye";
+const char * exit_msg = "bye";
 
 
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
   String data;
+  String ESP_data;
 
   switch (type) {
     case WStype_DISCONNECTED:
       USE_SERIAL.printf("[WSc] Disconnected!\n");
       break;
-      
+
     case WStype_CONNECTED:
       USE_SERIAL.printf("[WSc] Connected to url: %s\n", payload);
+      
       // send message to server when Connected
-      webSocket->sendTXT("Hello World!");
+      ESP_data = jsonify(1, 2, 3, 4, 5);
+      webSocket->sendTXT(ESP_data);
       break;
 
     case WStype_TEXT:
       data = (char*)payload;
       USE_SERIAL.printf("[WSc] get text: %s\n", payload);
 
-      if (data == exit_msg) disconnect(); // disconnect after transmission
-      else if (data.substring(0, 3) == "ttr") {
+      if (data == exit_msg) websocket_disconnect(); // disconnect after transmission
+      else if (data.substring(0, 3) == "tbr") { // tbr stand for 'time before reconnect'
         reconnect_interval = data.substring(4).toInt();
-        USE_SERIAL.printf("[WSc] new interval = %d ms\n", reconnect_interval);
+        USE_SERIAL.printf("[WSc] new reconnect interval set: %d ms\n", reconnect_interval);
       }
-
-      // send message to server
-      // webSocket.sendTXT("message here");
       break;
-      
+
     case WStype_BIN:
       USE_SERIAL.printf("[WSc] get binary length: %u\n", length);
       hexdump(payload, length);
@@ -100,34 +101,34 @@ void setup() {
   //Local intialization. Once its business is done, there is no need to keep it around
   WiFiManager wifiManager;
   //reset saved settings
-  //  wifiManager.resetSettings();
+//    wifiManager.resetSettings();
 
   String config_ssid = "ESP_" + String(ESP.getChipId());
   char buf[13];
   config_ssid.toCharArray(buf, 13);
   wifiManager.autoConnect(buf);
 
-  USE_SERIAL.println(jsonify(1, 2, 3, 4, 5));
+  websocket_connect();
 
-  connect();
-  // use HTTP Basic Authorization this is optional remove if not needed
-  //	webSocket.setAuthorization("user", "Password");
-
-  // try ever 5000 again if connection has failed
-  //  webSocket.setReconnectInterval(5000);
-
+  USE_SERIAL.printf("[SETUP] Boot completed, handing controll to loop\n");
 }
 
-void connect() {
+void websocket_connect() {
   USE_SERIAL.printf("[WSc] New connection initiated\n");
   webSocket = new WebSocketsClient();
   // server address, port and URL
   webSocket->begin(SERVER_ADDR, PORT, "/");
   webSocket->onEvent(webSocketEvent);
+
+  // use HTTP Basic Authorization this is optional remove if not needed
+  // webSocket.setAuthorization("user", "Password");
+
+  // try ever 5000 again if connection has failed
+  //  webSocket.setReconnectInterval(5000);
 }
 
-void disconnect() {
-  USE_SERIAL.printf("[WSc] No attempt to reconnect will be made");
+void websocket_disconnect() {
+  USE_SERIAL.printf("[WSc] Disconnected! Next reconnect in %d s\n", reconnect_interval/1000);
   webSocket->disconnect();
   delete webSocket;
   webSocket = NULL;
@@ -135,6 +136,9 @@ void disconnect() {
 }
 
 void loop() {
+  // handle websocket connection if the object exists
   if (webSocket) webSocket->loop();
-  else if (millis()-disconnect_timestamp >= reconnect_interval) connect();
+
+  // Reconnect to the websocket once the communicated timeout period had passed
+  else if (millis() - disconnect_timestamp >= reconnect_interval) websocket_connect();
 }
