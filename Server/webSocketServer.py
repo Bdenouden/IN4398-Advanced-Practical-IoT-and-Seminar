@@ -13,10 +13,14 @@ async def hello(websocket, path):
     msg_in = await websocket.recv()
     print(f"{client} > {msg_in}")
 
-    msg_out = f"Received message: '{msg_in}'!"
-
-    await websocket.send("bye")
+    msg_out = f"ttr:2000"
+    await websocket.send(msg_out)
     print(f"{client} < {msg_out}")
+
+    msg_out = f"bye"
+    await websocket.send(msg_out)
+    print(f"{client} < {msg_out}")
+
     current_clients -= 1
     print('[WSS] Connection closed!')
     print(f'[WSS] currently connected clients: {current_clients}')

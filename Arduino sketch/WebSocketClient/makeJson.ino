@@ -1,5 +1,5 @@
 #include <ArduinoJson.h>
-const size_t capacity = JSON_OBJECT_SIZE(5); // the number of
+const size_t capacity = JSON_OBJECT_SIZE(6); // the number of
 DynamicJsonDocument doc(capacity);
 
 String jsonify(
@@ -10,12 +10,12 @@ String jsonify(
   uint8_t battery
 ) {
   String json; // temporary string to store the output of the json formatter
-
+  doc["chipID"] = ESP.getChipId();
+  doc["battery"] = battery;
   doc["soil_moisture"] = soil_moisture;
   doc["air_humidity"] = air_humidity;
   doc["temperature"] = temperature;
   doc["pH"] = pH;
-  doc["battery"] = battery;
 
   serializeJson(doc, json);
 
