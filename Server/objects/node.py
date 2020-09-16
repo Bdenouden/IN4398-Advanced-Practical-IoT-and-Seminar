@@ -48,16 +48,21 @@ class Node:
         print(f"--> version = {self.version}")
         print(f"--> created_at = {self.created_at}")
         print(f"--> updated_at = {self.updated_at}")
-        print(f"--> sensorList = {self.sensorList}")
+        if(not self.sensorList):
+            print(f"--> sensorList = []")
+        else:
+            print(f"--> sensorList = [")
+            self.print_sensorList()
+            print(f"    ]")
 
     @classmethod  # create node object from json data
     def from_JSON(cls, json):
         node = Node.knownDevices.get(json['chipID'])
         if(node is not None):
-            print(f'node {json["chipID"]} is a KNOWN device')
+            print(f'[NODE] Node {json["chipID"]} is a KNOWN device')
             node.updated_at = datetime.now().strftime("%Y.%m.%d - %H:%M:%S")
             return node
-        print(f'node {json["chipID"]} is a NEW device')
+        print(f'[NODE] Node {json["chipID"]} is a NEW device')
         return cls(json['chipID'], json['version'])
 
     # "chipID": 9159476,
@@ -69,5 +74,6 @@ class Node:
     # "pH": 4
 
     @staticmethod
+    # TODO: remove me
     def test():
         print('IM ALIVEEEE')
