@@ -2,15 +2,20 @@ import asyncio
 import websockets
 import json
 from datetime import datetime
+from objects.node import Node
+
+
+print(Node.ping())
 
 current_clients = 0 
+timeBeforeReconnect = 30000 # time between the current and next interaction, as send to the ESP
 
 async def hello(websocket, path):
-    global current_clients
-    current_clients = 1
+    global current_clients, timeBeforeReconnect
+    current_clients += 1
     client = websocket.remote_address
     curTime = datetime.now().strftime("%Y.%m.%d - %H:%M:%S")
-    print(f'[WSS] incomming connection: {client} @ {curTime }')
+    print(f'\n[WSS] incomming connection: {client} @ {curTime }')
     print(f'[WSS] currently connected clients: {current_clients}')
 
     msg_in = await websocket.recv()
@@ -21,7 +26,7 @@ async def hello(websocket, path):
     print(json.dumps(parsed , indent=4, sort_keys=False))
 
 
-    msg_out = f"tbr:30000"
+    msg_out = f"tbr:{timeBeforeReconnect}"
     await websocket.send(msg_out)
     print(f"{client} < {msg_out}")
 
