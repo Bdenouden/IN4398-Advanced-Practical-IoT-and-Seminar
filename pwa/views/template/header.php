@@ -19,7 +19,6 @@
 
 </head>
 <body>
-
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="/">
         <img src="../images/logo.png" alt="Logo" style="width:40px;">
@@ -31,34 +30,35 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link disabled"><?php echo ucfirst(User::g('user_name')); ?></a>
-            </li>
             <?php
-            if (User::userMinimalAccessLevel('admin')) { ?>
-                <li class="nav-item active">
-                    <a class="nav-link" href="/admin">Admin</a>
+            if (Page::checkForInitialSetupCompletion()) {
+                ?>
+                <li class="nav-item">
+                    <a class="nav-link disabled"><?php echo ucfirst(User::g('user_name')); ?></a>
                 </li>
-            <?php } ?>
-            <?php
-            if (User::userMinimalAccessLevel('user')) { ?>
-                <li class="nav-item active">
-                    <a class="nav-link" href="/download">Download</a>
-                </li>
-            <?php } ?>
-            <?php
-            if (User::session_exists()) { ?>
-                <li class="nav-item active">
-                    <a class="nav-link" href="/logout">Logout</a>
-                </li>
-            <?php } else { ?>
-                <li class="nav-item active">
-                    <a class="nav-link" href="/login">Login</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="/register">Register</a>
-                </li>
-            <?php } ?>
+                <?php
+                if (User::userMinimalAccessLevel('admin')) { ?>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/admin">Admin</a>
+                    </li>
+                <?php } ?>
+                <?php
+                if (User::userMinimalAccessLevel('user')) { ?>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/download">Download</a>
+                    </li>
+                <?php } ?>
+                <?php
+                if (User::session_exists()) { ?>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                <?php } else { ?>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                <?php }
+            } ?>
         </ul>
     </div>
 </nav>

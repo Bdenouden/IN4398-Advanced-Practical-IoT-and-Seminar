@@ -46,7 +46,15 @@ class Page extends Config
 
             $page_data = $this->page_model->searchPage('/' . $page_uri);
 
-            if ($this->checkLoginRequirement($page_data, $page_uri)) {
+            if (!$this->checkForInitialSetupCompletion()) { // Initial setup not completed, redirect to /setup
+
+                ob_start();
+
+                $this->loadView('template/header');
+                $this->loadController('setup');
+                $this->loadView('template/footer');
+
+            } elseif ($this->checkLoginRequirement($page_data, $page_uri)) {
 
                 ob_start();
 
@@ -174,6 +182,11 @@ class Page extends Config
         return array($uri, $total_get);
 
 
+    }
+
+    public static function checkForInitialSetupCompletion()
+    {
+        return false;
     }
 
 

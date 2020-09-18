@@ -1,7 +1,4 @@
 <?php
-/*
- * Author: Maarten
- */
 class api_model extends Model {
 
     public function getValidApiKeys()

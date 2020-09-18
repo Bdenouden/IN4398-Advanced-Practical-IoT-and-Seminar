@@ -22,7 +22,6 @@ class Config {
 
 		}
 
-
 	}
 
 	private function createCSRFtoken() {
@@ -51,7 +50,7 @@ class Config {
 		}
 		catch(exception $e) {
 
-			throw new Exception('settings could not be loaded');
+			throw new Exception('Settings could not be loaded');
 
 		}
 

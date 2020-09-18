@@ -23,7 +23,7 @@ class Controller {
 
 	}
 
-	public function loadModel($model, $user = false) {
+	public function loadModel($model) {
 
 		$model .= '_model';
 
