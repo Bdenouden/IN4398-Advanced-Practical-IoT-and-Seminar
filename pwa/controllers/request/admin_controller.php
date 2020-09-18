@@ -1,7 +1,4 @@
 <?php
-/*
- * Author: Maarten
- */
 Class admin_controller extends Controller{
 
 	public function __construct() {

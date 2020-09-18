@@ -77,7 +77,6 @@ class Database {
 		return self::$mysql->lastInsertId();
 	}
 
-	//author jaap: Transaction functions
 	public static function beginTransaction(){
 		
 		self::$mysql->beginTransaction();

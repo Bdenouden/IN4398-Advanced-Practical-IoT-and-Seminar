@@ -1,7 +1,4 @@
 <?php
-/*
- * Author: Maarten
- */
 Class register_controller extends Controller{
 
 	private $model;
