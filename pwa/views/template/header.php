@@ -43,11 +43,11 @@
                     </li>
                 <?php } ?>
                 <?php
-                if (User::userMinimalAccessLevel('user')) { ?>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/download">Download</a>
-                    </li>
-                <?php } ?>
+//                if (User::userMinimalAccessLevel('user')) { ?>
+<!--                    <li class="nav-item active">-->
+<!--                        <a class="nav-link" href="/download">Download</a>-->
+<!--                    </li>-->
+<!--                --><?php //} ?>
                 <?php
                 if (User::session_exists()) { ?>
                     <li class="nav-item active">
