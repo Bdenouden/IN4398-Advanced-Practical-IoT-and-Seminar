@@ -186,7 +186,7 @@ class Page extends Config
 
     public static function checkForInitialSetupCompletion()
     {
-        return false;
+        return file_exists("setup.lock");
     }
 
 
