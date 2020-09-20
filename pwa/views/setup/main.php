@@ -1,66 +1,67 @@
-<section style="padding-top:5px;">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-4 col-lg-offset-4 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3">
+<div class="container-fluid pt-3">
+    <div class="row">
+        <div class="col-lg-4 offset-lg-1 col-md-6 offset-md-2 col-sm-6 offset-sm-3">
 
-                <?php echo (isset($error)) ? '<div class="alert alert-danger" role="alert"><b>Error registering:</b> '.$error.'</div>' : null; ?>
+            <?php echo (isset($error)) ? '<div class="alert alert-danger" role="alert"><b>Error registering:</b> ' . $error . '</div>' : null; ?>
 
-                <?php echo (isset($notification) ? '<div class="alert alert-info" role="alert">' . $notification . '</div>' : NULL); ?>
+            <?php echo(isset($notification) ? '<div class="alert alert-info" role="alert">' . $notification . '</div>' : NULL); ?>
 
-                <h1>Register account</h1>
-                <div id="password_result"></div>
-                <form action="" id="register_form" method="POST">
-                    <input type="hidden" name="csrf-token" value="<?php echo $_SESSION['csrf-token']; ?>">
-                    <input type="hidden" name="register-account" />
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <i class="fa fa-user fa-align"></i>
-                                <input id="user" type="text" placeholder="username" class="form-control form-control-align" placeholder="" name="username" required autofocus>
-                            </div>
+            <h1>Initial Setup of Your ModFarm Unit</h1>
+            <div id="password_result"></div>
+            <form action="" id="register_form" method="POST">
+                <input type="hidden" name="csrf-token" value="<?php echo $_SESSION['csrf-token']; ?>">
+                <input type="hidden" name="register-account"/>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <i class="fa fa-user fa-align"></i>
+                            <input id="user" type="text" placeholder="username" class="form-control form-control-align"
+                                   placeholder="" name="username" required autofocus>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <i class="fa fa-lock fa-align"></i>
-                                <input id="password" type="password" name="password" placeholder="password" class="form-control form-control-align" required>
-                            </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <i class="fa fa-lock fa-align"></i>
+                            <input id="password" type="password" name="password" placeholder="password"
+                                   class="form-control form-control-align" required>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <i class="fa fa-lock fa-align"></i>
-                                <input id="password_confirm" type="password" name="password_confirm" placeholder="confirm password" class="form-control form-control-align" required>
-                            </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <i class="fa fa-lock fa-align"></i>
+                            <input id="password_confirm" type="password" name="password_confirm"
+                                   placeholder="confirm password" class="form-control form-control-align" required>
                         </div>
                     </div>
-                    <div id="result"></div>
-                    <button class="btn" type="submit">
-                        <span>Register</span>
-                    </button>
-                    <div class="clearfix"></div>
-                </form>
-            </div>
+                </div>
+                <div id="result"></div>
+                <button class="btn" type="submit">
+                    <span>Register</span>
+                </button>
+                <div class="clearfix"></div>
+            </form>
         </div>
     </div>
-</section>
+</div>
 
 <script type="text/javascript">
-    $(document).ready(function() {
+    $(document).ready(function () {
 
         function checkPasswordMatch() {
             var password = $("#password").val();
             var confirmPassword = $("#password_confirm").val();
 
-            if (password != confirmPassword)
+            if (password !== confirmPassword)
                 $("#password_result").html("<div class='alert alert-info' role='alert'>Passwords aren't identical</div>");
             else
                 $("#password_result").html('');
         }
 
-        $('#password, #password_confirm').keyup(function() {
+        $('#password, #password_confirm').keyup(function () {
 
             checkPasswordMatch();
 
@@ -71,8 +72,7 @@
         so everytime user type code will execute
         */
 
-        $('#password').keyup(function()
-        {
+        $('#password').keyup(function () {
             $('#result').html(checkStrength($('#password').val()))
 
         });
@@ -96,19 +96,29 @@
             //length is ok, lets continue.
 
             //if length is 8 characters or more, increase strength value
-            if (password.length > 7) {strength += 1}
+            if (password.length > 7) {
+                strength += 1
+            }
 
             //if password contains both lower and uppercase characters, increase strength value
-            if (password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/)) { strength += 1 }
+            if (password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/)) {
+                strength += 1
+            }
 
             //if it has numbers and characters, increase strength value
-            if (password.match(/([a-zA-Z])/) && password.match(/([0-9])/)) { strength += 1 }
+            if (password.match(/([a-zA-Z])/) && password.match(/([0-9])/)) {
+                strength += 1
+            }
 
             //if it has one special character, increase strength value
-            if (password.match(/([!,%,&,@,#,$,^,*,?,_,~])/)) { strength += 1 }
+            if (password.match(/([!,%,&,@,#,$,^,*,?,_,~])/)) {
+                strength += 1
+            }
 
             //if it has two special characters, increase strength value
-            if (password.match(/(.*[!,%,&,@,#,$,^,*,?,_,~].*[!,%,&,@,#,$,^,*,?,_,~])/)) { strength += 1 }
+            if (password.match(/(.*[!,%,&,@,#,$,^,*,?,_,~].*[!,%,&,@,#,$,^,*,?,_,~])/)) {
+                strength += 1
+            }
 
             //now we have calculated strength value, we can return messages
 
@@ -117,7 +127,7 @@
                 $('#result').removeClass();
                 $('#result').addClass('weak');
                 return '<span class="label label-warning">Password is very weak</span>';
-            } else if (strength == 2 ) {
+            } else if (strength === 2) {
                 $('#result').removeClass();
                 $('#result').addClass('good');
                 return '<span class="label label-default">Password is weak</span>';

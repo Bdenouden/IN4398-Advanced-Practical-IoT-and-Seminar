@@ -22,7 +22,7 @@ class login_controller extends Controller
                 $this->model = $this->loadModel('login');
 
                 if ($this->login()) {
-                    Auth::redirect('/admin');
+                    Auth::redirect('/');
                 } else {
                     Auth::redirect('/' . Auth::esc(str_replace('-', '/', $_GET['next'])));
                 }

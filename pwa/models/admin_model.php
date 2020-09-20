@@ -1,16 +1,13 @@
 <?php
 
-class admin_model extends Model {
+class admin_model extends Model
+{
 
-	public function getAllUsers() {
-		
-		return Database::select("SELECT * FROM users");
-	}
+    public function getAdminPageSensorData()
+    {
 
-	public function getUserLevels() {
-
-		return Database::select("SELECT * FROM user_levels");
-	}
+        return Database::select("SELECT sensor_id, GROUP_CONCAT(value) as value, GROUP_CONCAT(unit) as unit FROM sensor_data WHERE entry_time BETWEEN date_sub(now(), INTERVAL 3 HOUR) AND now() GROUP BY sensor_id");
+    }
 
 }
 

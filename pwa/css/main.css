@@ -2,3 +2,7 @@
 	cursor:pointer;
 }
 
+h1 {
+	color: #777;
+	text-transform: capitalize;
+}

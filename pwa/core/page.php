@@ -46,7 +46,7 @@ class Page extends Config
 
             $page_data = $this->page_model->searchPage('/' . $page_uri);
 
-            if (!$this->checkForInitialSetupCompletion()) { // Initial setup not completed, redirect to /setup
+            if (!$this->isInitialSetupCompleted()) { // Initial setup not completed, redirect to /setup
 
                 ob_start();
 
@@ -184,7 +184,7 @@ class Page extends Config
 
     }
 
-    public static function checkForInitialSetupCompletion()
+    public static function isInitialSetupCompleted()
     {
         return file_exists("setup.lock");
     }

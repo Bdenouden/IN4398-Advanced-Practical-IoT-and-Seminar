@@ -8,8 +8,7 @@ Class admin_controller extends Controller{
 		$this->model = $this->loadModel('admin');
 
 		$this->loadView('admin/main', array(
-//			'users' => $this->model->getAllUsers()
-//			'user_levels' => $this->model->getUserLevels()
+		    'sensor_data' => $this->model->getAdminPageSensorData()
 		));
 
 	}

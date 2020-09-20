@@ -1,7 +1,5 @@
-
-<section style="padding:90px 0;">
-	<div class="container">
+<div class="container-fluid pt-3">
 
 
-	</div>
-</section>
+
+</div>
