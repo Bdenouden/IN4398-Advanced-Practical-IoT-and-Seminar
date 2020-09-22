@@ -1,2 +1,5 @@
 .idea/
 *.lock
+
+# exclude data from the db 
+/mysql

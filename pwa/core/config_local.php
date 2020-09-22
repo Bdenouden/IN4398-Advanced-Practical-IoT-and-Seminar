@@ -1,7 +1,7 @@
 <?php
 return (object) array(
 		"database_username"		=>		"iot",
-		"database_host"			=>		"localhost",
+		"database_host"			=>		"advanced_iot_mariadb",
 		"database_name"			=>		"iot",
 		"database_password"		=>		"2Cm&&G0CKKkt2@vL",
 	
