@@ -37,7 +37,7 @@ class api_update_controller extends Controller
                 echo json_encode($failures);
             }
             else {
-                echo json_encode(["succes" => true, "message" => "Successfully stored all sensor data entries!"]);
+                echo json_encode(["success" => true, "message" => "Successfully stored all sensor data entries!"]);
             }
 
         } else {
