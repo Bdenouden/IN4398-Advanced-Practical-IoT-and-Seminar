@@ -1,9 +1,11 @@
 <?php
 class api_model extends Model {
 
-    public function getValidApiKeys()
+    public function getKnownDevices(bool $active = true)
     {
-        return Database::select("SELECT * FROM sensor_data");
+        return Database::select("SELECT * FROM sensor_nodes WHERE is_active = :is_active", array(
+            ":is_active" => $active ? 1 : 0,
+        ));
     }
 
     public function storeSensorEntry(string $node_chipid, string $sensor_uid, string $data_type, float $data_value, string $data_unit)
