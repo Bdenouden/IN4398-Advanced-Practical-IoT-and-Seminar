@@ -10,29 +10,30 @@ class api_new_device_controller extends Controller
 
         $this->model = $this->loadModel('api');
 
-        if (isset($_POST['API_KEY']) && $this->isValidApiKey($_POST['API_KEY'])) {
-            if (isset($_POST['node_id']) && is_string($_POST['node_id'])) {
-                if ($this->model->addNewDevice($_POST['node_id'])) {
-                    echo json_encode(["success" => true, "message" => "Successfully added a new device!"]);
+        try {
+            $login = Auth::requireBasicLogin();
+
+            if ($login){
+                if (isset($_POST['node_id']) && is_string($_POST['node_id'])) {
+                    if ($this->model->addNewDevice($_POST['node_id'])) {
+                        echo json_encode(["success" => true, "message" => "Successfully added a new device!"]);
+                    }
+                    else {
+                        echo json_encode(["success" => false, "message" => "Something went wrong with adding a new device"]);
+
+                    }
                 }
                 else {
-                    echo json_encode(["success" => false, "message" => "Something went wrong with adding a new device"]);
-
+                    echo json_encode(["success" => false, "message" => "Missing 'node_id' field!"]);
                 }
             }
             else {
-                echo json_encode(["success" => false, "message" => "Missing 'node_id' field!"]);
+                $this->loadController('e403');
             }
-
-        } else {
+        } catch (UserException $e) {
             $this->loadController('e403');
         }
 
-    }
-
-    public static function isValidApiKey($api_key)
-    {
-        return $api_key == 123;
     }
 
 }

@@ -6,7 +6,7 @@
 
             <?php echo(isset($notification) ? '<div class="alert alert-info" role="alert">' . $notification . '</div>' : NULL); ?>
 
-            <h1>Initial Setup of Your ModFarm Unit</h1>
+            <h1>Initial Setup of Your <?= WEBSITE_NAME ?> Unit</h1>
             <div id="password_result"></div>
             <form action="" id="register_form" method="POST">
                 <input type="hidden" name="csrf-token" value="<?php echo $_SESSION['csrf-token']; ?>">

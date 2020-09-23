@@ -48,7 +48,7 @@ class register_model extends Model {
 					$mail = new Mailer;
 					$mail->setSender();
 					$mail->setReceiver($user_email[0]['user_email']);
-					$mail->setTitle('ModFarm: Confirm Account');
+					$mail->setTitle(WEBSITE_NAME . ': Confirm Account');
 					$mail->setMessage('
 						Hi '.$user_email[0]['user_name'].'!<br /><br />
 						Looks like you want to sign up for the Blockade Simulator, awesome!<br/>
@@ -56,7 +56,7 @@ class register_model extends Model {
 						<a href="http://'.DOMAIN.'/register?token=' . $reset_token.'">http://'.DOMAIN.'/register?token=' . $reset_token.'</a><br />
 						<br />
 						Regards,<br />
-						Team ModFarm<br />
+						Team '.WEBSITE_NAME.'<br />
 						');
 					$mail->send_mail();
 				}

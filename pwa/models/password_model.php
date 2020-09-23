@@ -24,7 +24,7 @@ class password_model extends Model {
             $mail = new Mailer;
             $mail->setSender();
             $mail->setReceiver($user_email[0]['user_email']);
-            $mail->setTitle('ModFarm: Reset Password');
+            $mail->setTitle(WEBSITE_NAME . ': Reset Password');
             $mail->setMessage('
                 Hi '.$user_email[0]['user_name'].'!<br /><br />
                 Someone told me you forgot your password...<br/>
@@ -32,7 +32,7 @@ class password_model extends Model {
                 <a href="http://'.DOMAIN.'/forgotpassword?token=' . $reset_token.'">http://'.DOMAIN.'/forgotpassword?token=' . $reset_token.'</a><br />
                 <br />
                 Regards,<br />
-                Team ModFarm<br />
+                Team '. WEBSITE_NAME .'<br />
                 ');
             $mail->send_mail();
         }
