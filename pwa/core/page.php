@@ -46,39 +46,44 @@ class Page extends Config
 
             $page_data = $this->page_model->searchPage('/' . $page_uri);
 
-            if (!$this->isInitialSetupCompleted()) { // Initial setup not completed, redirect to /setup
-
-                ob_start();
-
+            if (count($page_data) == 0) {
                 $this->loadView('template/header');
-                $this->loadController('setup');
+                $this->loadController('e404');
                 $this->loadView('template/footer');
+            }
+            else {
 
-            } elseif ($this->checkLoginRequirement($page_data, $page_uri)) {
+                $page_data = $page_data[0];
 
-                ob_start();
+                if (!$this->isInitialSetupCompleted()) { // Initial setup not completed, redirect to /setup
 
-                switch ($page_data['page_type']) {
+                    $this->loadView('template/header');
+                    $this->loadController('setup');
+                    $this->loadView('template/footer');
 
-                    case 'default':
-                        if (!$this->redirectAJAX($page_data)) {
+                } elseif ($this->checkLoginRequirement($page_data, $page_uri)) {
 
-                            $this->loadView('template/header');
-                            $this->loadController($page_data['page_name']);
-                            $this->loadView('template/footer');
-                        }
-                        break;
+                    switch ($page_data['page_type']) {
 
-                    case 'api':
-                        if (!$this->redirectAJAX($page_data)) {
+                        case 'default':
+                            if (!$this->redirectAJAX($page_data)) {
 
-                            $this->loadController($page_data['page_name']);
-                        }
-                        break;
+                                $this->loadView('template/header');
+                                $this->loadController($page_data['page_name']);
+                                $this->loadView('template/footer');
+                            }
+                            break;
 
+                        case 'api':
+                            if (!$this->redirectAJAX($page_data)) {
+
+                                $this->loadController($page_data['page_name']);
+                            }
+                            break;
+
+                    }
                 }
             }
-
 
         } catch (exception $e) {
 
