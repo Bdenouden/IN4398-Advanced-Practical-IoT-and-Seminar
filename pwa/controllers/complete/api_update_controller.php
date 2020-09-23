@@ -11,44 +11,46 @@ class api_update_controller extends Controller
         $this->model = $this->loadModel('api');
 
         try {
-            $data = json_decode(file_get_contents('php://input'), true);
-        }
-        catch (Exception $e){
-            $this->loadController('e403');
-        }
+            $login = Auth::requireBasicLogin();
 
-        $api_key = $data['API_KEY'];
+            if ($login) {
+                try {
+                    $data = json_decode(file_get_contents('php://input'), true);
+                } catch (Exception $e) {
+                    $this->loadController('e403');
+                }
 
-        $failures = [];
+                if (!isset($data)) {
+                    $this->loadController('e403');
+                } else {
 
-        if (isset($api_key) && $this->isValidApiKey($api_key)) {
-            foreach ($data as $node_chipid => $entry) {
-                if (is_array($entry)) {
-                    foreach ($entry as $sensor_uid => $sensor_data){
-                        if(!$this->model->storeSensorEntry($node_chipid, $sensor_uid, $sensor_data['name'], $sensor_data['value'], $sensor_data['unit'])){
-                            $failures[] = [$node_chipid, $sensor_uid];
+                    $failures = [];
+
+                    foreach ($data as $node_chipid => $entry) {
+                        if (is_array($entry)) {
+                            foreach ($entry as $sensor_uid => $sensor_data) {
+                                if (!$this->model->storeSensorEntry($node_chipid, $sensor_uid, $sensor_data['name'], $sensor_data['value'], $sensor_data['unit'])) {
+                                    $failures[] = [$node_chipid, $sensor_uid];
+                                }
+                            }
                         }
                     }
+
+                    if (sizeof($failures) > 0) {
+                        echo json_encode("Ran into one or more failures!");
+                        echo json_encode($failures);
+                    } else {
+                        echo json_encode(["success" => true, "message" => "Successfully stored all sensor data entries!"]);
+                    }
                 }
+            } else {
+                $this->loadController('e403');
             }
-
-            if (sizeof($failures) > 0){
-                echo json_encode("Ran into one or more failures!");
-                echo json_encode($failures);
-            }
-            else {
-                echo json_encode(["success" => true, "message" => "Successfully stored all sensor data entries!"]);
-            }
-
-        } else {
+        } catch
+        (UserException $e) {
             $this->loadController('e403');
         }
 
-    }
-
-    public static function isValidApiKey($api_key)
-    {
-        return $api_key == 123;
     }
 
 }

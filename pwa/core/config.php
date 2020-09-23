@@ -1,6 +1,8 @@
 <?php
 setlocale(LC_TIME, 'dutch');
 
+define("WEBSITE_NAME", "ModFarm");
+
 class Config {
 
 	public static $settings;

@@ -7,20 +7,22 @@ class api_get_devices_controller extends Controller
 
     public function __construct($arg)
     {
-
         $this->model = $this->loadModel('api');
 
-        if (isset($_POST['API_KEY']) && $this->isValidApiKey($_POST['API_KEY'])) {
-            echo json_encode($this->model->getKnownDevices());
-        } else {
+        try {
+            $login = Auth::requireBasicLogin();
+
+            if ($login){
+                echo json_encode($this->model->getKnownDevices());
+            }
+            else {
+                $this->loadController('e403');
+            }
+        } catch (UserException $e) {
             $this->loadController('e403');
         }
 
     }
 
-    public static function isValidApiKey($api_key)
-    {
-        return $api_key == 123;
-    }
 
 }
