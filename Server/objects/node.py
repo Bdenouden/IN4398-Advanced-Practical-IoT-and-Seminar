@@ -2,12 +2,11 @@ from datetime import datetime
 from .api import API
 import threading
 
-import time
-
 
 class Node:
     knownDevices = {}
     __isActive = False
+    isNew = False
 
     def __init__(self, chipId, version, sensorList=None):
         self.chipId = chipId
@@ -20,15 +19,11 @@ class Node:
             self.sensorList = sensorList
         Node.knownDevices[self.chipId] = self
 
-    def saveNewDeviceToDb(self):
-        """
+    def sensorDataFromJson(self, json):
+        for sensor in self.sensorList:
+            s_name = sensor.name
+            s_value = json.get(sensor.name)
 
-        """
-        t = time.time()
-        newDeviceApi=API(path='/new_device' , params={"node_id": self.chipId})
-        response = newDeviceApi.post()
-        elapsed_time = time.time()-t
-        print(f"[NEW DEVICE] {response.status_code}, took {elapsed_time}s")
 
     def getFromDb(self, chipId):
         # TODO dit goed implementeren
@@ -41,7 +36,7 @@ class Node:
 
     def set_sensors(self, sensors):
         """ Replace this node's sensor list with the list `sensors`"""
-        self.sensorList = sensors
+        self.sensorList=sensors
 
     def remove_sensor(self, sensor):
         """ Remove individual sensors from this node's sensor list"""
@@ -65,43 +60,37 @@ class Node:
             self.print_sensorList()
             print(f"    ]")
 
-    @classmethod  # create node object from json data
+    @ classmethod  # create node object from json data
     def from_JSON(cls, json):
-        node = Node.knownDevices.get(json['chipID'])
+        node=Node.knownDevices.get(json['chipID'])
         if(node is not None):
-            print(f'[NODE] Node {json["chipID"]} is a\033[92m KNOWN\033[0m device')
-            node.updated_at = datetime.now().strftime("%Y.%m.%d - %H:%M:%S")
-            return node
-        print(f'[NODE] Node {json["chipID"]} is a\033[93m NEW\033[0m device')
+            print(
+                f'[NODE] Node {json["chipID"]} is a\033[92m KNOWN\033[0m device')
+            node.updated_at=datetime.now().strftime("%Y.%m.%d - %H:%M:%S")
+        else:
+            print(
+                f'[NODE] Node {json["chipID"]} is a\033[93m NEW\033[0m device')
+            node=cls(json['chipID'], json['version'])
+            node.isNew=True
 
-        # FIXME put this in a thread
-        # problem: node object is destroyed before thread has time to execute completely
-        # result: thread will not execute, no http request made
-
-        node = cls(json['chipID'], json['version'])
-        # t = threading.Thread(target=node.saveNewDeviceToDb, args=[json["chipID"]])
-        # t.start()
-        node.saveNewDeviceToDb()
-        
-
-        # t = time.time()
-        # newDeviceApi=API(path='/api/new_device' , params={"node_id": json["chipID"]})
-        # response = newDeviceApi.post()
-        # elapsed_time = time.time()-t
-        # print(f"[NEW DEVICE] {response.status_code}, took {elapsed_time}s")
-
-        # end of thread
-
-        print(f'[NODE] # known devices: {len(Node.knownDevices)}')
         return node
 
-    @staticmethod  # initialise known devices from json
+    def saveNewDeviceToDb(self):
+        """
+            Saves a new device to the PWA database
+        """
+        newDeviceApi=API(path='/new_device', params={"node_id": self.chipId})
+        response=newDeviceApi.post()
+        print(f"[NEW DEVICE] {response.status_code}")
+        if response.status_code == 200:
+            self.isNew=False
+
+    @ staticmethod  # initialise known devices from json
     def knownDevices_from_JSON(json):
         for item in json:
-            # print(f'item: {item}\n')
-            node = Node.knownDevices.get(item['id'])
+            node=Node.knownDevices.get(item['id'])
             if (node is None):
-                node = Node(int(item["id"]), 'unknown')  # FIXME version
+                node=Node(int(item["id"]), 'unknown')  # FIXME version
                 # print(f"Device with id {item['id']} is now known")
 
     # "chipID": 9159476,

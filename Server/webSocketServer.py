@@ -1,37 +1,53 @@
 import asyncio
 import websockets
 import json
+import threading
 from datetime import datetime
 from objects import Node
-from objects import Sensor
+from objects import PH_sensor
+from objects import Soil_moisture_sensor
+from objects import Battery
 from objects import API
 
-current_clients = 0  
+current_clients = 0
+threads = []
 
 # time between the current and next interaction, as send to the ESP
 timeBeforeReconnect = 30000
 
 
+def get_known_devices():
+    api = API()
+    print("[SETUP] Awaiting known_devices")
+    response = api.get()
 
-api = API()
-print("[SETUP] Awaiting known_devices")
-response = api.get()
-if response.status_code == 200:
-    # print(f"[API] Response code {response.status_code}")
-    known_devices = json.loads(response.text)
-    # print(json.dumps(known_devices, indent=4, sort_keys=False))
-    Node.knownDevices_from_JSON(known_devices)
-else:
-    print(f"[API] Response code {response.status_code}, could not load known devices")
+    if response is None:
+        print(f"[API] An error occured, could not load known devices")
+    elif response.status_code == 200:
+        # print(f"[API] Response code {response.status_code}")
+        known_devices = json.loads(response.text)
+        # print(json.dumps(known_devices, indent=4, sort_keys=False))
+        Node.knownDevices_from_JSON(known_devices)
+    else:
+        print(
+            f"[API] Response code {response.status_code}, could not load known devices")
 
-print(f"[SETUP] {len(Node.knownDevices)} device(s) were found:")
+    print(f"[SETUP] {len(Node.knownDevices)} device(s) were found:")
+
+
+def HTTP_new_device(node):
+    # print(f"[WSS] New device thread started")
+    t = threading.Thread(target=node.saveNewDeviceToDb)
+    threads.append(t)
+    t.start()
+
+
 
 async def eventHandler(websocket, path):
-    global current_clients, timeBeforeReconnect
+    global current_clients, timeBeforeReconnect, threads
 
     # update active clients
     current_clients += 1
-    
 
     client = websocket.remote_address
     curTime = datetime.now().strftime("%Y.%m.%d - %H:%M:%S")
@@ -48,6 +64,12 @@ async def eventHandler(websocket, path):
 
     # get/create node object
     node = Node.from_JSON(parsed)
+    if node.isNew:
+        HTTP_new_device(node)
+    # TODO version update
+    # TODO check which sensor data is received but not used -> alert UI
+    node.sensorDataFromJson(parsed)
+
     print(f"[WSS] Node {node.chipId} has succesfully transmitted its data")
 
     # print attributes of the node
@@ -58,7 +80,7 @@ async def eventHandler(websocket, path):
     await websocket.send(msg_out)
     # print(f"{client} < {msg_out}")
 
-    # added to prove the server can handle multiple clients at once provided no blocking actions take place 
+    # added to prove the server can handle multiple clients at once provided no blocking actions take place
     # see https://websockets.readthedocs.io/en/stable/faq.html
     # await asyncio.sleep(5)
 
@@ -74,6 +96,17 @@ async def eventHandler(websocket, path):
 
     # show the amount of known devices
     # print(f'# known devices: {len(Node.knownDevices)}')
+
+get_known_devices()
+
+# TODO remove from here after test
+for key in Node.knownDevices:
+    node = Node.knownDevices.get(key)
+    node.add_sensor(Soil_moisture_sensor())
+    node.add_sensor(PH_sensor())
+    node.add_sensor(Battery())
+# Remove up to here
+
 
 start_server = websockets.serve(eventHandler, "", 8765)
 

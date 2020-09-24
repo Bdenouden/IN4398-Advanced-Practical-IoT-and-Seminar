@@ -12,28 +12,30 @@ class API:
             path='/get_devices',
             username='api',
             password='test1234',
-            params=None):
+            params=None,
+            json=None):
         self.url = url
         self.path = path
         self.username = username
         self.password = password
         self.params = params
+        self.json = json
 
     def get(self):
-        response = requests.get(
-            self.url + self.path,
-            auth=(self.username, self.password),
-            params=self.params)
-
+        try:
+            response = requests.get(
+                self.url + self.path,
+                auth=(self.username, self.password),
+                params=self.params)
+        except:
+            response = None
         return response
 
     def post(self):
         response = requests.post(
             self.url + self.path,
             auth=(self.username, self.password),
-            data=self.params)
+            data=self.params,
+            json=self.json)
 
         return response
-
-
-
