@@ -1,5 +1,5 @@
 import requests
-
+import json
 
 class API:
     url = 'http://bram-ubuntu.local/api'
@@ -39,3 +39,5 @@ class API:
             json=self.json)
 
         return response
+
+

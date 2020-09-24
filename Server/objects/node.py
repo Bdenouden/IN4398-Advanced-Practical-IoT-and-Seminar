@@ -21,9 +21,7 @@ class Node:
 
     def sensorDataFromJson(self, json):
         for sensor in self.sensorList:
-            s_name = sensor.name
-            s_value = json.get(sensor.name)
-
+            sensor.setValue(json.get(sensor.name))
 
     def getFromDb(self, chipId):
         # TODO dit goed implementeren
@@ -36,7 +34,7 @@ class Node:
 
     def set_sensors(self, sensors):
         """ Replace this node's sensor list with the list `sensors`"""
-        self.sensorList=sensors
+        self.sensorList = sensors
 
     def remove_sensor(self, sensor):
         """ Remove individual sensors from this node's sensor list"""
@@ -60,18 +58,25 @@ class Node:
             self.print_sensorList()
             print(f"    ]")
 
+    def getDict(self):
+        temp_dict = {}
+        for sensor in self.sensorList:
+            temp_dict[sensor.name] = sensor.getDict()
+        return temp_dict
+
+
     @ classmethod  # create node object from json data
     def from_JSON(cls, json):
-        node=Node.knownDevices.get(json['chipID'])
+        node = Node.knownDevices.get(json['chipID'])
         if(node is not None):
             print(
                 f'[NODE] Node {json["chipID"]} is a\033[92m KNOWN\033[0m device')
-            node.updated_at=datetime.now().strftime("%Y.%m.%d - %H:%M:%S")
+            node.updated_at = datetime.now().strftime("%Y.%m.%d - %H:%M:%S")
         else:
             print(
                 f'[NODE] Node {json["chipID"]} is a\033[93m NEW\033[0m device')
-            node=cls(json['chipID'], json['version'])
-            node.isNew=True
+            node = cls(json['chipID'], json['version'])
+            node.isNew = True
 
         return node
 
@@ -79,18 +84,18 @@ class Node:
         """
             Saves a new device to the PWA database
         """
-        newDeviceApi=API(path='/new_device', params={"node_id": self.chipId})
-        response=newDeviceApi.post()
+        newDeviceApi = API(path='/new_device', params={"node_id": self.chipId})
+        response = newDeviceApi.post()
         print(f"[NEW DEVICE] {response.status_code}")
         if response.status_code == 200:
-            self.isNew=False
+            self.isNew = False
 
     @ staticmethod  # initialise known devices from json
     def knownDevices_from_JSON(json):
         for item in json:
-            node=Node.knownDevices.get(item['id'])
+            node = Node.knownDevices.get(item['id'])
             if (node is None):
-                node=Node(int(item["id"]), 'unknown')  # FIXME version
+                node = Node(int(item["id"]), 'unknown')  # FIXME version
                 # print(f"Device with id {item['id']} is now known")
 
     # "chipID": 9159476,

@@ -51,10 +51,20 @@ class Sensor:
     def calc_value(self):
         ''' This is a standard mapping function and should in most cases be overwritten in the subclass'''
         val = self.minVal + self.maxVal * (self.raw_value / self.rawmaxVal)
-        return val
+        return round(val, 2)
 
     def getValue(self):
         return self.value
+
+    def getDict(self):
+        '''
+            Used to generate the JSON send to the PWA
+        '''
+        return {
+            "name": self.name,
+            "value": self.value,
+            "unit": self.siUnit
+        }
 
 
 class PH_sensor(Sensor):

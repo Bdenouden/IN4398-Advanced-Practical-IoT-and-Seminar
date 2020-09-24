@@ -3,6 +3,7 @@ import websockets
 import json
 import threading
 from datetime import datetime
+from datetime import timedelta
 from objects import Node
 from objects import PH_sensor
 from objects import Soil_moisture_sensor
@@ -97,6 +98,35 @@ async def eventHandler(websocket, path):
     # show the amount of known devices
     # print(f'# known devices: {len(Node.knownDevices)}')
 
+
+async def send_update():
+    delay = 0.5*60
+    while True:
+
+        transmission_time = datetime.now() + timedelta(seconds = delay)
+        print(f'[UPDATE] delay set for {delay} seconds, next update: {transmission_time.strftime("%Y.%m.%d - %H:%M:%S")}')
+    
+        await asyncio.sleep(delay)
+
+        # send data to pwa
+        temp_dict = {}
+        api = API(path='/update')
+
+        for _, node in Node.knownDevices.items():
+            temp_dict[node.chipId] = node.getDict()
+
+        output = json.dumps(temp_dict, indent=4, sort_keys=False)
+
+        print("[UPDATE] /update JSON output: ")
+        print(output)
+
+        api.json = output
+        response = api.post()
+
+        print(f"[UPDATE] Response code: {response.status_code}")
+        print(response.text)
+
+
 get_known_devices()
 
 # TODO remove from here after test
@@ -111,5 +141,7 @@ for key in Node.knownDevices:
 start_server = websockets.serve(eventHandler, "", 8765)
 
 print('[WSS] Server started!')
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+loop = asyncio.get_event_loop()
+loop.run_until_complete(start_server)
+loop.create_task(send_update())
+loop.run_forever()
