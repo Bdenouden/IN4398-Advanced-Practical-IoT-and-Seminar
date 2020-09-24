@@ -25,7 +25,7 @@ class api_model extends Model
         }
     }
 
-    public function storeSensorEntry(string $node_chipid, string $sensor_uid, string $data_type, float $data_value, string $data_unit)
+    public function storeSensorEntry(string $node_chipid, string $sensor_uid, string $data_type, ?float $data_value, string $data_unit)
     {
 
         try {
