@@ -115,12 +115,11 @@ async def send_update():
         for _, node in Node.knownDevices.items():
             temp_dict[node.chipId] = node.getDict()
 
-        output = json.dumps(temp_dict, indent=4, sort_keys=False)
+        api.json = temp_dict
 
         print("[UPDATE] /update JSON output: ")
-        print(output)
+        # print(output)
 
-        api.json = output
         response = api.post()
 
         print(f"[UPDATE] Response code: {response.status_code}")

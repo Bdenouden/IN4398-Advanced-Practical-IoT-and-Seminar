@@ -25,6 +25,7 @@ class api_update_controller extends Controller
                 } else {
 
                     $failures = [];
+                    $success = false;
 
                     foreach ($data as $node_chipid => $entry) {
                         if (is_array($entry)) {
@@ -32,11 +33,14 @@ class api_update_controller extends Controller
                                 if (!$this->model->storeSensorEntry($node_chipid, $sensor_uid, $sensor_data['name'], $sensor_data['value'], $sensor_data['unit'])) {
                                     $failures[] = [$node_chipid, $sensor_uid];
                                 }
+                                else {
+                                    $success = true;
+                                }
                             }
                         }
                     }
 
-                    if (sizeof($failures) > 0) {
+                    if (sizeof($failures) > 0 || !$success) {
                         echo json_encode("Ran into one or more failures!");
                         echo json_encode($failures);
                     } else {
