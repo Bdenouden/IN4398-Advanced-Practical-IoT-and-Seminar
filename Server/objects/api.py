@@ -1,6 +1,7 @@
 import requests
 import json
 
+
 class API:
     url = 'http://bram-ubuntu.local/api'
     path = '/get_devices'
@@ -32,12 +33,12 @@ class API:
         return response
 
     def post(self):
-        response = requests.post(
-            self.url + self.path,
-            auth=(self.username, self.password),
-            data=self.params,
-            json=self.json)
-
+        try:
+            response = requests.post(
+                self.url + self.path,
+                auth=(self.username, self.password),
+                data=self.params,
+                json=self.json)
+        except:
+            response = None
         return response
-
-

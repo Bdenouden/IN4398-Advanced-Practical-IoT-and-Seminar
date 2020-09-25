@@ -2,6 +2,9 @@ import asyncio
 import websockets
 import json
 import threading
+import time
+import os
+import sys
 from datetime import datetime
 from datetime import timedelta
 from objects import Node
@@ -13,8 +16,11 @@ from objects import API
 current_clients = 0
 threads = []
 
-# time between the current and next interaction, as send to the ESP
-timeBeforeReconnect = 30000
+# time between the current and next interaction, in ms, as send to the ESP
+timeBeforeReconnect = 30*1000
+
+# seconds between sensor updates to the pwa
+update_delay = 0.1*60
 
 
 def get_known_devices():
@@ -41,7 +47,6 @@ def HTTP_new_device(node):
     t = threading.Thread(target=node.saveNewDeviceToDb)
     threads.append(t)
     t.start()
-
 
 
 async def eventHandler(websocket, path):
@@ -99,16 +104,16 @@ async def eventHandler(websocket, path):
     # print(f'# known devices: {len(Node.knownDevices)}')
 
 
-async def send_update():
-    delay = 0.5*60
+def send_update():
+    global update_delay
+
     while True:
+        transmission_time = datetime.now() + timedelta(seconds=update_delay)
+        print(
+            f'[UPDATE] delay set for {update_delay} seconds, next update: {transmission_time.strftime("%Y.%m.%d - %H:%M:%S")}')
 
-        transmission_time = datetime.now() + timedelta(seconds = delay)
-        print(f'[UPDATE] delay set for {delay} seconds, next update: {transmission_time.strftime("%Y.%m.%d - %H:%M:%S")}')
-    
-        await asyncio.sleep(delay)
+        time.sleep(update_delay)
 
-        # send data to pwa
         temp_dict = {}
         api = API(path='/update')
 
@@ -117,13 +122,22 @@ async def send_update():
 
         api.json = temp_dict
 
-        print("[UPDATE] /update JSON output: ")
-        # print(output)
+        # print("[UPDATE] /update JSON output: ")
+        # print(json.dumps(temp_dict, indent=4, sort_keys=False))
 
+        # TODO this is a blocking statement, ruining the async method. this should be put into a thread
         response = api.post()
 
-        print(f"[UPDATE] Response code: {response.status_code}")
-        print(response.text)
+        if response is None:
+            print(f"[UPDATE] An error occured!")
+            curTime = datetime.now().strftime("%Y%m%d-%H%M%S")
+            with open(sys.path[0]+ '/data/'+curTime+'.txt', 'w+') as outFile:
+                json.dump(temp_dict, outFile)
+        elif response.status_code == 200:
+            print(f"[UPDATE] Sensor values successfully uploaded!")
+        else:
+            print(
+                f"[UPDATE] An error occured! Response code: {response.status_code}")
 
 
 get_known_devices()
@@ -138,9 +152,11 @@ for key in Node.knownDevices:
 
 
 start_server = websockets.serve(eventHandler, "", 8765)
-
 print('[WSS] Server started!')
-loop = asyncio.get_event_loop()
-loop.run_until_complete(start_server)
-loop.create_task(send_update())
-loop.run_forever()
+
+t = threading.Thread(target=send_update)
+threads.append(t)
+t.start()
+
+asyncio.get_event_loop().run_until_complete(start_server)
+asyncio.get_event_loop().run_forever()

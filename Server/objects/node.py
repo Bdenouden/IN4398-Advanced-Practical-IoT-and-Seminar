@@ -86,9 +86,12 @@ class Node:
         """
         newDeviceApi = API(path='/new_device', params={"node_id": self.chipId})
         response = newDeviceApi.post()
-        print(f"[NEW DEVICE] {response.status_code}")
-        if response.status_code == 200:
-            self.isNew = False
+        if response is not None:
+            print(f"[NEW DEVICE] {response.status_code}")
+            if response.status_code == 200:
+                self.isNew = False
+        else: 
+            print(f"[NEW DEVICE] Network error: could not upload new device")
 
     @ staticmethod  # initialise known devices from json
     def knownDevices_from_JSON(json):
