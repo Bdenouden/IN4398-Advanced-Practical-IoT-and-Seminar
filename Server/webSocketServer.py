@@ -20,7 +20,7 @@ threads = []
 timeBeforeReconnect = 30*1000
 
 # seconds between sensor updates to the pwa
-update_delay = 0.1*60
+update_delay = 1*60
 
 
 def get_known_devices():
@@ -48,7 +48,10 @@ def HTTP_new_device(node):
     threads.append(t)
     t.start()
 
-
+# TODO unexpected close of the connection throws an exception
+# TODO sending key chipId instead of chipID throws a keyerror
+# TODO place unknown key-value pairs into a 'extra' column
+# TODO collect sensor data in a <timestamp>:<value> manner
 async def eventHandler(websocket, path):
     global current_clients, timeBeforeReconnect, threads
 
@@ -117,6 +120,7 @@ def send_update():
         temp_dict = {}
         api = API(path='/update')
 
+        # FIXME Node.knownDevices is not thread safe: must be converted to argument of the function
         for _, node in Node.knownDevices.items():
             temp_dict[node.chipId] = node.getDict()
 
@@ -125,7 +129,6 @@ def send_update():
         # print("[UPDATE] /update JSON output: ")
         # print(json.dumps(temp_dict, indent=4, sort_keys=False))
 
-        # TODO this is a blocking statement, ruining the async method. this should be put into a thread
         response = api.post()
 
         if response is None:
@@ -154,6 +157,7 @@ for key in Node.knownDevices:
 start_server = websockets.serve(eventHandler, "", 8765)
 print('[WSS] Server started!')
 
+# TODO possible alternative for web comunication: https://realpython.com/python-concurrency/
 t = threading.Thread(target=send_update)
 threads.append(t)
 t.start()
