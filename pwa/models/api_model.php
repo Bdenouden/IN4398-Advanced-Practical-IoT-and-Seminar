@@ -25,17 +25,18 @@ class api_model extends Model
         }
     }
 
-    public function storeSensorEntry(string $node_chipid, string $sensor_uid, string $data_type, ?float $data_value, string $data_unit)
+    public function storeSensorEntry(string $node_chipid, string $sensor_uid, string $data_type, ?float $data_value, string $data_unit, ?string $measure_time)
     {
 
         try {
             Database::beginTransaction();
-            Database::query("INSERT INTO sensor_data (node_id, sensor_id, type, value, unit) VALUES (:node_id, :sensor_id, :type, :value, :unit)", array(
+            Database::query("INSERT INTO sensor_data (node_id, sensor_id, type, value, unit, measure_time) VALUES (:node_id, :sensor_id, :type, :value, :unit, IFNULL(:measure_time, DEFAULT(measure_time)))", array(
                 ":node_id" => $node_chipid,
                 ":sensor_id" => $sensor_uid,
                 ":type" => $data_type,
                 ":value" => $data_value,
-                ":unit" => $data_unit
+                ":unit" => $data_unit,
+                ":measure_time" => $measure_time
             ));
             Database::commit();
             return true;
