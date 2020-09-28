@@ -29,8 +29,10 @@ class api_update_controller extends Controller
 
                     foreach ($data as $node_chipid => $entry) {
                         if (is_array($entry)) {
-                            $measure_time = isset($entry['measure_time']) ? $entry['measure_time'] : null;
-                            unset($entry['measure_time']);
+                            if (isset($entry['measure_time'])){
+                                $measure_time = $entry['measure_time'];
+                                unset($entry['measure_time']);
+                            }
                             foreach ($entry as $sensor_uid => $sensor_data) {
                                 if (!$this->model->storeSensorEntry($node_chipid, $sensor_uid, $sensor_data['name'], $sensor_data['value'], $sensor_data['unit'], $measure_time)) {
                                     $failures[] = [$node_chipid, $sensor_uid];
