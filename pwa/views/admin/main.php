@@ -62,7 +62,16 @@ $date_parse = function ($value) {
 
 function inTimeBracket($timestamp_array, $index, $minute_index)
 {
-    return floor($timestamp_array[$index]->format("i") / 6) == $minute_index;
+    $in_bracket = false;
+    if (isset($timestamp_array[$index - 1])){
+        if (floor($timestamp_array[$index - 1]->format("i") / 6) <= $minute_index && floor($timestamp_array[$index]->format("i") / 6) >= $minute_index){
+            $in_bracket = true;
+        }
+    }
+    elseif (floor($timestamp_array[$index]->format("i") / 6) == $minute_index){
+        $in_bracket = true;
+    }
+    return $in_bracket;
 }
 
 ?>
