@@ -21,34 +21,100 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"
         integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI=" crossorigin="anonymous"></script>
 
+<?php
+
+$unique_sensors = [];
+
+for ($i = 0; $i < count($sensor_data); $i++) {
+    if (array_key_exists($sensor_data[$i]["node_id"], $unique_sensors)) {
+        if (!in_array($sensor_data[$i]["type"], $unique_sensors[$sensor_data[$i]["node_id"]])) {
+            $unique_sensors[$sensor_data[$i]["node_id"]][] = $sensor_data[$i]["type"];
+        }
+    } else {
+        $unique_sensors[$sensor_data[$i]["node_id"]] = [$sensor_data[$i]["type"]];
+    }
+}
+
+$unique_sensor_count = 0;
+
+foreach ($unique_sensors as $sensor){
+    $unique_sensor_count += count($sensor);
+}
+
+$date = new DateTime('now');
+$date->modify('-2 hours')->modify('-10 minutes');
+$timestamps = [];
+
+for ($i = 0; $i < 13; $i++) {
+    $date->modify('+10 minute');
+    $timestamps[] = clone $date;
+}
+
+$js_timestamps = "[";
+foreach ($timestamps as $timestamp) {
+    $js_timestamps .= "'" . $timestamp->format("H:i") . "',";
+}
+$js_timestamps = substr($js_timestamps, 0, -1) . "]";
+
+$date_parse = function ($value) {
+    return date_parse($value);
+};
+
+function inTimeBracket($timestamp_array, $index, $minute_index)
+{
+    return floor($timestamp_array[$index]->format("i") / 6) == $minute_index;
+}
+
+?>
+
 
 <script type="text/javascript">
     const chartConfig = {
         type: 'line',
         data: {
+            labels: <?= $js_timestamps ?>,
             datasets: [
-                <?php for ($i = 0; $i < count($sensor_data); $i++) {
+                <?php
+                $units = [];
+                for ($i = 0; $i < count($sensor_data); $i++) {
+                $unit = $sensor_data[$i]["unit"];
+                if ($unit !== ""){
+                    $label = "[" . $sensor_data[$i]["node_id"] . "] " . $sensor_data[$i]["type"] . " (" . $unit . ")";
+                }
+                else {
+                    $label = "[" . $sensor_data[$i]["node_id"] . "] " . $sensor_data[$i]["type"];
+                }
+                if (!in_array($unit, $units)) {
+                    $units[] = $unit;
+                }
                 ?>
                 {
-                label: "<?= $sensor_data[$i]["sensor_id"]; ?>",
-                <?php
-                    $data_array = explode(", ", $sensor_data[$i]["value"]);
-
+                    label: "<?= $label ?>",
+                    <?php
                     $data_string = 'data: [';
 
-                    foreach ($data_array as $data_val){
-                        $data_string .= $data_val . ", ";
+                    for ($j = 0; $j < 13; $j++) {
+                        foreach ($sensor_data as $data) {
+                            if ($timestamps[$j]->format("H") == $data["hour"] && inTimeBracket($timestamps, $j, $data["minute_window_id"]) && $data["type"] == $sensor_data[$i]["type"] && $data["node_id"] == $sensor_data[$i]["node_id"]) {
+                                $data_string .= $data['value'] . ",";
+                            }
+                        }
+                        $data_string .= ",";
                     }
 
                     $data_string = rtrim($data_string, ", ") . "], fill: false,";
 
                     echo $data_string;
 
-                ?>
+                    if ($i == $unique_sensor_count - 1) {
+                        echo "}";
+                        break;
+                    }
+                    ?>
                 },
                 <?php
                 } ?>
-            ]
+            ],
         },
         options: {
             responsive: true,
@@ -57,14 +123,14 @@
                 text: 'click a sensor to hide its data'
             },
             hover: {
-                mode: 'dataset'
+                mode: 'point'
             },
             scales: {
                 xAxes: [{
                     display: true,
                     scaleLabel: {
                         show: true,
-                    }
+                    },
                 }],
                 yAxes: [{
                     display: true,

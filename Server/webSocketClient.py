@@ -1,4 +1,6 @@
 import asyncio
+import random
+
 import websockets
 import json
 
@@ -22,6 +24,12 @@ async def client():
         try:
             async with websockets.connect(uri) as websocket:
                 print(f"[WSC] Connected to {uri}")
+
+                data["battery"] = random.randint(0, 255)
+                data["soil_moisture"] = random.randint(0, 255)
+                data["air_humidity"] = random.randint(0, 255)
+                data["temperature"] = random.randint(0, 255)
+                data["pH"] = random.randint(0, 255)
 
                 json_out = json.dumps(data)
                 await websocket.send(json_out)
