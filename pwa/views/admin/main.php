@@ -63,12 +63,7 @@ $date_parse = function ($value) {
 function inTimeBracket($timestamp_array, $index, $minute_index)
 {
     $in_bracket = false;
-    if (isset($timestamp_array[$index - 1])){
-        if (floor($timestamp_array[$index - 1]->format("i") / 6) <= $minute_index && floor($timestamp_array[$index]->format("i") / 6) >= $minute_index){
-            $in_bracket = true;
-        }
-    }
-    elseif (floor($timestamp_array[$index]->format("i") / 6) == $minute_index){
+    if (floor($timestamp_array[$index]->format("i") / 6) == $minute_index){
         $in_bracket = true;
     }
     return $in_bracket;
@@ -103,12 +98,16 @@ function inTimeBracket($timestamp_array, $index, $minute_index)
                     $data_string = 'data: [';
 
                     for ($j = 0; $j < 13; $j++) {
+                        $added = false;
                         foreach ($sensor_data as $data) {
                             if ($timestamps[$j]->format("H") == $data["hour"] && inTimeBracket($timestamps, $j, $data["minute_window_id"]) && $data["type"] == $sensor_data[$i]["type"] && $data["node_id"] == $sensor_data[$i]["node_id"]) {
                                 $data_string .= $data['value'] . ",";
+                                $added = true;
                             }
                         }
-                        $data_string .= ",";
+                        if (!$added){
+                            $data_string .= ",";
+                        }
                     }
 
                     $data_string = rtrim($data_string, ", ") . "], fill: false,";
