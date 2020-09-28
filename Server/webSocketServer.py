@@ -5,13 +5,11 @@ import threading
 import time
 import os
 import sys
+import fnmatch
 from datetime import datetime
 from datetime import timedelta
-from objects import Node
-from objects import PH_sensor
-from objects import Soil_moisture_sensor
-from objects import Battery
-from objects import API
+from objects import Node, PH_sensor, Soil_moisture_sensor, Battery, API
+
 
 current_clients = 0
 threads = []
@@ -52,6 +50,8 @@ def HTTP_new_device(node):
 # TODO sending key chipId instead of chipID throws a keyerror
 # TODO place unknown key-value pairs into a 'extra' column
 # TODO collect sensor data in a <timestamp>:<value> manner
+
+
 async def eventHandler(websocket, path):
     global current_clients, timeBeforeReconnect, threads
 
@@ -134,13 +134,38 @@ def send_update():
         if response is None:
             print(f"[UPDATE] An error occured!")
             curTime = datetime.now().strftime("%Y%m%d-%H%M%S")
-            with open(sys.path[0]+ '/data/'+curTime+'.txt', 'w+') as outFile:
+            with open(sys.path[0] + '/data/'+curTime+'.json', 'w+') as outFile:
                 json.dump(temp_dict, outFile)
         elif response.status_code == 200:
             print(f"[UPDATE] Sensor values successfully uploaded!")
+            sendBacklog()  # Since there is an established connection now, attempt to transmit the backlog
+
         else:
             print(
                 f"[UPDATE] An error occured! Response code: {response.status_code}")
+
+
+def sendBacklog():
+    '''
+        Cycle through all failed attempts to update and retry to transmit, deleting files if succesfull
+    '''
+    path = sys.path[0] + '/data'
+    api = API(path='/update')
+
+    files = fnmatch.filter(os.listdir(path), '*.json')
+    for file in files:
+        response = None
+        with open(path + '/' + file, 'r') as f:
+            api.json = json.load(f)
+            response = api.post()
+
+        if response is not None and response.status_code == 200:
+            os.remove(path+'/'+file)
+            print(
+                f"[UPDATE] Backlog file {file} has been transmitted and deleted")
+        else:
+            print(
+                f'[UPDATE] Could not transmit backlog file {file} due to a network error')
 
 
 get_known_devices()
