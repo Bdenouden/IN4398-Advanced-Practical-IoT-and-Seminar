@@ -30,7 +30,7 @@ class api_model extends Model
 
         try {
             Database::beginTransaction();
-            Database::query("INSERT INTO sensor_data (node_id, sensor_id, type, value, unit, measure_time) VALUES (:node_id, :sensor_id, :type, :value, :unit, :measure_time)", array(
+            Database::query("INSERT INTO sensor_data (node_id, sensor_id, type, value, unit, measure_time) VALUES (:node_id, :sensor_id, :type, :value, :unit, IFNULL(:measure_time, DEFAULT(measure_time)))", array(
                 ":node_id" => $node_chipid,
                 ":sensor_id" => $sensor_uid,
                 ":type" => $data_type,
