@@ -60,6 +60,7 @@ class Node:
 
     def getDict(self):
         temp_dict = {}
+        temp_dict['measure_time'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         for sensor in self.sensorList:
             temp_dict[sensor.name] = sensor.getDict()
         return temp_dict
