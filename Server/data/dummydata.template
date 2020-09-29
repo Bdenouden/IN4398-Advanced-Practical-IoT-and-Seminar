@@ -1,0 +1,56 @@
+{
+    "12345": {
+        "measure_time": "2020-09-29 10:42:22",
+        "soil_moisture": {
+            "name": "soil_moisture",
+            "value": null,
+            "unit": "%"
+        },
+        "pH": {
+            "name": "pH",
+            "value": null,
+            "unit": ""
+        },
+        "battery": {
+            "name": "battery",
+            "value": null,
+            "unit": "%"
+        }
+    },
+    "1253624": {
+        "measure_time": "2020-09-29 10:42:22",
+        "soil_moisture": {
+            "name": "soil_moisture",
+            "value": null,
+            "unit": "%"
+        },
+        "pH": {
+            "name": "pH",
+            "value": null,
+            "unit": ""
+        },
+        "battery": {
+            "name": "battery",
+            "value": null,
+            "unit": "%"
+        }
+    },
+    "9159476": {
+        "measure_time": "2020-09-29 10:42:22",
+        "soil_moisture": {
+            "name": "soil_moisture",
+            "value": 0.39,
+            "unit": "%"
+        },
+        "pH": {
+            "name": "pH",
+            "value": 0.22,
+            "unit": ""
+        },
+        "battery": {
+            "name": "battery",
+            "value": 1.96,
+            "unit": "%"
+        }
+    }
+}
