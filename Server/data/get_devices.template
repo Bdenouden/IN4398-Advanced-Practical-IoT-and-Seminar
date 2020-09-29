@@ -1,0 +1,50 @@
+{
+    "12345": {
+        "id": null,
+        "added": "2020-09-23 09:56:19",
+        "is_active": "1",
+        "sensors": [
+            {
+                "id": null,
+                "name": null,
+                "type": null,
+                "rawMinVal": null,
+                "rawMaxVal": null,
+                "minVal": null,
+                "maxVal": null
+            }
+        ]
+    },
+    "1253624": {
+        "id": null,
+        "added": "2020-09-24 09:42:21",
+        "is_active": "1",
+        "sensors": [
+            {
+                "id": null,
+                "name": null,
+                "type": null,
+                "rawMinVal": null,
+                "rawMaxVal": null,
+                "minVal": null,
+                "maxVal": null
+            }
+        ]
+    },
+    "9159476": {
+        "id": null,
+        "added": "2020-09-25 11:09:56",
+        "is_active": "1",
+        "sensors": [
+            {
+                "id": null,
+                "name": null,
+                "type": null,
+                "rawMinVal": null,
+                "rawMaxVal": null,
+                "minVal": null,
+                "maxVal": null
+            }
+        ]
+    }
+}
