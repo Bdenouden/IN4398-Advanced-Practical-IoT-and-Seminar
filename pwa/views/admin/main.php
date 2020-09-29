@@ -2,13 +2,77 @@
     <div class="row">
         <div class="col-md-6">
 
-            <h1 class="text-center">Add new module</h1>
+            <h1 class="text-center">Link modules to your node</h1>
             <p class="text-justify">
-                To add a new module, ensure you have configured it already to be connected to your WiFi.
+                To add modules to a new node, ensure you have configured the node already to be connected to your WiFi.
+                It will then automatically show up here to allow you to assign which modules are connected to it.
             </p>
 
+            <?php
+            foreach ($nodes as $node_id => $node_data) {
+                ?>
+                <h4>Node: <?= $node_id ?></h4>
+                <table class="table table-responsive-md" id="table_<?= $node_id ?>">
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Raw Minimum Value</th>
+                        <th>Raw Maximum Value</th>
+                        <th>Real Minimum Value</th>
+                        <th>Real Maximum Value</th>
+                        <th></th>
+                    </tr>
+                    <?php
+                    if (is_array($node_data["sensors"])) {
+                        foreach ($node_data["sensors"] as $sensor) {
+                            ?>
+                            <tr id="row_<?= $node_id . '_' . $sensor["id"] ?>">
+                                <form>
+                                    <td><?= $sensor["name"] ?></td>
+                                    <td><?= $sensor["type"] ?></td>
+                                    <td><?= $sensor["rawMinVal"] ?></td>
+                                    <td><?= $sensor["rawMaxVal"] ?></td>
+                                    <td><?= $sensor["minVal"] ?></td>
+                                    <td><?= $sensor["maxVal"] ?></td>
+                                    <td><button class="btn btn-dark" onclick="return removeSensorRow(this)">Remove</button></td>
+                                </form>
+                            </tr>
+                            <?php
+                        }
+                    }
+                    ?>
+                    <!--
+                    <td>
+                        <input class="form-control" type="text" id="name_<?= $node_id ?>" name="name_<?= $node_id ?>" value="<?= $sensor["name"] ?>">
+                    </td>
+                    <td>
+                        <select class="form-control" id="type_<?= $node_id ?>" name="type_<?= $node_id ?>">
+                            <option value="analog" <?php echo ("analog" == $sensor["type"] ? 'selected' : '') ?>>Analog</option>
+                            <option value="dht11" <?php echo ("dht11" == $sensor["type"] ? 'selected' : '') ?>>DHT11</option>
+                        </select>
+                    </td>
+                    <td><input type="number" value="<?= $sensor["rawMinVal"] ?>" /></td>
+                    <td><input type="number" value="<?= $sensor["rawMaxVal"] ?>" /></td>
+                    <td><input type="number" value="<?= $sensor["minVal"] ?>" /></td>
+                    <td><input type="number" value="<?= $sensor["maxVal"] ?>" /></td>
+                    <td><button class="btn btn-dark">Remove</button></td>
+                    -->
+                </table>
+                <button class="btn btn-dark" onclick="addNewRowTo(<?= $node_id ?>)">Add new sensor</button>
+                <button class="btn btn-dark" onclick="saveNodeData(<?= $node_id ?>)">Save newly added sensors</button>
+                <?php
+            }
+            ?>
+
+
+            <br><br>
+            <pre>
+                <?php var_dump($sensor_types); ?>
+                <?php var_dump($nodes); ?>
+            </pre>
+
         </div>
-        <div class="col-md-6">
+        <div class="col-md-5 offset-md-1">
 
             <h1 class="text-center">Sensor Data</h1>
 
@@ -37,7 +101,7 @@ for ($i = 0; $i < count($sensor_data); $i++) {
 
 $unique_sensor_count = 0;
 
-foreach ($unique_sensors as $sensor){
+foreach ($unique_sensors as $sensor) {
     $unique_sensor_count += count($sensor);
 }
 
@@ -63,7 +127,7 @@ $date_parse = function ($value) {
 function inTimeBracket($timestamp_array, $index, $minute_index)
 {
     $in_bracket = false;
-    if (floor($timestamp_array[$index]->format("i") / 6) == $minute_index){
+    if (floor($timestamp_array[$index]->format("i") / 6) == $minute_index) {
         $in_bracket = true;
     }
     return $in_bracket;
@@ -73,6 +137,108 @@ function inTimeBracket($timestamp_array, $index, $minute_index)
 
 
 <script type="text/javascript">
+
+    const removeButton = "<button class='btn btn-dark' onclick='removeElementById()'>Remove</button>";
+
+    let sensorNameDropdown = "<select class='form-control' onChange='initializeRowForId(this)'>";
+    <?php
+        foreach ($sensor_types as $sensor_type){
+            ?>
+            sensorNameDropdown += "<option value='<?= $sensor_type["id"] ?>'><?= $sensor_type["name"] ?></option>";
+    <?php
+        }
+    ?>
+
+    sensorNameDropdown += "</select>";
+
+    let count = 0;
+
+    function removeSensorRow(element){
+        const toDelete = confirm("Are you sure you want to delete this sensor?");
+
+        if (toDelete) {
+            element = element.parentNode.parentNode;
+
+            const sensorId = element.id.split("_")[2];
+
+            $.ajax({
+                method: "POST",
+                url: "/admin",
+                data: {
+                    AJAX: 1,
+                    ACTION: 'removeSensorFromNode',
+                    sensorId: parseInt(sensorId),
+                    'csrf-token': '<?php echo $_SESSION['csrf-token']?>'
+                }
+            })
+
+            element.parentNode.removeChild(element);
+            return false;
+        }
+        else {
+            return false;
+        }
+    }
+
+    function addNewRowTo(tableName) {
+        const table = document.getElementById("table_" + tableName);
+        const row = table.insertRow();
+
+        row.id = "row_" + count;
+
+        const nameCell = row.insertCell();
+        const typeCell = row.insertCell();
+        const rawMinCell = row.insertCell();
+        const rawMaxCell = row.insertCell();
+        const minCell = row.insertCell();
+        const maxCell = row.insertCell();
+        const removeCell = row.insertCell();
+
+        nameCell.innerHTML = sensorNameDropdown;
+
+        removeCell.innerHTML = "<button class='btn btn-dark' onclick='return removeSensorRow(this)'>Remove</button>";
+
+        initializeRowForId("row_" + count);
+
+        count++;
+    }
+
+    function initializeRowForId(rowId) {
+
+        let row;
+
+        if (typeof rowId !== "string"){
+            row = document.getElementById(rowId.parentNode.parentNode.id);
+        }
+        else {
+            row = document.getElementById(rowId);
+        }
+
+        const selectedSensorId = row.firstChild.firstChild.value;
+
+        $.ajax({
+            method: "POST",
+            url: "/admin",
+            data: {
+                AJAX: 1,
+                ACTION: 'getSensorDataForId',
+                sensorId: parseInt(selectedSensorId),
+                'csrf-token': '<?php echo $_SESSION['csrf-token']?>'
+            }
+        })
+            .done(function (result) {
+
+                const data = $.parseJSON(result)[0];
+
+                row.firstChild.nextSibling.innerHTML = data.type;
+                row.firstChild.nextSibling.nextSibling.innerHTML = data.rawMinVal;
+                row.firstChild.nextSibling.nextSibling.nextSibling.innerHTML = data.rawMaxVal;
+                row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = data.minVal;
+                row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = data.maxVal;
+            });
+    }
+
+
     const chartConfig = {
         type: 'line',
         data: {
@@ -82,10 +248,9 @@ function inTimeBracket($timestamp_array, $index, $minute_index)
                 $units = [];
                 for ($i = 0; $i < count($sensor_data); $i++) {
                 $unit = $sensor_data[$i]["unit"];
-                if ($unit !== ""){
+                if ($unit !== "") {
                     $label = "[" . $sensor_data[$i]["node_id"] . "] " . $sensor_data[$i]["type"] . " (" . $unit . ")";
-                }
-                else {
+                } else {
                     $label = "[" . $sensor_data[$i]["node_id"] . "] " . $sensor_data[$i]["type"];
                 }
                 if (!in_array($unit, $units)) {
@@ -105,7 +270,7 @@ function inTimeBracket($timestamp_array, $index, $minute_index)
                                 $added = true;
                             }
                         }
-                        if (!$added){
+                        if (!$added) {
                             $data_string .= ",";
                         }
                     }

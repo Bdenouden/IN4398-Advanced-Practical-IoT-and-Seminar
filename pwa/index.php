@@ -21,6 +21,8 @@ require_once('core/form.php');
 require_once('core/user.php');
 require_once('core/page.php');
 
+require_once('core/api.php');
+
 require_once('core/helper_functions.php');
 
 $page = new Page();
