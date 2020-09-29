@@ -41,7 +41,6 @@ services:
         MYSQL_USER: iot
         MYSQL_PASSWORD: 2Cm&&G0CKKkt2@vL
         MYSQL_DATABASE: iot
-        TZ: Europe/Amsterdam
     ports:
         - "8889:3306"
     command: > 
