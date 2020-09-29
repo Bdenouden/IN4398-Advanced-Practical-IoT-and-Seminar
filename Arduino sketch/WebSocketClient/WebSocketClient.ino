@@ -20,6 +20,7 @@
 
 #include <WebSocketsClient.h>
 #include <Hash.h>
+#include "sensors/sensors.h"
 
 WebSocketsClient * webSocket;
 
