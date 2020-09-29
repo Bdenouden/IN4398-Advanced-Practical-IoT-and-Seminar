@@ -42,7 +42,7 @@ class api_model extends Model
             return true;
         } catch (SystemException $e) {
             Database::rollBack();
-            return false;
+            return $e->getMessage();
         }
     }
 
