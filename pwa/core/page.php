@@ -46,7 +46,10 @@ class Page extends Config
 
             $page_data = $this->page_model->searchPage('/' . $page_uri);
 
+            ob_start();
+
             if (count($page_data) == 0) {
+
                 $this->loadView('template/header');
                 $this->loadController('e404');
                 $this->loadView('template/footer');
