@@ -23,9 +23,6 @@ class Node:
         for sensor in self.sensorList:
             sensor.setValue(json.get(sensor.name))
 
-    def getFromDb(self, chipId):
-        # TODO dit goed implementeren
-        pass
 
     def add_sensor(self, sensor):
         """ Add individual sensors to this node's sensor list"""

@@ -18,7 +18,7 @@ threads = []
 timeBeforeReconnect = 30*1000
 
 # seconds between sensor updates to the pwa
-update_delay = 1*60
+update_delay = 0.5*60
 
 
 def get_known_devices():
@@ -49,9 +49,6 @@ def HTTP_new_device(node):
 # TODO unexpected close of the connection throws an exception
 # TODO sending key chipId instead of chipID throws a keyerror
 # TODO place unknown key-value pairs into a 'extra' column
-# TODO collect sensor data in a <timestamp>:<value> manner
-
-
 async def eventHandler(websocket, path):
     global current_clients, timeBeforeReconnect, threads
 
@@ -107,7 +104,7 @@ async def eventHandler(websocket, path):
     # print(f'# known devices: {len(Node.knownDevices)}')
 
 
-def send_update():
+def send_update(knownDevices):
     global update_delay
 
     while True:
@@ -121,13 +118,13 @@ def send_update():
         api = API(path='/update')
 
         # FIXME Node.knownDevices is not thread safe: must be converted to argument of the function
-        for _, node in Node.knownDevices.items():
+        for _, node in knownDevices.items():
             temp_dict[node.chipId] = node.getDict()
 
         api.json = temp_dict
 
-        # print("[UPDATE] /update JSON output: ")
-        # print(json.dumps(temp_dict, indent=4, sort_keys=False))
+        print("[UPDATE] /update JSON output: ")
+        print(json.dumps(temp_dict, indent=4, sort_keys=False))
 
         response = api.post()
 
@@ -138,6 +135,8 @@ def send_update():
                 json.dump(temp_dict, outFile)
         elif response.status_code == 200:
             print(f"[UPDATE] Sensor values successfully uploaded!")
+            print(f"[UPDATE] PWA response: ")
+            print(response.text)
             sendBacklog()  # Since there is an established connection now, attempt to transmit the backlog
 
         else:
@@ -157,7 +156,11 @@ def sendBacklog():
         response = None
         with open(path + '/' + file, 'r') as f:
             api.json = json.load(f)
-            response = api.post()
+
+        response = api.post()
+        if response is not None:
+            print(f"[UPDATE] Response status code: {response.status_code}")
+            print(f"[UPDATE] Response text: {response.text}")
 
         if response is not None and response.status_code == 200:
             os.remove(path+'/'+file)
@@ -183,7 +186,7 @@ start_server = websockets.serve(eventHandler, "", 8765)
 print('[WSS] Server started!')
 
 # TODO possible alternative for web comunication: https://realpython.com/python-concurrency/
-t = threading.Thread(target=send_update)
+t = threading.Thread(target=send_update, args=(Node.knownDevices,))
 threads.append(t)
 t.start()
 
