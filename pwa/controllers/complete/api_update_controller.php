@@ -49,8 +49,7 @@ class api_update_controller extends Controller
                     }
 
                     if (sizeof($failures) > 0 || !$success) {
-                        echo json_encode("Ran into one or more failures!");
-                        echo json_encode($failures);
+                        $this->loadController('e500', ["success" => false, "failures" => $failures]);
                     } else {
                         echo json_encode(["success" => true, "message" => "Successfully stored all sensor data entries!"]);
                     }
