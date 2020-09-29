@@ -5,7 +5,13 @@ class api_model extends Model
 
     public function getKnownDevices(bool $active = true)
     {
-        return Database::select("SELECT * FROM sensor_nodes WHERE is_active = :is_active", array(
+        return Database::select("
+                SELECT sensor_nodes.id AS node_id, sensor_nodes.added, sensor_nodes.is_active, st.*
+                FROM sensor_nodes
+                LEFT JOIN sensor_node_link snl on sensor_nodes.id = snl.node_id
+                LEFT JOIN sensor_types st on snl.sensor_type_id = st.id
+                WHERE is_active = :is_active
+                ", array(
             ":is_active" => $active ? 1 : 0,
         ));
     }
