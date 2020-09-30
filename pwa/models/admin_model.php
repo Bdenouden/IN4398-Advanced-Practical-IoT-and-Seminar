@@ -44,8 +44,28 @@ class admin_model extends Model
                 ":sensor_id" => $sensor_id
             ));
             Database::commit();
+            return true;
         } catch (SystemException $e) {
             Database::rollBack();
+            return $e->getMessage();
+        }
+    }
+
+    public function addSensorToNode(int $sensor_id, string $node_id){
+        try {
+            Database::beginTransaction();
+            Database::query("
+                INSERT INTO sensor_node_link (node_id, sensor_type_id)
+                VALUES (:node_id, :sensor_id)
+            ", array(
+                ":node_id" => $node_id,
+                ":sensor_id" => $sensor_id
+            ));
+            Database::commit();
+            return true;
+        } catch (SystemException $e) {
+            Database::rollBack();
+            return false;
         }
     }
 

@@ -23,10 +23,10 @@
                         <th></th>
                     </tr>
                     <?php
-                    if (is_array($node_data["sensors"])) {
+                    if (is_array($node_data["sensors"]) && count($node_data["sensors"]) > 1) {
                         foreach ($node_data["sensors"] as $sensor) {
                             ?>
-                            <tr id="row_<?= $node_id . '_' . $sensor["id"] ?>">
+                            <tr id="row_<?= $node_id . '_' . $sensor["link_id"] ?>">
                                 <form>
                                     <td><?= $sensor["name"] ?></td>
                                     <td><?= $sensor["type"] ?></td>
@@ -41,22 +41,7 @@
                         }
                     }
                     ?>
-                    <!--
-                    <td>
-                        <input class="form-control" type="text" id="name_<?= $node_id ?>" name="name_<?= $node_id ?>" value="<?= $sensor["name"] ?>">
-                    </td>
-                    <td>
-                        <select class="form-control" id="type_<?= $node_id ?>" name="type_<?= $node_id ?>">
-                            <option value="analog" <?php echo ("analog" == $sensor["type"] ? 'selected' : '') ?>>Analog</option>
-                            <option value="dht11" <?php echo ("dht11" == $sensor["type"] ? 'selected' : '') ?>>DHT11</option>
-                        </select>
-                    </td>
-                    <td><input type="number" value="<?= $sensor["rawMinVal"] ?>" /></td>
-                    <td><input type="number" value="<?= $sensor["rawMaxVal"] ?>" /></td>
-                    <td><input type="number" value="<?= $sensor["minVal"] ?>" /></td>
-                    <td><input type="number" value="<?= $sensor["maxVal"] ?>" /></td>
-                    <td><button class="btn btn-dark">Remove</button></td>
-                    -->
+                   
                 </table>
                 <button class="btn btn-dark" onclick="addNewRowTo(<?= $node_id ?>)">Add new sensor</button>
                 <button class="btn btn-dark" onclick="saveNodeData(<?= $node_id ?>)">Save newly added sensors</button>
@@ -65,11 +50,7 @@
             ?>
 
 
-            <br><br>
-            <pre>
-                <?php var_dump($sensor_types); ?>
-                <?php var_dump($nodes); ?>
-            </pre>
+
 
         </div>
         <div class="col-md-5 offset-md-1">
@@ -156,7 +137,7 @@ function inTimeBracket($timestamp_array, $index, $minute_index)
     function removeSensorRow(element){
         const toDelete = confirm("Are you sure you want to delete this sensor?");
 
-        if (toDelete) {
+        if (toDelete === true) {
             element = element.parentNode.parentNode;
 
             const sensorId = element.id.split("_")[2];
@@ -171,13 +152,14 @@ function inTimeBracket($timestamp_array, $index, $minute_index)
                     'csrf-token': '<?php echo $_SESSION['csrf-token']?>'
                 }
             })
+            .done(function(result) {
+                const data = $.parseJSON(result);
+                console.log(data);
+            });
 
             element.parentNode.removeChild(element);
-            return false;
         }
-        else {
-            return false;
-        }
+        return false;
     }
 
     function addNewRowTo(tableName) {
@@ -236,6 +218,38 @@ function inTimeBracket($timestamp_array, $index, $minute_index)
                 row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = data.minVal;
                 row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = data.maxVal;
             });
+    }
+
+    function saveNodeData(tableId) {
+        const table = $("#table_" + tableId).find("tr");
+        for (let i = 0; i < table.length; i++) {
+            if ((table[i].id.match(new RegExp("_", "g")) || []).length === 1) {
+                const sensorIdToAdd = table[i].firstChild.firstChild.value;
+                const nodeIdToAdd = table[i].parentNode.parentNode.id.split("_")[1];
+
+                $.ajax({
+                    method: "POST",
+                    url: "/admin",
+                    data: {
+                        AJAX: 1,
+                        ACTION: 'addSensorToNode',
+                        sensorId: parseInt(sensorIdToAdd),
+                        nodeId: nodeIdToAdd,
+                        'csrf-token': '<?php echo $_SESSION['csrf-token']?>'
+                    }
+                })
+                    .done(function (result) {
+
+                        const data = $.parseJSON(result);
+
+                        if (result === "true") {
+                            window.location.reload();
+                        } else {
+                            alert("Something went wrong with saving!");
+                        }
+                    });
+            }
+        }
     }
 
 

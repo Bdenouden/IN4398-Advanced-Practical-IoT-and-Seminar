@@ -6,7 +6,7 @@ class Api {
         $output = [];
         foreach($sensors as $sensor){
             $sensor_data = [
-                "id" => $sensor["id"],
+                "link_id" => $sensor["link_id"],
                 "name" => $sensor["name"],
                 "type" => $sensor["type"],
                 "rawMinVal" => $sensor["rawMinVal"],
@@ -20,7 +20,7 @@ class Api {
             }
             else {
                 $output[$sensor["node_id"]] = [
-                    "id" => $sensor["id"],
+                    "link_id" => $sensor["link_id"],
                     "added" => $sensor["added"],
                     "is_active" => $sensor["is_active"],
                     "sensors" => [$sensor_data]

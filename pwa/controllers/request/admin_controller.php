@@ -21,7 +21,14 @@ class admin_controller extends Controller
     public function removeSensorFromNode()
     {
         if (isset($_POST['sensorId']) && is_numeric($_POST['sensorId']) && !empty($_POST['csrf-token']) && array_key_exists($_POST['csrf-token'], $_SESSION['csrf-tokens'])) {
-            $this->model->removeSensorFromNode($_POST['sensorId']);
+            echo json_encode($this->model->removeSensorFromNode($_POST['sensorId']));
+        }
+    }
+
+    public function addSensorToNode()
+    {
+        if (isset($_POST['nodeId']) && isset($_POST['sensorId']) && is_numeric($_POST['sensorId']) && !empty($_POST['csrf-token']) && array_key_exists($_POST['csrf-token'], $_SESSION['csrf-tokens'])) {
+            echo json_encode($this->model->addSensorToNode($_POST['sensorId'], $_POST['nodeId']));
         }
     }
 
