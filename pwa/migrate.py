@@ -1,18 +1,41 @@
+#!/usr/bin/python3
+
 # Module Imports
 import mariadb
 import sys
 import os
 import fnmatch
+import json
+from time import sleep
+
+HOST = 'localhost'
+PORT = 3306
+
+try: 
+    config = {}
+    with open(sys.path[0]+'/migrate.cfg', 'r') as f: 
+        config = json.load(f)
+        HOST = config['HOST']
+        PORT = config['PORT']
+        print(f"Config file found:\n -> Host: {HOST}\n -> Port: {PORT}")
+
+except:
+    print(f"No migrate.config file or an invalid one found, using defaults:\n -> Host: {HOST}\n -> Port: {PORT}")
+
 
 def runMigration(completed):
 
     path = sys.path[0] + '/sql'
     files = sorted(set(fnmatch.filter(os.listdir(path), '*.sql'))-set(completed))
 
+    if not files: 
+        print('\033[92mThere are no new migrations!\033[0m')
+        sys.exit(1)
+
     print('Scheduled migrations: ')
     for file in files:
         print(f"-> {file}")
-    
+
     print("Do you want to execute these migrations? [Y/n]: ",end='')
     resp = input().rstrip()
     if resp != '' and resp != 'Y' and resp != 'y':
@@ -36,17 +59,19 @@ def runMigration(completed):
                             error = True
                             break
                 if not error:
+                    print(file)
                     cur.execute(
-                        "INSERT INTO migrations(migration) VALUES (?)", (file,))
+                        "INSERT INTO iot.migrations(migration) VALUES (?)", (file,))
+                    conn.commit()
                     print(f"\033[92m{file} executed!\033[0m")
+                    sleep(0.1)
                     i+=1
+                else:
+                    conn.rollback()
         else:
             break
 
     print(f"{i}/{len(files)} migrations were executed")
-
-    conn.close()
-    print('done!')
 
 def getCompletedMigrations():
     cur.execute(
@@ -67,11 +92,11 @@ try:
     conn = mariadb.connect(
         user="iot",
         password="2Cm&&G0CKKkt2@vL",
-        host="bram-ubuntu.local",
-        port=8889,
+        host=HOST,
+        port=PORT,
         database="iot"
-
     )
+    conn.autocommit = False
     print('Connection to db established')
 except mariadb.Error as e:
     print(f"Error connecting to MariaDB Platform: {e}")
@@ -105,4 +130,6 @@ except mariadb.Error as e:
     except mariadb.Error as e:
         print(f'An error occured: {e}')
 
-
+cur.close()
+conn.close()
+print('done!')

@@ -3,3 +3,6 @@
 
 # exclude data from the db 
 /mysql
+
+# exclude migration config
+migrate.cfg
