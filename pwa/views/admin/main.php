@@ -7,11 +7,10 @@
                 To add modules to a new node, ensure you have configured the node already to be connected to your WiFi.
                 It will then automatically show up here to allow you to assign which modules are connected to it.
             </p>
-
             <?php
             foreach ($nodes as $node_id => $node_data) {
                 ?>
-                <h4>Node: <?= $node_id ?></h4>
+                <h4 class="pt-5">Node: <?= $node_id ?></h4>
                 <table class="table table-responsive-md" id="table_<?= $node_id ?>">
                     <tr>
                         <th>Name</th>
@@ -23,8 +22,9 @@
                         <th></th>
                     </tr>
                     <?php
-                    if (is_array($node_data["sensors"]) && count($node_data["sensors"]) > 1) {
+                    if (is_array($node_data["sensors"]) && count($node_data["sensors"]) > 0) {
                         foreach ($node_data["sensors"] as $sensor) {
+                            if ($sensor['link_id'] == null) { break; }
                             ?>
                             <tr id="row_<?= $node_id . '_' . $sensor["link_id"] ?>">
                                 <form>
