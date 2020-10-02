@@ -104,4 +104,22 @@ class admin_model extends Model
         }
     }
 
+    public function removeTrigger(int $trigger_id)
+    {
+        try{
+            Database::beginTransaction();
+            Database::query("
+                DELETE FROM triggers
+                WHERE id = :trigger_id
+            ", array(
+                ":trigger_id" => $trigger_id
+            ));
+            Database::commit();
+            return true;
+        } catch (SystemException $e) {
+            Database::rollBack();
+            return $e->getMessage();
+        }
+    }
+
 }

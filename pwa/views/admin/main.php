@@ -62,7 +62,6 @@
 
             <?php
             $count = 0;
-            var_dump($triggers);
             foreach ($nodes as $node_id => $node_data) {
                 ?>
                 <h4 class="pt-5">Node: <?= $node_id ?></h4>
@@ -95,7 +94,7 @@
                             <option value="0">send a push notification</option>
                             <!--                            <option>send an email to</option>-->
                         </select>
-                        <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="removeTrigger('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
+                        <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="return removeTrigger('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
                     </p>
                     <?php
                     $count++;
@@ -128,7 +127,7 @@
                                 <option value="0" <?php echo(0 == $trigger["notification_type"] ? 'selected' : '') ?>>send a push notification</option>
                                 <!--                            <option>send an email to</option>-->
                             </select>
-                            <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="removeTrigger('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
+                            <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="return removeTrigger('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
                         </p>
 
                     <?php
@@ -411,7 +410,28 @@
     }
 
     function removeTrigger(element){
-        console.log(element);
+        const toDelete = confirm("Are you sure you want to delete this trigger?");
+
+        if (toDelete === true) {
+            $.ajax({
+                method: "POST",
+                url: "/admin",
+                data: {
+                    AJAX: 1,
+                    ACTION: 'removeTrigger',
+                    triggerId: parseInt(document.getElementById(element).getAttribute("trigger_id")),
+                    'csrf-token': '<?php echo $_SESSION['csrf-token']?>'
+                }
+            })
+                .done(function (result) {
+
+                    if (result === "true") {
+                        removeElement(element);
+                    }
+                });
+        }
+        return false;
+
     }
 
     function addNewTypeRowTo(tableName) {
