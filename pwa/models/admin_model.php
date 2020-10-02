@@ -22,6 +22,16 @@ class admin_model extends Model
         ");
     }
 
+    public function getTriggers()
+    {
+        return Database::select("
+            SELECT *, triggers.id AS trigger_id
+            FROM triggers
+            LEFT JOIN sensor_node_link snl on snl.id = triggers.link_id
+            LEFT JOIN sensor_types st on snl.sensor_type_id = st.id
+        ");
+    }
+
     public function getSensorDataForId(int $sensor_id)
     {
         return Database::select("
@@ -33,7 +43,8 @@ class admin_model extends Model
         ));
     }
 
-    public function removeSensorFromNode(int $sensor_id){
+    public function removeSensorFromNode(int $sensor_id)
+    {
         try {
             Database::beginTransaction();
             Database::query("
@@ -51,7 +62,8 @@ class admin_model extends Model
         }
     }
 
-    public function addSensorToNode(int $sensor_id, string $node_id){
+    public function addSensorToNode(int $sensor_id, string $node_id)
+    {
         try {
             Database::beginTransaction();
             Database::query("
@@ -65,7 +77,48 @@ class admin_model extends Model
             return true;
         } catch (SystemException $e) {
             Database::rollBack();
-            return false;
+            return $e->getMessage();
+        }
+    }
+
+    public function addTriggerToSensor(?int $trigger_id, int $link_id, int $ltGt, int $val, int $notification_type)
+    {
+        try {
+            Database::beginTransaction();
+            Database::query("
+                INSERT INTO triggers (id, link_id, lessThan_greaterThan, val, notification_type)
+                VALUES (:id, :link_id, :ltGt, :val, :notification_type)
+                ON DUPLICATE KEY UPDATE link_id=:link_id, lessThan_greaterThan=:ltGt, val=:val, notification_type=:notification_type
+            ", array(
+                ":id" => $trigger_id,
+                ":link_id" => $link_id,
+                ":ltGt" => $ltGt,
+                ":val" => $val,
+                ":notification_type" => $notification_type
+            ));
+            Database::commit();
+            return true;
+        } catch (SystemException $e) {
+            Database::rollBack();
+            return $e->getMessage();
+        }
+    }
+
+    public function removeTrigger(int $trigger_id)
+    {
+        try{
+            Database::beginTransaction();
+            Database::query("
+                DELETE FROM triggers
+                WHERE id = :trigger_id
+            ", array(
+                ":trigger_id" => $trigger_id
+            ));
+            Database::commit();
+            return true;
+        } catch (SystemException $e) {
+            Database::rollBack();
+            return $e->getMessage();
         }
     }
 

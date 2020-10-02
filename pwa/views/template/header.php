@@ -15,7 +15,8 @@
     <link rel="stylesheet" href="../../css/main.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://use.fontawesome.com/58a3479a64.js"></script>
+
+    <script src="https://kit.fontawesome.com/f6439da816.js" crossorigin="anonymous"></script>
 
     <script src='../../js/ajax_custom.js'></script>
 

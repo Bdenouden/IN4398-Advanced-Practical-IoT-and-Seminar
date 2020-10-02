@@ -1,9 +1,9 @@
-<div class="container-fluid pt-3">
+<div class="container-fluid pt-3 pb-5">
     <div class="row">
         <div class="col-md-6">
 
             <h1 class="text-center">Link modules to your node</h1>
-            <p class="text-justify">
+            <p class="text-center">
                 To add modules to a new node, ensure you have configured the node already to be connected to your WiFi.
                 It will then automatically show up here to allow you to assign which modules are connected to it.
             </p>
@@ -24,18 +24,20 @@
                     <?php
                     if (is_array($node_data["sensors"]) && count($node_data["sensors"]) > 0) {
                         foreach ($node_data["sensors"] as $sensor) {
-                            if ($sensor['link_id'] == null) { break; }
+                            if ($sensor['link_id'] == null) {
+                                break;
+                            }
                             ?>
                             <tr id="row_<?= $node_id . '_' . $sensor["link_id"] ?>">
-                                <form>
-                                    <td><?= $sensor["name"] ?></td>
-                                    <td><?= $sensor["type"] ?></td>
-                                    <td><?= $sensor["rawMinVal"] ?></td>
-                                    <td><?= $sensor["rawMaxVal"] ?></td>
-                                    <td><?= $sensor["minVal"] ?></td>
-                                    <td><?= $sensor["maxVal"] ?></td>
-                                    <td><button class="btn btn-dark" onclick="return removeSensorRow(this)">Remove</button></td>
-                                </form>
+                                <td><?= $sensor["name"] ?></td>
+                                <td><?= $sensor["type"] ?></td>
+                                <td><?= $sensor["rawMinVal"] ?></td>
+                                <td><?= $sensor["rawMaxVal"] ?></td>
+                                <td><?= $sensor["minVal"] ?></td>
+                                <td><?= $sensor["maxVal"] ?></td>
+                                <td>
+                                    <button class="IIT btn btn-outline-danger" style="width:40px; height:40px" onclick="return removeSensorRow(this)"><i class="far fa-trash-alt"></i></button>
+                                </td>
                             </tr>
                             <?php
                         }
@@ -43,8 +45,99 @@
                     ?>
 
                 </table>
-                <button class="btn btn-dark" onclick="addNewSensorRowTo(<?= $node_id ?>)">Add new sensor</button>
-                <button class="btn btn-dark" onclick="saveNodeData(<?= $node_id ?>)">Save newly added sensors</button>
+                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="addNewSensorRowTo(<?= $node_id ?>)"><i class="fas fa-plus"></i></button>
+                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="saveNodeData(<?= $node_id ?>)"><i class="far fa-save"></i></button>
+                <?php
+            }
+            ?>
+
+        </div>
+        <div class="col-md-6">
+
+            <h1 class="text-center">Create Triggers</h1>
+            <p class="text-center">
+                Here you can determine when you want to receive a push notification on your device(s)!
+                <br>&nbsp;
+            </p>
+
+            <?php
+            $count = 0;
+            foreach ($nodes as $node_id => $node_data) {
+                ?>
+                <h4 class="pt-5">Node: <?= $node_id ?></h4>
+
+                <?php
+                if (is_array($node_data["sensors"]) && count($node_data["sensors"]) > 0 && $node_data["sensors"][0]["link_id"] !== null && !isset($triggers[$node_id])) {
+                    ?>
+                    <p id="trigger_<?= $node_id ?>_<?= $count ?>">
+                        <span class="IIT">IF</span>
+                        <select id="linkid_<?= $node_id ?>_<?= $count ?>">
+                            <?php
+                            foreach ($node_data["sensors"] as $sensor) {
+                                if ($sensor["link_id"] == null) {
+                                    break;
+                                }
+                                ?>
+                                <option value="<?= $sensor["link_id"] ?>"><?= $sensor["name"] ?></option>
+                                <?php
+                            }
+                            ?>
+                        </select>
+                        <span class="IIT">IS</span>
+                        <select id="ltgt_<?= $node_id ?>_<?= $count ?>">
+                            <option value="0">less than</option>
+                            <option value="1">greater than</option>
+                        </select>
+                        <input id="number_<?= $node_id ?>_<?= $count ?>" type="number" placeholder="20" size="5"/>
+                        <span class="IIT">THEN</span>
+                        <select id="action_<?= $node_id ?>_<?= $count ?>">
+                            <option value="0">send a push notification</option>
+                            <!--                            <option>send an email to</option>-->
+                        </select>
+                        <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="return removeTrigger('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
+                    </p>
+                    <?php
+                    $count++;
+                } else if (isset($triggers[$node_id]) && count($triggers[$node_id]) > 0) {
+                    foreach ($triggers[$node_id] as $trigger){
+                    ?>
+
+                        <p id="trigger_<?= $node_id ?>_<?= $count ?>" trigger_id="<?= $trigger["trigger_id"] ?>">
+                            <span class="IIT">IF</span>
+                            <select id="linkid_<?= $node_id ?>_<?= $count ?>" autocomplete="off">
+                                <?php
+                                foreach ($node_data["sensors"] as $sensor) {
+                                    if ($sensor["link_id"] == null) {
+                                        break;
+                                    }
+                                    ?>
+                                    <option value="<?= $sensor["link_id"] ?>" <?php echo($sensor["name"] == $trigger["name"] ? 'selected' : '') ?>><?= $sensor["name"] ?></option>
+                                    <?php
+                                }
+                                ?>
+                            </select>
+                            <span class="IIT">IS</span>
+                            <select id="ltgt_<?= $node_id ?>_<?= $count ?>" autocomplete="off">
+                                <option value="0" <?php echo(0 == $trigger["lessThan_greaterThan"] ? 'selected' : '') ?>>less than</option>
+                                <option value="1" <?php echo(1 == $trigger["lessThan_greaterThan"] ? 'selected' : '') ?>>greater than</option>
+                            </select>
+                            <input id="number_<?= $node_id ?>_<?= $count ?>" type="number" placeholder="20" size="5" value="<?= $trigger["val"] ?>"  autocomplete="off" />
+                            <span class="IIT">THEN</span>
+                            <select id="action_<?= $node_id ?>_<?= $count ?>" autocomplete="off">
+                                <option value="0" <?php echo(0 == $trigger["notification_type"] ? 'selected' : '') ?>>send a push notification</option>
+                                <!--                            <option>send an email to</option>-->
+                            </select>
+                            <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="return removeTrigger('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
+                        </p>
+
+                    <?php
+                        $count++;
+                    }
+                }
+                ?>
+                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="addNewTriggerRow(<?= $node_id ?>)"><i class="fas fa-plus"></i></button>
+                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="saveTriggerData(<?= $node_id ?>)"><i class="far fa-save"></i></button>
+
                 <?php
             }
             ?>
@@ -71,16 +164,16 @@
                 </tr>
 
                 <?php
-                foreach ($sensor_types as $sensor_type){
-                    ?>
+        foreach ($sensor_types as $sensor_type) {
+            ?>
                     <tr>
                         <td>
                             <input class="form-control" type="text" id="name_<?= $node_id ?>" name="name_<?= $node_id ?>" value="<?= $sensor_type["name"] ?>">
                         </td>
                         <td>
                             <select class="form-control" id="type_<?= $node_id ?>" name="type_<?= $node_id ?>">
-                                <option value="analog" <?php echo ("analog" == $sensor_type["type"] ? 'selected' : '') ?>>Analog</option>
-                                <option value="dht11" <?php echo ("dht11" == $sensor_type["type"] ? 'selected' : '') ?>>DHT11</option>
+                                <option value="analog" <?php echo("analog" == $sensor_type["type"] ? 'selected' : '') ?>>Analog</option>
+                                <option value="dht11" <?php echo("dht11" == $sensor_type["type"] ? 'selected' : '') ?>>DHT11</option>
                             </select>
                         </td>
                         <td><input type="number" value="<?= $sensor_type["rawMinVal"] ?>" /></td>
@@ -90,8 +183,8 @@
                         <td><button class="btn btn-dark" onclick="removeTypeRow(this)">Remove</button></td>
                     </tr>
                 <?php
-                }
-                ?>
+        }
+        ?>
 
             </table>
 
@@ -105,22 +198,33 @@
 
 <script type="text/javascript">
 
+    // General
+
+    function removeElement(element){
+        const toRemove = document.getElementById(element);
+        toRemove.parentNode.removeChild(toRemove);
+    }
+
+    function insertAfter(newNode, referenceNode) {
+        referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+    }
+
     // Left side
 
     let sensorNameDropdown = "<select class='form-control' onChange='initializeRowForId(this)'>";
     <?php
-        foreach ($sensor_types as $sensor_type){
-            ?>
-            sensorNameDropdown += "<option value='<?= $sensor_type["id"] ?>'><?= $sensor_type["name"] ?></option>";
+    foreach ($sensor_types as $sensor_type){
+    ?>
+    sensorNameDropdown += "<option value='<?= $sensor_type["id"] ?>'><?= $sensor_type["name"] ?></option>";
     <?php
-        }
+    }
     ?>
 
     sensorNameDropdown += "</select>";
 
     let count = 0;
 
-    function removeSensorRow(element){
+    function removeSensorRow(element) {
         const toDelete = confirm("Are you sure you want to delete this sensor?");
 
         if (toDelete === true) {
@@ -138,12 +242,14 @@
                     'csrf-token': '<?php echo $_SESSION['csrf-token']?>'
                 }
             })
-            .done(function(result) {
-                const data = $.parseJSON(result);
-                console.log(data);
-            });
+                .done(function (result) {
+                    if (result !== "") {
+                        const data = $.parseJSON(result);
+                        console.log(data);
+                    }
+                });
 
-            element.parentNode.removeChild(element);
+            removeElement(element);
         }
         return false;
     }
@@ -164,7 +270,7 @@
 
         nameCell.innerHTML = sensorNameDropdown;
 
-        removeCell.innerHTML = "<button class='btn btn-dark' onclick='return removeSensorRow(this)'>Remove</button>";
+        removeCell.innerHTML = "<button class='IIT btn btn-outline-danger' style='width:40px; height:40px' onclick='return removeSensorRow(this)'><i class='far fa-trash-alt'></i></button>";
 
         initializeRowForId("row_" + count);
 
@@ -175,10 +281,9 @@
 
         let row;
 
-        if (typeof rowId !== "string"){
+        if (typeof rowId !== "string") {
             row = document.getElementById(rowId.parentNode.parentNode.id);
-        }
-        else {
+        } else {
             row = document.getElementById(rowId);
         }
 
@@ -240,6 +345,95 @@
 
     // Right side
 
+    function addNewTriggerRow(nodeId) {
+        const possibleElements = document.querySelectorAll('[id^=trigger_' + nodeId + ']');
+
+        const paragraph = possibleElements[possibleElements.length - 1];
+
+        let count = parseInt(paragraph.id.split("_")[paragraph.id.split("_").length - 1]);
+
+        const newParagraph = document.createElement("p");
+        newParagraph.id = "trigger_".concat(nodeId, "_", count + 1);
+
+        newParagraph.innerHTML = paragraph.innerHTML.replace(paragraph.id, newParagraph.id);
+
+        const renameElements = newParagraph.querySelectorAll('[id*=_' + nodeId + "_" + count + ']');
+
+        for (let i = 0; i < renameElements.length; i++){
+            renameElements[i].id = renameElements[i].id.replace('_' + nodeId + "_" + count, '_'.concat(nodeId, "_", count + 1));
+        }
+
+        insertAfter(newParagraph, paragraph);
+    }
+
+    function saveTriggerData(nodeId) {
+        const possibleElements = document.querySelectorAll('[id^=trigger_' + nodeId + ']');
+
+        for (let i = 0; i < possibleElements.length; i++) {
+            const children = possibleElements[i].children;
+
+            let dataArray = [];
+
+            for (let j = 0; j < children.length; j++) {
+                if (children[j].id.indexOf(nodeId) !== -1) {
+                    dataArray.push(children[j].value);
+                }
+            }
+
+            const linkId = dataArray[0];
+            const ltGt = dataArray[1];
+            const triggerVal = dataArray[2];
+            const notificationChoice = dataArray[3];
+
+            $.ajax({
+                method: "POST",
+                url: "/admin",
+                data: {
+                    AJAX: 1,
+                    ACTION: 'addTriggerToSensor',
+                    linkId: parseInt(linkId),
+                    ltGt: parseInt(ltGt),
+                    triggerVal: parseInt(triggerVal),
+                    notificationChoice: parseInt(notificationChoice),
+                    triggerId: parseInt(possibleElements[i].getAttribute("trigger_id")),
+                    'csrf-token': '<?php echo $_SESSION['csrf-token']?>'
+                }
+            })
+                .done(function (result) {
+
+                    if (result !== "") {
+                        const data = $.parseJSON(result);
+                        window.location.reload();
+                    }
+                });
+        }
+    }
+
+    function removeTrigger(element){
+        const toDelete = confirm("Are you sure you want to delete this trigger?");
+
+        if (toDelete === true) {
+            $.ajax({
+                method: "POST",
+                url: "/admin",
+                data: {
+                    AJAX: 1,
+                    ACTION: 'removeTrigger',
+                    triggerId: parseInt(document.getElementById(element).getAttribute("trigger_id")),
+                    'csrf-token': '<?php echo $_SESSION['csrf-token']?>'
+                }
+            })
+                .done(function (result) {
+
+                    if (result === "true") {
+                        removeElement(element);
+                    }
+                });
+        }
+        return false;
+
+    }
+
     function addNewTypeRowTo(tableName) {
         const table = document.getElementById("table_" + tableName);
         const row = table.insertRow();
@@ -254,14 +448,14 @@
         const maxCell = row.insertCell();
         const removeCell = row.insertCell();
 
-/*
-        <td>
-            <input class="form-control" type="text" id="name_<?= $node_id ?>" name="name_<?= $node_id ?>" value="<?= $sensor_type["name"] ?>">
+        /*
+                <td>
+                    <input class="form-control" type="text" id="name_<?= $node_id ?>" name="name_<?= $node_id ?>" value="<?= $sensor_type["name"] ?>">
         </td>
         <td>
             <select class="form-control" id="type_<?= $node_id ?>" name="type_<?= $node_id ?>">
-                <option value="analog" <?php echo ("analog" == $sensor_type["type"] ? 'selected' : '') ?>>Analog</option>
-                <option value="dht11" <?php echo ("dht11" == $sensor_type["type"] ? 'selected' : '') ?>>DHT11</option>
+                <option value="analog" <?php echo("analog" == $sensor_type["type"] ? 'selected' : '') ?>>Analog</option>
+                <option value="dht11" <?php echo("dht11" == $sensor_type["type"] ? 'selected' : '') ?>>DHT11</option>
             </select>
         </td>
         <td><input type="number" value="<?= $sensor_type["rawMinVal"] ?>" /></td>
@@ -300,12 +494,12 @@
                     'csrf-token': '<?php echo $_SESSION['csrf-token']?>'
                 }
             })
-                .done(function(result) {
+                .done(function (result) {
                     const data = $.parseJSON(result);
                     console.log(data);
                 });
 
-            element.parentNode.removeChild(element);
+            removeElement(element);
         }
         return false;
     }
