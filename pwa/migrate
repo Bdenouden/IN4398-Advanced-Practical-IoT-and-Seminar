@@ -59,7 +59,6 @@ def runMigration(completed):
                             error = True
                             break
                 if not error:
-                    print(file)
                     cur.execute(
                         "INSERT INTO iot.migrations(migration) VALUES (?)", (file,))
                     conn.commit()
