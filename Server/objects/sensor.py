@@ -65,6 +65,30 @@ class Sensor:
             "value": self.value,
             "unit": self.siUnit
         }
+    
+    @classmethod
+    def sensorsFromList(cls, sensorList):
+        output = []
+        
+        # TODO rewrite this to work for different sensor types
+        for sensor in sensorList:
+            # sensor is a dict, sensorObj is the sensor object
+            output.append(cls(
+                sensor.get('name',''),
+                sensor.get('type',''),
+                sensor.get('siUnit',''),
+                sensor.get('rawMinVal',''),
+                sensor.get('rawMaxVal',''),
+                sensor.get('minVal',''),
+                sensor.get('maxVal','')
+                 ))
+
+            # print(sensor)
+
+
+        print(f"[SENSOR] {len(output)} sensors created from list")
+
+        return output
 
 
 class PH_sensor(Sensor):

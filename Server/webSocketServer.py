@@ -18,7 +18,7 @@ threads = []
 timeBeforeReconnect = 30*1000
 
 # seconds between sensor updates to the pwa
-update_delay = 0.5*60
+update_delay = 1*60
 
 
 def get_known_devices():
@@ -31,7 +31,7 @@ def get_known_devices():
     elif response.status_code == 200:
         # print(f"[API] Response code {response.status_code}")
         known_devices = json.loads(response.text)
-        # print(json.dumps(known_devices, indent=4, sort_keys=False))
+
         Node.knownDevices_from_JSON(known_devices)
     else:
         print(
@@ -48,7 +48,6 @@ def HTTP_new_device(node):
 
 # TODO unexpected close of the connection throws an exception
 # TODO sending key chipId instead of chipID throws a keyerror
-# TODO place unknown key-value pairs into a 'extra' column
 async def eventHandler(websocket, path):
     global current_clients, timeBeforeReconnect, threads
 
@@ -130,9 +129,8 @@ def send_update(knownDevices):
 
         if response is None:
             print(f"[UPDATE] An error occured!")
-            curTime = datetime.now().strftime("%Y%m%d-%H%M%S")
-            with open(sys.path[0] + '/data/'+curTime+'.json', 'w+') as outFile:
-                json.dump(temp_dict, outFile)
+            createBacklogFile(temp_dict)
+
         elif response.status_code == 200:
             print(f"[UPDATE] Sensor values successfully uploaded!")
             print(f"[UPDATE] PWA response: ")
@@ -142,7 +140,16 @@ def send_update(knownDevices):
         else:
             print(
                 f"[UPDATE] An error occured! Response code: {response.status_code}")
+            print(response.text)
+            createBacklogFile(temp_dict)
 
+def createBacklogFile(data):
+    '''
+        Write a JSON file containing the information found in the dict `data`
+    '''
+    curTime = datetime.now().strftime("%Y%m%d-%H%M%S")
+    with open(sys.path[0] + '/data/'+curTime+'.json', 'w+') as outFile:
+        json.dump(data, outFile)
 
 def sendBacklog():
     '''
@@ -172,15 +179,6 @@ def sendBacklog():
 
 
 get_known_devices()
-
-# TODO remove from here after test
-for key in Node.knownDevices:
-    node = Node.knownDevices.get(key)
-    node.add_sensor(Soil_moisture_sensor())
-    node.add_sensor(PH_sensor())
-    node.add_sensor(Battery())
-# Remove up to here
-
 
 start_server = websockets.serve(eventHandler, "", 8765)
 print('[WSS] Server started!')

@@ -1,6 +1,8 @@
 from datetime import datetime
 from .api import API
+from .sensor import Sensor
 import threading
+
 
 
 class Node:
@@ -59,6 +61,7 @@ class Node:
         temp_dict = {}
         temp_dict['measure_time'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         for sensor in self.sensorList:
+            # TODO multiple sensors with the same name overwrite eachother
             temp_dict[sensor.name] = sensor.getDict()
         return temp_dict
 
@@ -93,10 +96,15 @@ class Node:
 
     @ staticmethod  # initialise known devices from json
     def knownDevices_from_JSON(json):
-        for item in json:
-            node = Node.knownDevices.get(item['id'])
+        for chipId in json:
+            node = Node.knownDevices.get(int(chipId))
             if (node is None):
-                node = Node(int(item["id"]), 'unknown')  # FIXME version
+                # get sensor list
+                # print(json[chipId]['sensors'])
+                sensorList = Sensor.sensorsFromList(json[chipId]['sensors'])
+
+                # generate new node object
+                node = Node(int(chipId), 'unknown', sensorList)  # FIXME version
                 # print(f"Device with id {item['id']} is now known")
 
     # "chipID": 9159476,
