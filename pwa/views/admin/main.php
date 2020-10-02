@@ -3,7 +3,7 @@
         <div class="col-md-6">
 
             <h1 class="text-center">Link modules to your node</h1>
-            <p class="text-justify">
+            <p class="text-center">
                 To add modules to a new node, ensure you have configured the node already to be connected to your WiFi.
                 It will then automatically show up here to allow you to assign which modules are connected to it.
             </p>
@@ -29,17 +29,15 @@
                             }
                             ?>
                             <tr id="row_<?= $node_id . '_' . $sensor["link_id"] ?>">
-                                <form>
-                                    <td><?= $sensor["name"] ?></td>
-                                    <td><?= $sensor["type"] ?></td>
-                                    <td><?= $sensor["rawMinVal"] ?></td>
-                                    <td><?= $sensor["rawMaxVal"] ?></td>
-                                    <td><?= $sensor["minVal"] ?></td>
-                                    <td><?= $sensor["maxVal"] ?></td>
-                                    <td>
-                                        <button class="IIT btn btn-outline-danger" style="width:40px; height:40px" onclick="return removeSensorRow(this)"><i class="far fa-trash-alt"></i></button>
-                                    </td>
-                                </form>
+                                <td><?= $sensor["name"] ?></td>
+                                <td><?= $sensor["type"] ?></td>
+                                <td><?= $sensor["rawMinVal"] ?></td>
+                                <td><?= $sensor["rawMaxVal"] ?></td>
+                                <td><?= $sensor["minVal"] ?></td>
+                                <td><?= $sensor["maxVal"] ?></td>
+                                <td>
+                                    <button class="IIT btn btn-outline-danger" style="width:40px; height:40px" onclick="return removeSensorRow(this)"><i class="far fa-trash-alt"></i></button>
+                                </td>
                             </tr>
                             <?php
                         }
@@ -57,7 +55,7 @@
         <div class="col-md-6">
 
             <h1 class="text-center">Create Triggers</h1>
-            <p class="text-justify">
+            <p class="text-center">
                 Here you can determine when you want to receive a push notification on your device(s)!
                 <br>&nbsp;
             </p>
@@ -90,20 +88,22 @@
                             <option>less than</option>
                             <option>greater than</option>
                         </select>
-                        <input type="number" placeholder="20" size="5" />
+                        <input type="number" placeholder="20" size="5"/>
                         <span class="IIT">THEN</span>
                         <select>
                             <option>send a push notification</option>
-<!--                            <option>send an email to</option>-->
+                            <!--                            <option>send an email to</option>-->
                         </select>
-                        <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="removeElement('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
+                        <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px"
+                                onclick="removeElement('trigger_<?= $node_id ?>_<?= $count ?>')"><i
+                                    class="far fa-trash-alt"></i></button>
                     </p>
                     <?php
                     $count++;
                 }
                 ?>
-                <button class="IIT btn btn-outline-success" style="width:40px; height:40px"><i class="fas fa-plus"></i></button>
-                <button class="IIT btn btn-outline-success" style="width:40px; height:40px"><i class="far fa-save"></i></button>
+                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="addNewTriggerRow(<?= $node_id ?>)"><i class="fas fa-plus"></i></button>
+                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="saveTriggerData(<?= $node_id ?>)"><i class="far fa-save"></i></button>
 
                 <?php
             }
@@ -170,6 +170,10 @@
     function removeElement(element){
         const toRemove = document.getElementById(element);
         toRemove.parentNode.removeChild(toRemove);
+    }
+
+    function insertAfter(newNode, referenceNode) {
+        referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
     }
 
     // Left side
@@ -307,6 +311,21 @@
     }
 
     // Right side
+
+    function addNewTriggerRow(pName){
+        const possibleElements = document.querySelectorAll('[id^=trigger_' + pName + ']');
+
+        const paragraph = possibleElements[possibleElements.length - 1];
+
+        const count = parseInt(paragraph.id.split("_")[paragraph.id.split("_").length - 1]) + 1;
+
+        const newParagraph = document.createElement("p");
+        newParagraph.id = "trigger_" + pName + "_" + count;
+
+        newParagraph.innerHTML = paragraph.innerHTML;
+
+        insertAfter(newParagraph, paragraph);
+    }
 
 
     function addNewTypeRowTo(tableName) {
