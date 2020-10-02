@@ -95,9 +95,7 @@
                             <option value="0">send a push notification</option>
                             <!--                            <option>send an email to</option>-->
                         </select>
-                        <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px"
-                                onclick="removeElement('trigger_<?= $node_id ?>_<?= $count ?>')"><i
-                                    class="far fa-trash-alt"></i></button>
+                        <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="removeTrigger('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
                     </p>
                     <?php
                     $count++;
@@ -105,7 +103,7 @@
                     foreach ($triggers[$node_id] as $trigger){
                     ?>
 
-                        <p id="trigger_<?= $node_id ?>_<?= $count ?>">
+                        <p id="trigger_<?= $node_id ?>_<?= $count ?>" trigger_id="<?= $trigger["trigger_id"] ?>">
                             <span class="IIT">IF</span>
                             <select id="linkid_<?= $node_id ?>_<?= $count ?>" autocomplete="off">
                                 <?php
@@ -124,18 +122,17 @@
                                 <option value="0" <?php echo(0 == $trigger["lessThan_greaterThan"] ? 'selected' : '') ?>>less than</option>
                                 <option value="1" <?php echo(1 == $trigger["lessThan_greaterThan"] ? 'selected' : '') ?>>greater than</option>
                             </select>
-                            <input id="number_<?= $node_id ?>_<?= $count ?>" type="number" placeholder="20" size="5" value="<?= $trigger["val"] ?>" />
+                            <input id="number_<?= $node_id ?>_<?= $count ?>" type="number" placeholder="20" size="5" value="<?= $trigger["val"] ?>"  autocomplete="off" />
                             <span class="IIT">THEN</span>
                             <select id="action_<?= $node_id ?>_<?= $count ?>" autocomplete="off">
                                 <option value="0" <?php echo(0 == $trigger["notification_type"] ? 'selected' : '') ?>>send a push notification</option>
                                 <!--                            <option>send an email to</option>-->
                             </select>
-                            <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px"
-                                    onclick="removeElement('trigger_<?= $node_id ?>_<?= $count ?>')"><i
-                                        class="far fa-trash-alt"></i></button>
+                            <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="removeTrigger('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
                         </p>
 
                     <?php
+                        $count++;
                     }
                 }
                 ?>
@@ -253,7 +250,7 @@
                     }
                 });
 
-            element.parentNode.removeChild(element);
+            removeElement(element);
         }
         return false;
     }
@@ -399,18 +396,23 @@
                     ltGt: parseInt(ltGt),
                     triggerVal: parseInt(triggerVal),
                     notificationChoice: parseInt(notificationChoice),
+                    triggerId: parseInt(possibleElements[i].getAttribute("trigger_id")),
                     'csrf-token': '<?php echo $_SESSION['csrf-token']?>'
                 }
             })
                 .done(function (result) {
 
-                    const data = $.parseJSON(result);
-
-                    console.log(data);
+                    if (result !== "") {
+                        const data = $.parseJSON(result);
+                        window.location.reload();
+                    }
                 });
         }
     }
 
+    function removeTrigger(element){
+        console.log(element);
+    }
 
     function addNewTypeRowTo(tableName) {
         const table = document.getElementById("table_" + tableName);
@@ -477,7 +479,7 @@
                     console.log(data);
                 });
 
-            element.parentNode.removeChild(element);
+            removeElement(element);
         }
         return false;
     }

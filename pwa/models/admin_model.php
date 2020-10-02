@@ -25,7 +25,7 @@ class admin_model extends Model
     public function getTriggers()
     {
         return Database::select("
-            SELECT *
+            SELECT *, triggers.id AS trigger_id
             FROM triggers
             LEFT JOIN sensor_node_link snl on snl.id = triggers.link_id
             LEFT JOIN sensor_types st on snl.sensor_type_id = st.id
@@ -81,18 +81,20 @@ class admin_model extends Model
         }
     }
 
-    public function addTriggertoSensor(int $link_id, int $ltGt, int $val, int $notification_type)
+    public function addTriggerToSensor(?int $trigger_id, int $link_id, int $ltGt, int $val, int $notification_type)
     {
         try {
             Database::beginTransaction();
             Database::query("
-                INSERT INTO triggers (link_id, lessThan_greaterThan, val, notification_type)
-                VALUES (:link_id, :ltGt, :val, :notification_type)
+                INSERT INTO triggers (id, link_id, lessThan_greaterThan, val, notification_type)
+                VALUES (:id, :link_id, :ltGt, :val, :notification_type)
+                ON DUPLICATE KEY UPDATE link_id=:link_id, lessThan_greaterThan=:ltGt, val=:val, notification_type=:notification_type
             ", array(
-               ":link_id" => $link_id,
-               ":ltGt" => $ltGt,
-               ":val" => $val,
-               ":notification_type" => $notification_type
+                ":id" => $trigger_id,
+                ":link_id" => $link_id,
+                ":ltGt" => $ltGt,
+                ":val" => $val,
+                ":notification_type" => $notification_type
             ));
             Database::commit();
             return true;

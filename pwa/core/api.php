@@ -33,6 +33,7 @@ class Api {
         $output = [];
         foreach($triggers as $trigger){
             $trigger_data = [
+                "trigger_id" => $trigger["trigger_id"],
                 "link_id" => $trigger["link_id"],
                 "lessThan_greaterThan" => $trigger["lessThan_greaterThan"],
                 "val" => $trigger["val"],
