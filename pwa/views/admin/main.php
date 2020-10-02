@@ -50,6 +50,46 @@
             ?>
 
         </div>
+        <div class="col-md-6">
+
+            <h1 class="text-center">Create Triggers</h1>
+            <p class="text-justify">
+                Here you can determine when you want to receive a push notification on your device(s)!
+                <br>&nbsp;
+            </p>
+
+            <?php
+            foreach ($nodes as $node_id => $node_data) {
+                ?>
+                <h4>Node: <?= $node_id ?></h4>
+
+                IF "DROPDOWN SENSORS" IS "lessthan" "value" THEN "push"
+                <br>
+
+                <p>
+                    IF
+                    <select>
+                        <option>humidity</option>
+                        <option>Temperature</option>
+                    </select>
+                    IS
+                    <select>
+                        <option>less than</option>
+                        <option>greater than</option>
+                    </select>
+                    <input type="number" placeholder="20" />
+                    THEN
+                    <select>
+                        <option>push</option>
+                        <option>mail</option>
+                    </select>
+                </p>
+
+                <?php
+            }
+            ?>
+
+        </div>
         <!--
         <div class="col-md-6">
 
