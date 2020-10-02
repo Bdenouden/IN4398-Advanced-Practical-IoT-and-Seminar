@@ -1,4 +1,4 @@
-<div class="container-fluid pt-3">
+<div class="container-fluid pt-3 pb-5">
     <div class="row">
         <div class="col-md-6">
 
@@ -37,8 +37,7 @@
                                     <td><?= $sensor["minVal"] ?></td>
                                     <td><?= $sensor["maxVal"] ?></td>
                                     <td>
-                                        <button class="btn btn-dark" onclick="return removeSensorRow(this)">Remove
-                                        </button>
+                                        <button class="IIT btn btn-outline-danger" style="width:40px; height:40px" onclick="return removeSensorRow(this)"><i class="far fa-trash-alt"></i></button>
                                     </td>
                                 </form>
                             </tr>
@@ -48,7 +47,7 @@
                     ?>
 
                 </table>
-                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="addNewSensorRowTo(<?= $node_id ?>)">+</button>
+                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="addNewSensorRowTo(<?= $node_id ?>)"><i class="fas fa-plus"></i></button>
                 <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="saveNodeData(<?= $node_id ?>)"><i class="far fa-save"></i></button>
                 <?php
             }
@@ -64,14 +63,15 @@
             </p>
 
             <?php
+            $count = 0;
             foreach ($nodes as $node_id => $node_data) {
                 ?>
                 <h4 class="pt-5">Node: <?= $node_id ?></h4>
 
                 <?php
-                if (is_array($node_data["sensors"]) && count($node_data["sensors"]) > 1) {
+                if (is_array($node_data["sensors"]) && count($node_data["sensors"]) > 0 && $node_data["sensors"][0]["link_id"] !== null) {
                     ?>
-                    <p>
+                    <p id="trigger_<?= $node_id ?>_<?= $count ?>">
                         <span class="IIT">IF</span>
                         <select>
                             <?php
@@ -90,17 +90,19 @@
                             <option>less than</option>
                             <option>greater than</option>
                         </select>
-                        <input type="number" placeholder="20"/>
+                        <input type="number" placeholder="20" size="5" />
                         <span class="IIT">THEN</span>
                         <select>
-                            <option>push</option>
-                            <option>mail</option>
+                            <option>send a push notification</option>
+<!--                            <option>send an email to</option>-->
                         </select>
+                        <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="removeElement('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
                     </p>
                     <?php
+                    $count++;
                 }
                 ?>
-                <button class="IIT btn btn-outline-success" style="width:40px; height:40px">+</button>
+                <button class="IIT btn btn-outline-success" style="width:40px; height:40px"><i class="fas fa-plus"></i></button>
                 <button class="IIT btn btn-outline-success" style="width:40px; height:40px"><i class="far fa-save"></i></button>
 
                 <?php
@@ -163,6 +165,13 @@
 
 <script type="text/javascript">
 
+    // General
+
+    function removeElement(element){
+        const toRemove = document.getElementById(element);
+        toRemove.parentNode.removeChild(toRemove);
+    }
+
     // Left side
 
     let sensorNameDropdown = "<select class='form-control' onChange='initializeRowForId(this)'>";
@@ -197,8 +206,10 @@
                 }
             })
                 .done(function (result) {
-                    const data = $.parseJSON(result);
-                    console.log(data);
+                    if (result !== "") {
+                        const data = $.parseJSON(result);
+                        console.log(data);
+                    }
                 });
 
             element.parentNode.removeChild(element);
@@ -222,7 +233,7 @@
 
         nameCell.innerHTML = sensorNameDropdown;
 
-        removeCell.innerHTML = "<button class='btn btn-dark' onclick='return removeSensorRow(this)'>Remove</button>";
+        removeCell.innerHTML = "<button class='IIT btn btn-outline-danger' style='width:40px; height:40px' onclick='return removeSensorRow(this)'><i class='far fa-trash-alt'></i></button>";
 
         initializeRowForId("row_" + count);
 
@@ -296,6 +307,7 @@
     }
 
     // Right side
+
 
     function addNewTypeRowTo(tableName) {
         const table = document.getElementById("table_" + tableName);
