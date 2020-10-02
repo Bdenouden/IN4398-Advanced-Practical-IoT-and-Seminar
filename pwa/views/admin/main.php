@@ -322,7 +322,7 @@
         const newParagraph = document.createElement("p");
         newParagraph.id = "trigger_" + pName + "_" + count;
 
-        newParagraph.innerHTML = paragraph.innerHTML;
+        newParagraph.innerHTML = paragraph.innerHTML.replace(paragraph.id, newParagraph.id);
 
         insertAfter(newParagraph, paragraph);
     }
