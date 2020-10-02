@@ -6,6 +6,8 @@
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
 
+<script type="text/javascript" src="../../js/push.js"></script>
+
 <script type="text/javascript">
     // https://levelup.gitconnected.com/build-a-pwa-using-only-vanilla-javascript-bdf1eee6f37a
     if ("serviceWorker" in navigator) {
