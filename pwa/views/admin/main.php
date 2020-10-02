@@ -225,7 +225,8 @@
     let count = 0;
 
     function removeSensorRow(element) {
-        const toDelete = confirm("Are you sure you want to delete this sensor?");
+        const toDelete = confirm("Are you sure you want to delete this sensor?" +
+            "\n!! This will also remove ALL the triggers you have defined !!");
 
         if (toDelete === true) {
             element = element.parentNode.parentNode;
@@ -243,13 +244,13 @@
                 }
             })
                 .done(function (result) {
-                    if (result !== "") {
-                        const data = $.parseJSON(result);
-                        console.log(data);
+
+                    if (result === "true") {
+                        element.parentNode.removeChild(element);
+                        window.location.reload();
                     }
                 });
 
-            removeElement(element);
         }
         return false;
     }

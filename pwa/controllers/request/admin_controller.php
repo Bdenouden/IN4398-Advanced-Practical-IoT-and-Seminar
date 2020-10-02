@@ -23,6 +23,9 @@ class admin_controller extends Controller
         if (isset($_POST['sensorId']) && is_numeric($_POST['sensorId']) && !empty($_POST['csrf-token']) && array_key_exists($_POST['csrf-token'], $_SESSION['csrf-tokens'])) {
             echo json_encode($this->model->removeSensorFromNode($_POST['sensorId']));
         }
+        else {
+            echo json_encode(true);
+        }
     }
 
     public function addSensorToNode()

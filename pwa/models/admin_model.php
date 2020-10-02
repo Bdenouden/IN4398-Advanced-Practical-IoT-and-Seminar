@@ -109,7 +109,8 @@ class admin_model extends Model
         try{
             Database::beginTransaction();
             Database::query("
-                DELETE FROM triggers
+                DELETE
+                FROM triggers
                 WHERE id = :trigger_id
             ", array(
                 ":trigger_id" => $trigger_id
