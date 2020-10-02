@@ -62,12 +62,13 @@
 
             <?php
             $count = 0;
+            var_dump($triggers);
             foreach ($nodes as $node_id => $node_data) {
                 ?>
                 <h4 class="pt-5">Node: <?= $node_id ?></h4>
 
                 <?php
-                if (is_array($node_data["sensors"]) && count($node_data["sensors"]) > 0 && $node_data["sensors"][0]["link_id"] !== null) {
+                if (is_array($node_data["sensors"]) && count($node_data["sensors"]) > 0 && $node_data["sensors"][0]["link_id"] !== null && !isset($triggers[$node_id])) {
                     ?>
                     <p id="trigger_<?= $node_id ?>_<?= $count ?>">
                         <span class="IIT">IF</span>
@@ -100,6 +101,42 @@
                     </p>
                     <?php
                     $count++;
+                } else if (isset($triggers[$node_id]) && count($triggers[$node_id]) > 0) {
+                    foreach ($triggers[$node_id] as $trigger){
+                    ?>
+
+                        <p id="trigger_<?= $node_id ?>_<?= $count ?>">
+                            <span class="IIT">IF</span>
+                            <select id="linkid_<?= $node_id ?>_<?= $count ?>" autocomplete="off">
+                                <?php
+                                foreach ($node_data["sensors"] as $sensor) {
+                                    if ($sensor["link_id"] == null) {
+                                        break;
+                                    }
+                                    ?>
+                                    <option value="<?= $sensor["link_id"] ?>" <?php echo($sensor["name"] == $trigger["name"] ? 'selected' : '') ?>><?= $sensor["name"] ?></option>
+                                    <?php
+                                }
+                                ?>
+                            </select>
+                            <span class="IIT">IS</span>
+                            <select id="ltgt_<?= $node_id ?>_<?= $count ?>" autocomplete="off">
+                                <option value="0" <?php echo(0 == $trigger["lessThan_greaterThan"] ? 'selected' : '') ?>>less than</option>
+                                <option value="1" <?php echo(1 == $trigger["lessThan_greaterThan"] ? 'selected' : '') ?>>greater than</option>
+                            </select>
+                            <input id="number_<?= $node_id ?>_<?= $count ?>" type="number" placeholder="20" size="5" value="<?= $trigger["val"] ?>" />
+                            <span class="IIT">THEN</span>
+                            <select id="action_<?= $node_id ?>_<?= $count ?>" autocomplete="off">
+                                <option value="0" <?php echo(0 == $trigger["notification_type"] ? 'selected' : '') ?>>send a push notification</option>
+                                <!--                            <option>send an email to</option>-->
+                            </select>
+                            <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px"
+                                    onclick="removeElement('trigger_<?= $node_id ?>_<?= $count ?>')"><i
+                                        class="far fa-trash-alt"></i></button>
+                        </p>
+
+                    <?php
+                    }
                 }
                 ?>
                 <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="addNewTriggerRow(<?= $node_id ?>)"><i class="fas fa-plus"></i></button>

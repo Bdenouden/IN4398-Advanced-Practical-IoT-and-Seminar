@@ -29,4 +29,25 @@ class Api {
         return $output;
     }
 
+    public static function aggregateTriggersPerNode(array $triggers){
+        $output = [];
+        foreach($triggers as $trigger){
+            $trigger_data = [
+                "link_id" => $trigger["link_id"],
+                "lessThan_greaterThan" => $trigger["lessThan_greaterThan"],
+                "val" => $trigger["val"],
+                "notification_type" => $trigger["notification_type"],
+                "name" => $trigger["name"],
+            ];
+
+            if (array_key_exists($trigger["node_id"], $output)){
+                $output[$trigger["node_id"]][] = $trigger_data;
+            }
+            else {
+                $output[$trigger["node_id"]] = [$trigger_data];
+            }
+        }
+        return $output;
+    }
+
 }

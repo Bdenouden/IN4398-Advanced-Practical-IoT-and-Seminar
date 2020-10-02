@@ -22,6 +22,16 @@ class admin_model extends Model
         ");
     }
 
+    public function getTriggers()
+    {
+        return Database::select("
+            SELECT *
+            FROM triggers
+            LEFT JOIN sensor_node_link snl on snl.id = triggers.link_id
+            LEFT JOIN sensor_types st on snl.sensor_type_id = st.id
+        ");
+    }
+
     public function getSensorDataForId(int $sensor_id)
     {
         return Database::select("

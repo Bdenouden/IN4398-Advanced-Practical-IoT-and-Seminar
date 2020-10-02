@@ -13,6 +13,7 @@ Class admin_controller extends Controller{
 		    'sensor_data' => $this->model->getAdminPageSensorData(),
             'nodes' => Api::aggregateSensorsPerNode($this->api_model->getKnownDevices()),
             'sensor_types' => $this->model->getSensorTypes(),
+            'triggers' => Api::aggregateTriggersPerNode($this->model->getTriggers()),
 		));
 
 	}
