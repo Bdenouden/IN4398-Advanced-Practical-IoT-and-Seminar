@@ -1,5 +1,6 @@
 <?php
 setlocale(LC_TIME, 'dutch');
+date_default_timezone_set('Europe/Amsterdam');
 
 define("WEBSITE_NAME", "ModFarm");
 
