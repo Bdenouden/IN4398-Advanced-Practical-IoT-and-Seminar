@@ -24,7 +24,9 @@
                     <?php
                     if (is_array($node_data["sensors"]) && count($node_data["sensors"]) > 0) {
                         foreach ($node_data["sensors"] as $sensor) {
-                            if ($sensor['link_id'] == null) { break; }
+                            if ($sensor['link_id'] == null) {
+                                break;
+                            }
                             ?>
                             <tr id="row_<?= $node_id . '_' . $sensor["link_id"] ?>">
                                 <form>
@@ -34,7 +36,10 @@
                                     <td><?= $sensor["rawMaxVal"] ?></td>
                                     <td><?= $sensor["minVal"] ?></td>
                                     <td><?= $sensor["maxVal"] ?></td>
-                                    <td><button class="btn btn-dark" onclick="return removeSensorRow(this)">Remove</button></td>
+                                    <td>
+                                        <button class="btn btn-dark" onclick="return removeSensorRow(this)">Remove
+                                        </button>
+                                    </td>
                                 </form>
                             </tr>
                             <?php
@@ -43,8 +48,8 @@
                     ?>
 
                 </table>
-                <button class="btn btn-dark" onclick="addNewSensorRowTo(<?= $node_id ?>)">Add new sensor</button>
-                <button class="btn btn-dark" onclick="saveNodeData(<?= $node_id ?>)">Save newly added sensors</button>
+                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="addNewSensorRowTo(<?= $node_id ?>)">+</button>
+                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="saveNodeData(<?= $node_id ?>)"><i class="far fa-save"></i></button>
                 <?php
             }
             ?>
@@ -61,29 +66,42 @@
             <?php
             foreach ($nodes as $node_id => $node_data) {
                 ?>
-                <h4>Node: <?= $node_id ?></h4>
+                <h4 class="pt-5">Node: <?= $node_id ?></h4>
 
-                IF "DROPDOWN SENSORS" IS "lessthan" "value" THEN "push"
-                <br>
-
-                <p>
-                    IF
-                    <select>
-                        <option>humidity</option>
-                        <option>Temperature</option>
-                    </select>
-                    IS
-                    <select>
-                        <option>less than</option>
-                        <option>greater than</option>
-                    </select>
-                    <input type="number" placeholder="20" />
-                    THEN
-                    <select>
-                        <option>push</option>
-                        <option>mail</option>
-                    </select>
-                </p>
+                <?php
+                if (is_array($node_data["sensors"]) && count($node_data["sensors"]) > 1) {
+                    ?>
+                    <p>
+                        <span class="IIT">IF</span>
+                        <select>
+                            <?php
+                            foreach ($node_data["sensors"] as $sensor) {
+                                if ($sensor['link_id'] == null) {
+                                    break;
+                                }
+                                ?>
+                                <option><?= $sensor["name"] ?></option>
+                                <?php
+                            }
+                            ?>
+                        </select>
+                        <span class="IIT">IS</span>
+                        <select>
+                            <option>less than</option>
+                            <option>greater than</option>
+                        </select>
+                        <input type="number" placeholder="20"/>
+                        <span class="IIT">THEN</span>
+                        <select>
+                            <option>push</option>
+                            <option>mail</option>
+                        </select>
+                    </p>
+                    <?php
+                }
+                ?>
+                <button class="IIT btn btn-outline-success" style="width:40px; height:40px">+</button>
+                <button class="IIT btn btn-outline-success" style="width:40px; height:40px"><i class="far fa-save"></i></button>
 
                 <?php
             }
@@ -111,16 +129,16 @@
                 </tr>
 
                 <?php
-                foreach ($sensor_types as $sensor_type){
-                    ?>
+        foreach ($sensor_types as $sensor_type) {
+            ?>
                     <tr>
                         <td>
                             <input class="form-control" type="text" id="name_<?= $node_id ?>" name="name_<?= $node_id ?>" value="<?= $sensor_type["name"] ?>">
                         </td>
                         <td>
                             <select class="form-control" id="type_<?= $node_id ?>" name="type_<?= $node_id ?>">
-                                <option value="analog" <?php echo ("analog" == $sensor_type["type"] ? 'selected' : '') ?>>Analog</option>
-                                <option value="dht11" <?php echo ("dht11" == $sensor_type["type"] ? 'selected' : '') ?>>DHT11</option>
+                                <option value="analog" <?php echo("analog" == $sensor_type["type"] ? 'selected' : '') ?>>Analog</option>
+                                <option value="dht11" <?php echo("dht11" == $sensor_type["type"] ? 'selected' : '') ?>>DHT11</option>
                             </select>
                         </td>
                         <td><input type="number" value="<?= $sensor_type["rawMinVal"] ?>" /></td>
@@ -130,8 +148,8 @@
                         <td><button class="btn btn-dark" onclick="removeTypeRow(this)">Remove</button></td>
                     </tr>
                 <?php
-                }
-                ?>
+        }
+        ?>
 
             </table>
 
@@ -149,18 +167,18 @@
 
     let sensorNameDropdown = "<select class='form-control' onChange='initializeRowForId(this)'>";
     <?php
-        foreach ($sensor_types as $sensor_type){
-            ?>
-            sensorNameDropdown += "<option value='<?= $sensor_type["id"] ?>'><?= $sensor_type["name"] ?></option>";
+    foreach ($sensor_types as $sensor_type){
+    ?>
+    sensorNameDropdown += "<option value='<?= $sensor_type["id"] ?>'><?= $sensor_type["name"] ?></option>";
     <?php
-        }
+    }
     ?>
 
     sensorNameDropdown += "</select>";
 
     let count = 0;
 
-    function removeSensorRow(element){
+    function removeSensorRow(element) {
         const toDelete = confirm("Are you sure you want to delete this sensor?");
 
         if (toDelete === true) {
@@ -178,10 +196,10 @@
                     'csrf-token': '<?php echo $_SESSION['csrf-token']?>'
                 }
             })
-            .done(function(result) {
-                const data = $.parseJSON(result);
-                console.log(data);
-            });
+                .done(function (result) {
+                    const data = $.parseJSON(result);
+                    console.log(data);
+                });
 
             element.parentNode.removeChild(element);
         }
@@ -215,10 +233,9 @@
 
         let row;
 
-        if (typeof rowId !== "string"){
+        if (typeof rowId !== "string") {
             row = document.getElementById(rowId.parentNode.parentNode.id);
-        }
-        else {
+        } else {
             row = document.getElementById(rowId);
         }
 
@@ -294,14 +311,14 @@
         const maxCell = row.insertCell();
         const removeCell = row.insertCell();
 
-/*
-        <td>
-            <input class="form-control" type="text" id="name_<?= $node_id ?>" name="name_<?= $node_id ?>" value="<?= $sensor_type["name"] ?>">
+        /*
+                <td>
+                    <input class="form-control" type="text" id="name_<?= $node_id ?>" name="name_<?= $node_id ?>" value="<?= $sensor_type["name"] ?>">
         </td>
         <td>
             <select class="form-control" id="type_<?= $node_id ?>" name="type_<?= $node_id ?>">
-                <option value="analog" <?php echo ("analog" == $sensor_type["type"] ? 'selected' : '') ?>>Analog</option>
-                <option value="dht11" <?php echo ("dht11" == $sensor_type["type"] ? 'selected' : '') ?>>DHT11</option>
+                <option value="analog" <?php echo("analog" == $sensor_type["type"] ? 'selected' : '') ?>>Analog</option>
+                <option value="dht11" <?php echo("dht11" == $sensor_type["type"] ? 'selected' : '') ?>>DHT11</option>
             </select>
         </td>
         <td><input type="number" value="<?= $sensor_type["rawMinVal"] ?>" /></td>
@@ -340,7 +357,7 @@
                     'csrf-token': '<?php echo $_SESSION['csrf-token']?>'
                 }
             })
-                .done(function(result) {
+                .done(function (result) {
                     const data = $.parseJSON(result);
                     console.log(data);
                 });
