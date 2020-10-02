@@ -20,7 +20,6 @@ class Api {
             }
             else {
                 $output[$sensor["node_id"]] = [
-                    "link_id" => $sensor["link_id"],
                     "added" => $sensor["added"],
                     "is_active" => $sensor["is_active"],
                     "sensors" => [$sensor_data]
