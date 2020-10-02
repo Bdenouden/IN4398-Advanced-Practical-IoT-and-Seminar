@@ -33,7 +33,8 @@ class admin_model extends Model
         ));
     }
 
-    public function removeSensorFromNode(int $sensor_id){
+    public function removeSensorFromNode(int $sensor_id)
+    {
         try {
             Database::beginTransaction();
             Database::query("
@@ -51,7 +52,8 @@ class admin_model extends Model
         }
     }
 
-    public function addSensorToNode(int $sensor_id, string $node_id){
+    public function addSensorToNode(int $sensor_id, string $node_id)
+    {
         try {
             Database::beginTransaction();
             Database::query("
@@ -65,7 +67,28 @@ class admin_model extends Model
             return true;
         } catch (SystemException $e) {
             Database::rollBack();
-            return false;
+            return $e->getMessage();
+        }
+    }
+
+    public function addTriggertoSensor(int $link_id, int $ltGt, int $val, int $notification_type)
+    {
+        try {
+            Database::beginTransaction();
+            Database::query("
+                INSERT INTO triggers (link_id, lessThan_greaterThan, val, notification_type)
+                VALUES (:link_id, :ltGt, :val, :notification_type)
+            ", array(
+               ":link_id" => $link_id,
+               ":ltGt" => $ltGt,
+               ":val" => $val,
+               ":notification_type" => $notification_type
+            ));
+            Database::commit();
+            return true;
+        } catch (SystemException $e) {
+            Database::rollBack();
+            return $e->getMessage();
         }
     }
 

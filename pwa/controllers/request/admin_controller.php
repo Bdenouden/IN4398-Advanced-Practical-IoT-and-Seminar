@@ -32,4 +32,16 @@ class admin_controller extends Controller
         }
     }
 
+    public function addTriggerToSensor()
+    {
+        if (isset($_POST['linkId']) && isset($_POST['ltGt']) && isset($_POST['triggerVal']) && isset($_POST['notificationChoice'])
+            && is_numeric($_POST['linkId']) && is_numeric($_POST['ltGt']) && is_numeric($_POST['triggerVal']) && is_numeric($_POST['notificationChoice'])
+            && !empty($_POST['csrf-token']) && array_key_exists($_POST['csrf-token'], $_SESSION['csrf-tokens'])) {
+
+            echo json_encode($this->model->addTriggertoSensor($_POST['linkId'], $_POST['ltGt'], $_POST['triggerVal'], $_POST['notificationChoice']));
+
+        }
+    }
+
 }
+

@@ -8,6 +8,10 @@ class setup_controller extends Controller
     public function __construct($arg)
     {
 
+        if (Page::isInitialSetupCompleted()){
+            Auth::redirect('/');
+        }
+
         $this->model = $this->loadModel('setup');
 
         if (!strpos($_SERVER['REQUEST_URI'], "setup")) {

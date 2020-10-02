@@ -71,27 +71,27 @@
                     ?>
                     <p id="trigger_<?= $node_id ?>_<?= $count ?>">
                         <span class="IIT">IF</span>
-                        <select>
+                        <select id="linkid_<?= $node_id ?>_<?= $count ?>">
                             <?php
                             foreach ($node_data["sensors"] as $sensor) {
-                                if ($sensor['link_id'] == null) {
+                                if ($sensor["link_id"] == null) {
                                     break;
                                 }
                                 ?>
-                                <option><?= $sensor["name"] ?></option>
+                                <option value="<?= $sensor["link_id"] ?>"><?= $sensor["name"] ?></option>
                                 <?php
                             }
                             ?>
                         </select>
                         <span class="IIT">IS</span>
-                        <select>
-                            <option>less than</option>
-                            <option>greater than</option>
+                        <select id="ltgt_<?= $node_id ?>_<?= $count ?>">
+                            <option value="0">less than</option>
+                            <option value="1">greater than</option>
                         </select>
-                        <input type="number" placeholder="20" size="5"/>
+                        <input id="number_<?= $node_id ?>_<?= $count ?>" type="number" placeholder="20" size="5"/>
                         <span class="IIT">THEN</span>
-                        <select>
-                            <option>send a push notification</option>
+                        <select id="action_<?= $node_id ?>_<?= $count ?>">
+                            <option value="0">send a push notification</option>
                             <!--                            <option>send an email to</option>-->
                         </select>
                         <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px"
@@ -312,19 +312,66 @@
 
     // Right side
 
-    function addNewTriggerRow(pName){
-        const possibleElements = document.querySelectorAll('[id^=trigger_' + pName + ']');
+    function addNewTriggerRow(nodeId) {
+        const possibleElements = document.querySelectorAll('[id^=trigger_' + nodeId + ']');
 
         const paragraph = possibleElements[possibleElements.length - 1];
 
-        const count = parseInt(paragraph.id.split("_")[paragraph.id.split("_").length - 1]) + 1;
+        let count = parseInt(paragraph.id.split("_")[paragraph.id.split("_").length - 1]);
 
         const newParagraph = document.createElement("p");
-        newParagraph.id = "trigger_" + pName + "_" + count;
+        newParagraph.id = "trigger_".concat(nodeId, "_", count + 1);
 
         newParagraph.innerHTML = paragraph.innerHTML.replace(paragraph.id, newParagraph.id);
 
+        const renameElements = newParagraph.querySelectorAll('[id*=_' + nodeId + "_" + count + ']');
+
+        for (let i = 0; i < renameElements.length; i++){
+            renameElements[i].id = renameElements[i].id.replace('_' + nodeId + "_" + count, '_'.concat(nodeId, "_", count + 1));
+        }
+
         insertAfter(newParagraph, paragraph);
+    }
+
+    function saveTriggerData(nodeId) {
+        const possibleElements = document.querySelectorAll('[id^=trigger_' + nodeId + ']');
+
+        for (let i = 0; i < possibleElements.length; i++) {
+            const children = possibleElements[i].children;
+
+            let dataArray = [];
+
+            for (let j = 0; j < children.length; j++) {
+                if (children[j].id.indexOf(nodeId) !== -1) {
+                    dataArray.push(children[j].value);
+                }
+            }
+
+            const linkId = dataArray[0];
+            const ltGt = dataArray[1];
+            const triggerVal = dataArray[2];
+            const notificationChoice = dataArray[3];
+
+            $.ajax({
+                method: "POST",
+                url: "/admin",
+                data: {
+                    AJAX: 1,
+                    ACTION: 'addTriggerToSensor',
+                    linkId: parseInt(linkId),
+                    ltGt: parseInt(ltGt),
+                    triggerVal: parseInt(triggerVal),
+                    notificationChoice: parseInt(notificationChoice),
+                    'csrf-token': '<?php echo $_SESSION['csrf-token']?>'
+                }
+            })
+                .done(function (result) {
+
+                    const data = $.parseJSON(result);
+
+                    console.log(data);
+                });
+        }
     }
 
 
