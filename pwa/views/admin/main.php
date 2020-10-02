@@ -43,13 +43,14 @@
                     ?>
 
                 </table>
-                <button class="btn btn-dark" onclick="addNewRowTo(<?= $node_id ?>)">Add new sensor</button>
+                <button class="btn btn-dark" onclick="addNewSensorRowTo(<?= $node_id ?>)">Add new sensor</button>
                 <button class="btn btn-dark" onclick="saveNodeData(<?= $node_id ?>)">Save newly added sensors</button>
                 <?php
             }
             ?>
 
         </div>
+        <!--
         <div class="col-md-6">
 
             <h1 class="text-center">Manage Sensor Types</h1>
@@ -57,13 +58,54 @@
                 Here you can manage your sensor types and their respective settings.
             </p>
 
+            <table class="table table-responsive-md" id="table_sensortypes">
+
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Raw Minimum Value</th>
+                    <th>Raw Maximum Value</th>
+                    <th>Real Minimum Value</th>
+                    <th>Real Maximum Value</th>
+                    <th></th>
+                </tr>
+
+                <?php
+                foreach ($sensor_types as $sensor_type){
+                    ?>
+                    <tr>
+                        <td>
+                            <input class="form-control" type="text" id="name_<?= $node_id ?>" name="name_<?= $node_id ?>" value="<?= $sensor_type["name"] ?>">
+                        </td>
+                        <td>
+                            <select class="form-control" id="type_<?= $node_id ?>" name="type_<?= $node_id ?>">
+                                <option value="analog" <?php echo ("analog" == $sensor_type["type"] ? 'selected' : '') ?>>Analog</option>
+                                <option value="dht11" <?php echo ("dht11" == $sensor_type["type"] ? 'selected' : '') ?>>DHT11</option>
+                            </select>
+                        </td>
+                        <td><input type="number" value="<?= $sensor_type["rawMinVal"] ?>" /></td>
+                        <td><input type="number" value="<?= $sensor_type["rawMaxVal"] ?>" /></td>
+                        <td><input type="number" value="<?= $sensor_type["minVal"] ?>" /></td>
+                        <td><input type="number" value="<?= $sensor_type["maxVal"] ?>" /></td>
+                        <td><button class="btn btn-dark" onclick="removeTypeRow(this)">Remove</button></td>
+                    </tr>
+                <?php
+                }
+                ?>
+
+            </table>
+
+            <button class="btn btn-dark" onclick="addNewTypeRowTo('sensortypes')">Add new type</button>
+            <button class="btn btn-dark" onclick="saveSensorTypeData(<?= $node_id ?>)">Save changes</button>
+
         </div>
+        -->
     </div>
 </div>
 
 <script type="text/javascript">
 
-    const removeButton = "<button class='btn btn-dark' onclick='removeElementById()'>Remove</button>";
+    // Left side
 
     let sensorNameDropdown = "<select class='form-control' onChange='initializeRowForId(this)'>";
     <?php
@@ -106,7 +148,7 @@
         return false;
     }
 
-    function addNewRowTo(tableName) {
+    function addNewSensorRowTo(tableName) {
         const table = document.getElementById("table_" + tableName);
         const row = table.insertRow();
 
@@ -195,4 +237,78 @@
             }
         }
     }
+
+    // Right side
+
+    function addNewTypeRowTo(tableName) {
+        const table = document.getElementById("table_" + tableName);
+        const row = table.insertRow();
+
+        row.id = "row_" + count;
+
+        const nameCell = row.insertCell();
+        const typeCell = row.insertCell();
+        const rawMinCell = row.insertCell();
+        const rawMaxCell = row.insertCell();
+        const minCell = row.insertCell();
+        const maxCell = row.insertCell();
+        const removeCell = row.insertCell();
+
+/*
+        <td>
+            <input class="form-control" type="text" id="name_<?= $node_id ?>" name="name_<?= $node_id ?>" value="<?= $sensor_type["name"] ?>">
+        </td>
+        <td>
+            <select class="form-control" id="type_<?= $node_id ?>" name="type_<?= $node_id ?>">
+                <option value="analog" <?php echo ("analog" == $sensor_type["type"] ? 'selected' : '') ?>>Analog</option>
+                <option value="dht11" <?php echo ("dht11" == $sensor_type["type"] ? 'selected' : '') ?>>DHT11</option>
+            </select>
+        </td>
+        <td><input type="number" value="<?= $sensor_type["rawMinVal"] ?>" /></td>
+        <td><input type="number" value="<?= $sensor_type["rawMaxVal"] ?>" /></td>
+        <td><input type="number" value="<?= $sensor_type["minVal"] ?>" /></td>
+        <td><input type="number" value="<?= $sensor_type["maxVal"] ?>" /></td>
+*/
+
+        nameCell.innerHTML = "<input class='form-control' type='text' id='name_" + count + "' name='name_" + count + "'>";
+        typeCell.innerHTML = "<"
+
+
+        removeCell.innerHTML = "<button class='btn btn-dark' onclick='return removeTypeRow(this)'>Remove</button>";
+
+        initializeRowForId("row_" + count);
+
+        count++;
+    }
+
+    function removeTypeRow(element) {
+        const toDelete = confirm("Are you sure you want to delete this sensor type?" +
+            "\n!! This will also remove it from ALL nodes using this type !!");
+
+        if (toDelete === true) {
+            element = element.parentNode.parentNode;
+
+            const sensorId = element.id.split("_")[2];
+
+            $.ajax({
+                method: "POST",
+                url: "/admin",
+                data: {
+                    AJAX: 1,
+                    ACTION: 'removeSensorType',
+                    sensorId: parseInt(sensorId),
+                    'csrf-token': '<?php echo $_SESSION['csrf-token']?>'
+                }
+            })
+                .done(function(result) {
+                    const data = $.parseJSON(result);
+                    console.log(data);
+                });
+
+            element.parentNode.removeChild(element);
+        }
+        return false;
+    }
+
+
 </script>
