@@ -19,7 +19,7 @@ public:
 
 protected:
 	String _name; // e.g. temperature or DHT11
-}
+};
 
 class AnalogSensor : public Sensor
 {

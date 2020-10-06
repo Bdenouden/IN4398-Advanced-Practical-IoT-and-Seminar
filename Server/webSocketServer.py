@@ -48,6 +48,8 @@ def HTTP_new_device(node):
 
 # TODO unexpected close of the connection throws an exception
 # TODO sending key chipId instead of chipID throws a keyerror
+
+
 async def eventHandler(websocket, path):
     global current_clients, timeBeforeReconnect, threads
 
@@ -88,6 +90,58 @@ async def eventHandler(websocket, path):
     # added to prove the server can handle multiple clients at once provided no blocking actions take place
     # see https://websockets.readthedocs.io/en/stable/faq.html
     # await asyncio.sleep(5)
+
+    # check if new config is available
+    msg_out ='''config:{
+    "config-version": "12345678",
+    "config": [
+        {
+            "link-id": 8,
+            "type": "analog",
+            "pins": [1,4,6] 
+        },
+        {
+            "link-id": 9,
+            "type": "analog",
+            "pins": [1,4,6] 
+        },
+        {
+            "link-id": 10,
+            "type": "analog",
+            "pins": [1,4,6] 
+        },
+        {
+            "link-id": 9,
+            "type": "analog",
+            "pins": [1,4,6] 
+        },
+        {
+            "link-id": 10,
+            "type": "analog",
+            "pins": [1,4,6] 
+        },
+        {
+            "link-id": 9,
+            "type": "analog",
+            "pins": [1,4,6] 
+        },
+        {
+            "link-id": 10,
+            "type": "analog",
+            "pins": [1,4,6] 
+        },
+        {
+            "link-id": 10,
+            "type": "analog",
+            "pins": [1,4,6] 
+        }
+    ]
+}'''
+
+    await websocket.send(msg_out)
+
+    msg_in = await websocket.recv()
+    print(f"[WSS] msg_in = {msg_in}")
 
     # send exit message
     msg_out = f"bye"
@@ -143,6 +197,7 @@ def send_update(knownDevices):
             print(response.text)
             createBacklogFile(temp_dict)
 
+
 def createBacklogFile(data):
     '''
         Write a JSON file containing the information found in the dict `data`
@@ -150,6 +205,7 @@ def createBacklogFile(data):
     curTime = datetime.now().strftime("%Y%m%d-%H%M%S")
     with open(sys.path[0] + '/data/'+curTime+'.json', 'w+') as outFile:
         json.dump(data, outFile)
+
 
 def sendBacklog():
     '''

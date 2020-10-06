@@ -14,6 +14,7 @@ class Sensor:
             `maxVal` is the maximum raw value as transmitted by the node.
         '''
         self.name = name                # e.g. 'temperature'
+        # self.linkId = linkId            # ID for board-sensor combi in pwa database
         # defines the sensor class used at the arduino e.g. 'analog'
         self.type = type
         self.siUnit = siUnit            # e.g. 'Degrees C'

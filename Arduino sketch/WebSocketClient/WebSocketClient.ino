@@ -26,6 +26,8 @@ WebSocketsClient * webSocket;
 
 #define USE_SERIAL Serial
 
+Sensor * sensorList = (Sensor *)malloc(8);
+
 
 const char *SERVER_ADDR = "laptop-bram.local";
 const uint16_t PORT = 8765;
@@ -33,6 +35,54 @@ const uint16_t PORT = 8765;
 unsigned int reconnect_interval = 0;
 unsigned int disconnect_timestamp = 0;
 const char * exit_msg = "bye";
+
+
+char tempdata[] = "{"
+    "\"config-version\": \"12345678\","
+    "\"config\": ["
+        "{"
+            "\"link-id\": 8,"
+            "\"type\": \"analog\","
+            "\"pins\": [1,4,6]" 
+        "},"
+        "{"
+            "\"link-id\": 9,"
+            "\"type\": \"analog\","
+            "\"pins\": [1,4,6]" 
+        "},"
+        "{"
+            "\"link-id\": 10,"
+            "\"type\": \"analog\","
+            "\"pins\": [1,4,6]" 
+        "},"
+        "{"
+            "\"link-id\": 9,"
+            "\"type\": \"analog\","
+            "\"pins\": [1,4,6]" 
+        "},"
+        "{"
+            "\"link-id\": 10,"
+            "\"type\": \"analog\","
+            "\"pins\": [1,4,6] "
+        "},"
+        "{"
+            "\"link-id\": 9,"
+            "\"type\": \"analog\","
+            "\"pins\": [1,4,6]" 
+        "},"
+        "{"
+            "\"link-id\": 10,"
+            "\"type\": \"analog\","
+            "\"pins\": [1,4,6]" 
+        "},"
+        "{"
+            "\"link-id\": 10,"
+            "\"type\": \"analog\","
+            "\"pins\": [1,4,6]" 
+        "}"
+    "]"
+"}";
+
 
 
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
@@ -55,11 +105,18 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     case WStype_TEXT:
       data = (char*)payload;
       USE_SERIAL.printf("[WSc] get text: %s\n", payload);
-
+      
       if (data == exit_msg) websocket_disconnect(); // disconnect after transmission
       else if (data.substring(0, 3) == "tbr") { // tbr stand for 'time before reconnect'
         reconnect_interval = data.substring(4).toInt();
         USE_SERIAL.printf("[WSc] new reconnect interval set: %d ms\n", reconnect_interval);
+      }
+      else if(data.substring(0,6) == "config"){
+        bool success= false;
+        success = parseConfig((char*)&payload[7]);
+        if(success) USE_SERIAL.println("[ESP] RECONFIGURED");
+        else USE_SERIAL.println("[ESP] Could not reconfigure");
+        webSocket->sendTXT("[ESP] RECONFIGURED");
       }
       break;
 
