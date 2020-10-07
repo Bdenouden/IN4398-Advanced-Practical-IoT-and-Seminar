@@ -2,7 +2,6 @@
 #include "src/sensors/sensors.h"
 
 
-char config_version[9]; // this represents the first 8 characters of an MD5 hash of the config file
 StaticJsonDocument<1040> cfg;
 
 bool parseConfig(char* json) {
@@ -16,34 +15,44 @@ bool parseConfig(char* json) {
     return false;
   }
 
-  uint8_t NOSensors = cfg["config"].size(); //cfg["config"] is a JsonArray object
-  Serial.printf("[CONFIG] size of config: %d\n", NOSensors);
+  attached_sensors = cfg["config"].size(); //cfg["config"] is a JsonArray object
+  uint8_t invalid_sensors = 0;
+  Serial.printf("[CONFIG] size of config: %d\n", attached_sensors);
 
   // delete old config
-  for (int i = 0; i++; i < sizeof(sensorList)) {
+  for (int i = 0; i++; i < max_sensors) {
     delete sensorList[i];
   }
   // allocate new sensors
-  for (int i = 0; i < NOSensors; i++) {
+  for (int i = 0; i < attached_sensors; i++) {
     JsonObject sensor = cfg["config"][i];
-    Serial.printf("[%d] -> Link-id: ", i);
-    Serial.print(sensor["link-id"].as<unsigned int>());
-    Serial.print(", type: ");
-    Serial.println(sensor["type"].as<char*>());
-    
+    unsigned int linkId = sensor["link-id"].as<unsigned int>();
     const char* type = sensor["type"].as<char*>();
-    
-    sensorList[i] = new AnalogSensor(
-      sensor["link-id"].as<unsigned int>(),
-      type
-    );
-    // TODO implement pins
+
+    Serial.printf("[%d] -> Link-id: %d, type: %s\n", i, linkId, type);
+
+    if (strcmp("analog", type) == 0) {
+      sensorList[i] = new AnalogSensor(
+        sensor["link-id"].as<unsigned int>(),
+        type,
+        sensor["pins"][0] // first number in pin list
+      );
+    }
+    else if (strcmp("I2C", type) == 0) {
+      Serial.println("[CONFIG] I2C sensor type found");
+      // TODO implement pins
+      invalid_sensors++; // remove after I2C is implemented
+    }
+    else {
+      Serial.printf("[CONFIG] Invalid sensor type: %s\n", type);
+      invalid_sensors++;
+    }
   }
-
-
 
 
   strcpy(config_version, cfg["config-version"]);
 
+  // avoid null pointer error by adjusting for invalid sensors
+  attached_sensors = attached_sensors - invalid_sensors;
   return true;
 }

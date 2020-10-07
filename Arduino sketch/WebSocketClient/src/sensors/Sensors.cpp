@@ -2,20 +2,33 @@
 #include <stdint.h>
 #include <arduino.h>
 
-Sensor::Sensor(uint64_t linkId, const char * type)
+Sensor::Sensor(unsigned int linkId, const char * type)
 {
     this->_linkId = linkId;
     this->_type = type;
 }
 
+unsigned int Sensor::getLinkId(){
+    return this->_linkId;
+    // return 42;
+}
+
+void Sensor::echo(){
+    Serial.println("echo");
+}
+
 AnalogSensor::AnalogSensor(
-    uint64_t linkId, 
+    unsigned int linkId, 
     const char * type
-    // , uint8_t pin
+    , uint8_t pin
     ) 
     : Sensor(linkId, type)
 {
-    // this->_pin = pin;
+    this->_pin = pin;
+}
+
+void AnalogSensor::echo(){
+    Serial.println("analog - echo");
 }
 
 uint16_t AnalogSensor::getValue()

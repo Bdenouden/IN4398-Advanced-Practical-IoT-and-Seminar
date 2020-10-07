@@ -26,8 +26,10 @@ WebSocketsClient * webSocket;
 
 #define USE_SERIAL Serial
 
-//Sensor * sensorList = (Sensor *)malloc(8);
-Sensor *sensorList[8];
+char config_version[9]; // this represents the first 8 characters of an MD5 hash of the config file
+const uint8_t max_sensors = 8;
+uint8_t attached_sensors = 0;
+Sensor *sensorList[max_sensors];
 
 
 const char *SERVER_ADDR = "laptop-bram.local";
@@ -36,55 +38,6 @@ const uint16_t PORT = 8765;
 unsigned int reconnect_interval = 0;
 unsigned int disconnect_timestamp = 0;
 const char * exit_msg = "bye";
-
-
-//char tempdata[] = "{"
-//    "\"config-version\": \"12345678\","
-//    "\"config\": ["
-//        "{"
-//            "\"link-id\": 8,"
-//            "\"type\": \"analog\","
-//            "\"pins\": [1,4,6]" 
-//        "},"
-//        "{"
-//            "\"link-id\": 9,"
-//            "\"type\": \"analog\","
-//            "\"pins\": [1,4,6]" 
-//        "},"
-//        "{"
-//            "\"link-id\": 10,"
-//            "\"type\": \"analog\","
-//            "\"pins\": [1,4,6]" 
-//        "},"
-//        "{"
-//            "\"link-id\": 9,"
-//            "\"type\": \"analog\","
-//            "\"pins\": [1,4,6]" 
-//        "},"
-//        "{"
-//            "\"link-id\": 10,"
-//            "\"type\": \"analog\","
-//            "\"pins\": [1,4,6] "
-//        "},"
-//        "{"
-//            "\"link-id\": 9,"
-//            "\"type\": \"analog\","
-//            "\"pins\": [1,4,6]" 
-//        "},"
-//        "{"
-//            "\"link-id\": 10,"
-//            "\"type\": \"analog\","
-//            "\"pins\": [1,4,6]" 
-//        "},"
-//        "{"
-//            "\"link-id\": 10,"
-//            "\"type\": \"analog\","
-//            "\"pins\": [1,4,6]" 
-//        "}"
-//    "]"
-//"}";
-
-
 
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
   String data;
@@ -97,9 +50,12 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 
     case WStype_CONNECTED:
       USE_SERIAL.printf("[WSc] Connected to url: %s\n", payload);
+
+      //TODO data collection
       
       // send message to server when Connected
-      ESP_data = jsonify(1, 2, 3, 4, 5);
+//      ESP_data = jsonify(1, 2, 3, 4, 5);
+      ESP_data = jsonData();
       webSocket->sendTXT(ESP_data);
       break;
 
