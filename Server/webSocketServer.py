@@ -8,7 +8,8 @@ import sys
 import fnmatch
 from datetime import datetime
 from datetime import timedelta
-from objects import Node, PH_sensor, Soil_moisture_sensor, Battery, API
+from objects import Node, API  # , PH_sensor, Soil_moisture_sensor, Battery, API
+import hashlib
 
 
 current_clients = 0
@@ -91,57 +92,26 @@ async def eventHandler(websocket, path):
     # see https://websockets.readthedocs.io/en/stable/faq.html
     # await asyncio.sleep(5)
 
-    # check if new config is available
-    msg_out ='''config:{
-    "config-version": "12345678",
-    "config": [
-        {
-            "link-id": 8,
-            "type": "analog",
-            "pins": [1,4,6] 
-        },
-        {
-            "link-id": 9,
-            "type": "analog",
-            "pins": [1,4,6] 
-        },
-        {
-            "link-id": 10,
-            "type": "analog",
-            "pins": [1,4,6] 
-        },
-        {
-            "link-id": 9,
-            "type": "analog",
-            "pins": [1,4,6] 
-        },
-        {
-            "link-id": 10,
-            "type": "analog",
-            "pins": [1,4,6] 
-        },
-        {
-            "link-id": 9,
-            "type": "analog",
-            "pins": [1,4,6] 
-        },
-        {
-            "link-id": 10,
-            "type": "analog",
-            "pins": [1,4,6] 
-        },
-        {
-            "link-id": 10,
-            "type": "analog",
-            "pins": [1,4,6] 
+    config = node.getConfig()
+    configString = json.dumps(config)
+    hash = hashlib.md5(configString.encode()).hexdigest()[0:8]
+    print(f"Hash = {hash}")
+
+    print(f"Hash: {hash}, cfg_version: {node.config_version}\n Hash == cfg_version: {hash == node.config_version}")
+
+    if hash != node.config_version:
+
+        dict_out = {
+            "config-version": hash,
+            "config": config
         }
-    ]
-}'''
 
-    await websocket.send(msg_out)
+        msg_out = f"config:{dict_out}"
+        await websocket.send(msg_out)
 
-    msg_in = await websocket.recv()
-    print(f"[WSS] msg_in = {msg_in}")
+        # TODO check if update succesfull
+        msg_in = await websocket.recv()
+        print(f"[WSS] msg_in = {msg_in}")
 
     # send exit message
     msg_out = f"bye"

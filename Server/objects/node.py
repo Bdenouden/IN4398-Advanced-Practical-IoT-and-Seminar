@@ -4,15 +4,15 @@ from .sensor import Sensor
 import threading
 
 
-
 class Node:
     knownDevices = {}
     __isActive = False
     isNew = False
 
-    def __init__(self, chipId, version, sensorList=None):
+    def __init__(self, chipId, version, config_version, sensorList=None):
         self.chipId = chipId
         self.version = version
+        self.config_version = config_version
         self.created_at = datetime.now().strftime("%Y.%m.%d - %H:%M:%S")
         self.updated_at = datetime.now().strftime("%Y.%m.%d - %H:%M:%S")
         if sensorList is None:
@@ -21,10 +21,16 @@ class Node:
             self.sensorList = sensorList
         Node.knownDevices[self.chipId] = self
 
-    def sensorDataFromJson(self, json):
-        for sensor in self.sensorList:
-            sensor.setValue(json.get(sensor.name))
+        print(f"[NODE] ChipId: {self.chipId}, Sensorlist: ",end='')
+        print(sensorList)
 
+    def sensorDataFromJson(self, json):
+        # print(f"[NODE] sensordataformjson json = {json}")
+        self.config_version = json.get('config_version')
+        for sensor in self.sensorList:
+            sensor.setValue(json.get(sensor.link_id)) #FIXME
+            print(sensor)
+            print(f"[NODE] [sensorDataFromJson] Sensor link id: {sensor.link_id}, Value: {json.get(sensor.link_id)}")
 
     def add_sensor(self, sensor):
         """ Add individual sensors to this node's sensor list"""
@@ -48,6 +54,7 @@ class Node:
         print(f"Attributes from node {self.chipId}")
         print(f"--> chipId = {self.chipId}")
         print(f"--> version = {self.version}")
+        print(f"--> config_version = {self.config_version}")
         print(f"--> created_at = {self.created_at}")
         print(f"--> updated_at = {self.updated_at}")
         if(not self.sensorList):
@@ -59,12 +66,17 @@ class Node:
 
     def getDict(self):
         temp_dict = {}
-        temp_dict['measure_time'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        temp_dict['measure_time'] = datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S")
         for sensor in self.sensorList:
-            # TODO multiple sensors with the same name overwrite eachother
-            temp_dict[sensor.name] = sensor.getDict()
+            temp_dict[sensor.link_id] = sensor.getDict()
         return temp_dict
 
+    def getConfig(self):
+        temp_list = []
+        for sensor in self.sensorList:
+            temp_list.append(sensor.getConfig())
+        return temp_list
 
     @ classmethod  # create node object from json data
     def from_JSON(cls, json):
@@ -76,7 +88,7 @@ class Node:
         else:
             print(
                 f'[NODE] Node {json["chipID"]} is a\033[93m NEW\033[0m device')
-            node = cls(json['chipID'], json['version'])
+            node = cls(json['chipID'], json['version'], json['config_version'])
             node.isNew = True
 
         return node
@@ -91,7 +103,7 @@ class Node:
             print(f"[NEW DEVICE] {response.status_code}")
             if response.status_code == 200:
                 self.isNew = False
-        else: 
+        else:
             print(f"[NEW DEVICE] Network error: could not upload new device")
 
     @ staticmethod  # initialise known devices from json
@@ -101,16 +113,19 @@ class Node:
             if (node is None):
                 # get sensor list
                 # print(json[chipId]['sensors'])
+                print(f"[Node] chipid = {chipId}, ", end='')
                 sensorList = Sensor.sensorsFromList(json[chipId]['sensors'])
 
                 # generate new node object
-                node = Node(int(chipId), 'unknown', sensorList)  # FIXME version
+                node = Node(int(chipId), 'unknown','',
+                            sensorList)  # FIXME version
                 # print(f"Device with id {item['id']} is now known")
 
-    # "chipID": 9159476,
-    # "version": "V1 Sep 16 2020 16:34:41",
-    # "battery": 5,
-    # "soil_moisture": 1,
-    # "air_humidity": 2,
-    # "temperature": 3,
-    # "pH": 4
+# {
+#     "chipID": 9159476,
+#     "version": "V1 Oct  7 2020 16:47:51",
+#     "config_version": "12345678",
+#     "8": 12,
+#     "9": 0,
+#     "10": 0
+# }

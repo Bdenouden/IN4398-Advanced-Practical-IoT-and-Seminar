@@ -26,14 +26,13 @@ bool parseConfig(char* json) {
   // allocate new sensors
   for (int i = 0; i < attached_sensors; i++) {
     JsonObject sensor = cfg["config"][i];
-    unsigned int linkId = sensor["link-id"].as<unsigned int>();
+    unsigned int linkId = sensor["link_id"].as<unsigned int>();
     const char* type = sensor["type"].as<char*>();
-
-    Serial.printf("[%d] -> Link-id: %d, type: %s\n", i, linkId, type);
+    Serial.printf("\t[%d] -> Link-id: %d, type: %s\n", i, linkId, type);
 
     if (strcmp("analog", type) == 0) {
       sensorList[i] = new AnalogSensor(
-        sensor["link-id"].as<unsigned int>(),
+        linkId,
         type,
         sensor["pins"][0] // first number in pin list
       );

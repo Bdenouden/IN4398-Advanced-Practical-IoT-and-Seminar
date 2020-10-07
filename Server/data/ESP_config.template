@@ -5,12 +5,12 @@
         {
             "link-id": 8,
             "type": "analog",
-            "pins": [1,4,6] 
+            "pins": [0] 
         },
         {
             "link-id": 9,
             "type": "analog",
-            "pins": [1,4,6] 
+            "pins": [17] 
         },
         {
             "link-id": 10,
