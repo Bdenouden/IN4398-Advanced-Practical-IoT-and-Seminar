@@ -20,13 +20,14 @@
 
 #include <WebSocketsClient.h>
 #include <Hash.h>
-#include "sensors/sensors.h"
+#include "src/sensors/sensors.h"
 
 WebSocketsClient * webSocket;
 
 #define USE_SERIAL Serial
 
-Sensor * sensorList = (Sensor *)malloc(8);
+//Sensor * sensorList = (Sensor *)malloc(8);
+Sensor *sensorList[8];
 
 
 const char *SERVER_ADDR = "laptop-bram.local";
@@ -37,51 +38,51 @@ unsigned int disconnect_timestamp = 0;
 const char * exit_msg = "bye";
 
 
-char tempdata[] = "{"
-    "\"config-version\": \"12345678\","
-    "\"config\": ["
-        "{"
-            "\"link-id\": 8,"
-            "\"type\": \"analog\","
-            "\"pins\": [1,4,6]" 
-        "},"
-        "{"
-            "\"link-id\": 9,"
-            "\"type\": \"analog\","
-            "\"pins\": [1,4,6]" 
-        "},"
-        "{"
-            "\"link-id\": 10,"
-            "\"type\": \"analog\","
-            "\"pins\": [1,4,6]" 
-        "},"
-        "{"
-            "\"link-id\": 9,"
-            "\"type\": \"analog\","
-            "\"pins\": [1,4,6]" 
-        "},"
-        "{"
-            "\"link-id\": 10,"
-            "\"type\": \"analog\","
-            "\"pins\": [1,4,6] "
-        "},"
-        "{"
-            "\"link-id\": 9,"
-            "\"type\": \"analog\","
-            "\"pins\": [1,4,6]" 
-        "},"
-        "{"
-            "\"link-id\": 10,"
-            "\"type\": \"analog\","
-            "\"pins\": [1,4,6]" 
-        "},"
-        "{"
-            "\"link-id\": 10,"
-            "\"type\": \"analog\","
-            "\"pins\": [1,4,6]" 
-        "}"
-    "]"
-"}";
+//char tempdata[] = "{"
+//    "\"config-version\": \"12345678\","
+//    "\"config\": ["
+//        "{"
+//            "\"link-id\": 8,"
+//            "\"type\": \"analog\","
+//            "\"pins\": [1,4,6]" 
+//        "},"
+//        "{"
+//            "\"link-id\": 9,"
+//            "\"type\": \"analog\","
+//            "\"pins\": [1,4,6]" 
+//        "},"
+//        "{"
+//            "\"link-id\": 10,"
+//            "\"type\": \"analog\","
+//            "\"pins\": [1,4,6]" 
+//        "},"
+//        "{"
+//            "\"link-id\": 9,"
+//            "\"type\": \"analog\","
+//            "\"pins\": [1,4,6]" 
+//        "},"
+//        "{"
+//            "\"link-id\": 10,"
+//            "\"type\": \"analog\","
+//            "\"pins\": [1,4,6] "
+//        "},"
+//        "{"
+//            "\"link-id\": 9,"
+//            "\"type\": \"analog\","
+//            "\"pins\": [1,4,6]" 
+//        "},"
+//        "{"
+//            "\"link-id\": 10,"
+//            "\"type\": \"analog\","
+//            "\"pins\": [1,4,6]" 
+//        "},"
+//        "{"
+//            "\"link-id\": 10,"
+//            "\"type\": \"analog\","
+//            "\"pins\": [1,4,6]" 
+//        "}"
+//    "]"
+//"}";
 
 
 
