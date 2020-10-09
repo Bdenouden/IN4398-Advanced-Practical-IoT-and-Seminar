@@ -9,6 +9,7 @@ class Api {
                 "link_id" => $sensor["link_id"],
                 "name" => $sensor["name"],
                 "type" => $sensor["type"],
+                "pins" => $sensor['pins'],
                 "rawMinVal" => $sensor["rawMinVal"],
                 "rawMaxVal" => $sensor["rawMaxVal"],
                 "minVal" => $sensor["minVal"],

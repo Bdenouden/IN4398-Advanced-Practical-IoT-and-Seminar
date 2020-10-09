@@ -91,8 +91,8 @@
                         <input id="number_<?= $node_id ?>_<?= $count ?>" type="number" placeholder="20" size="5"/>
                         <span class="IIT">THEN</span>
                         <select id="action_<?= $node_id ?>_<?= $count ?>">
-                            <option value="0">send a push notification</option>
-                            <!--                            <option>send an email to</option>-->
+<!--                            <option value="0">send a push notification</option>-->
+                            <option value="1">send an email</option>
                         </select>
                         <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="return removeTrigger('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
                     </p>
@@ -124,8 +124,8 @@
                             <input id="number_<?= $node_id ?>_<?= $count ?>" type="number" placeholder="20" size="5" value="<?= $trigger["val"] ?>"  autocomplete="off" />
                             <span class="IIT">THEN</span>
                             <select id="action_<?= $node_id ?>_<?= $count ?>" autocomplete="off">
-                                <option value="0" <?php echo(0 == $trigger["notification_type"] ? 'selected' : '') ?>>send a push notification</option>
-                                <!--                            <option>send an email to</option>-->
+<!--                                <option value="0" <?php //echo(0 == $trigger["notification_type"] ? 'selected' : '') ?>>send a push notification</option>-->
+                                <option value="1" <?php echo(1 == $trigger["notification_type"] ? 'selected' : '') ?>>send an email</option>
                             </select>
                             <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="return removeTrigger('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
                         </p>
