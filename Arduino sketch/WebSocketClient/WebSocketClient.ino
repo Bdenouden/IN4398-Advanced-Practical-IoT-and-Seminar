@@ -20,11 +20,16 @@
 
 #include <WebSocketsClient.h>
 #include <Hash.h>
-#include "sensors/sensors.h"
+#include "src/sensors/sensors.h"
 
 WebSocketsClient * webSocket;
 
 #define USE_SERIAL Serial
+
+char config_version[9]; // this represents the first 8 characters of an MD5 hash of the config file
+const uint8_t max_sensors = 8;
+uint8_t attached_sensors = 0;
+Sensor *sensorList[max_sensors];
 
 
 const char *SERVER_ADDR = "laptop-bram.local";
@@ -33,7 +38,6 @@ const uint16_t PORT = 8765;
 unsigned int reconnect_interval = 0;
 unsigned int disconnect_timestamp = 0;
 const char * exit_msg = "bye";
-
 
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
   String data;
@@ -46,20 +50,30 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 
     case WStype_CONNECTED:
       USE_SERIAL.printf("[WSc] Connected to url: %s\n", payload);
+
+      //TODO data collection
       
       // send message to server when Connected
-      ESP_data = jsonify(1, 2, 3, 4, 5);
+//      ESP_data = jsonify(1, 2, 3, 4, 5);
+      ESP_data = jsonData();
       webSocket->sendTXT(ESP_data);
       break;
 
     case WStype_TEXT:
       data = (char*)payload;
       USE_SERIAL.printf("[WSc] get text: %s\n", payload);
-
+      
       if (data == exit_msg) websocket_disconnect(); // disconnect after transmission
       else if (data.substring(0, 3) == "tbr") { // tbr stand for 'time before reconnect'
         reconnect_interval = data.substring(4).toInt();
         USE_SERIAL.printf("[WSc] new reconnect interval set: %d ms\n", reconnect_interval);
+      }
+      else if(data.substring(0,6) == "config"){
+        bool success= false;
+        success = parseConfig((char*)&payload[7]);
+        if(success) USE_SERIAL.println("[ESP] RECONFIGURED");
+        else USE_SERIAL.println("[ESP] Could not reconfigure");
+        webSocket->sendTXT("[ESP] RECONFIGURED");
       }
       break;
 

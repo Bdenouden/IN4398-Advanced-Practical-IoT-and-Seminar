@@ -6,21 +6,23 @@ class Sensor:
     # dict of pins connected <name>:<pin> (e.g. 'SCL':'D5', 'SDA':'D6')
     _pin = {}
 
-    def __init__(self, name, type, siUnit, rawMinVal, rawMaxVal, minVal, maxVal):
+    def __init__(self, link_id, type, rawMinVal, rawMaxVal, minVal, maxVal):
         ''' 
             `type` indicates what the sensor measures.\n
-            `siUnit` is the SI unit of the measured value, used as suffix when printing.\n
             `minVal` is the minimum raw value as transmitted by the node.\n
             `maxVal` is the maximum raw value as transmitted by the node.
         '''
-        self.name = name                # e.g. 'temperature'
+        self.link_id = link_id
+        # self.name = name                # e.g. 'temperature'
+        # self.linkId = linkId            # ID for board-sensor combi in pwa database
         # defines the sensor class used at the arduino e.g. 'analog'
         self.type = type
-        self.siUnit = siUnit            # e.g. 'Degrees C'
-        self.rawMinVal = rawMinVal      # e.g. 0
-        self.rawmaxVal = rawMaxVal      # e.g. 255
-        self.minVal = minVal            # e.g. -55
-        self.maxVal = maxVal            # e.g. 125
+        self.rawMinVal = int(rawMinVal)      # e.g. 0
+        self.rawmaxVal = int(rawMaxVal)      # e.g. 255
+        self.minVal = int(minVal)            # e.g. -55
+        self.maxVal = int(maxVal)            # e.g. 125
+
+        print(f"[SENSOR] Link ID: {self.link_id}")
 
     def isValid(self, raw_value):
         ''' Used to determine if the transmitted value is within the specified range '''
@@ -58,47 +60,75 @@ class Sensor:
 
     def getDict(self):
         '''
-            Used to generate the JSON send to the PWA
+            Used to generate the JSON send to the PWA or Node config
         '''
         return {
-            "name": self.name,
+            "link_id": self.link_id,
             "value": self.value,
-            "unit": self.siUnit
         }
 
+    def getConfig(self):
+        return {
+            "link_id": self.link_id,
+            "type": self.type,
+            "pins": [0]             # TODO 
+        }
 
-class PH_sensor(Sensor):
-    def __init__(self):
-        super(PH_sensor, self).__init__('pH', 'I2C', '', 0, 255, 0, 14)
+    @classmethod
+    def sensorsFromList(cls, sensorList):
+        output = []
+
+        # TODO rewrite this to work for different sensor types
+        for sensor in sensorList:
+            # sensor is a dict, sensorObj is the sensor object
+            output.append(cls(
+                sensor.get('link_id',''),
+                sensor.get('type', ''),
+                sensor.get('rawMinVal', ''),
+                sensor.get('rawMaxVal', ''),
+                sensor.get('minVal', ''),
+                sensor.get('maxVal', '')
+            ))
+
+            # print(sensor)
+
+        print(f"[SENSOR] {len(output)} sensors created from list")
+
+        return output
 
 
-class Soil_moisture_sensor(Sensor):
-    def __init__(self):
-        super(Soil_moisture_sensor, self).__init__(
-            'soil_moisture', 'analog', '%', 0, 255, 0, 100)
+# class PH_sensor(Sensor):
+#     def __init__(self):
+#         super(PH_sensor, self).__init__('pH', 'I2C', '', 0, 255, 0, 14)
 
 
-class Battery(Sensor):
-    def __init__(self):
-        super(Battery, self).__init__('battery', 'analog', '%', 0, 255, 0, 100)
+# class Soil_moisture_sensor(Sensor):
+#     def __init__(self):
+#         super(Soil_moisture_sensor, self).__init__(
+#             'soil_moisture', 'analog', '%', 0, 255, 0, 100)
 
 
-class Humidity_sensor(Sensor):
-    def __init__(self):
-        super(Humidity_sensor, self).__init__(
-            'humidity', 'I2C', '%', 0, 255, 0, 100)
+# class Battery(Sensor):
+#     def __init__(self):
+#         super(Battery, self).__init__('battery', 'analog', '%', 0, 255, 0, 100)
 
 
-class Temperature_sensor(Sensor):
-    def __init__(self):
-        super(Temperature_sensor, self).__init__(
-            'temperature', 'I2C', 'C', 0, 255, -55, 125)
+# class Humidity_sensor(Sensor):
+#     def __init__(self):
+#         super(Humidity_sensor, self).__init__(
+#             'humidity', 'I2C', '%', 0, 255, 0, 100)
 
 
-class Light_sensor(Sensor):
-    def __init__(self):
-        super(Light_sensor, self).__init__(
-            'light', 'analog', '', 0, 255, 0, 255)
+# class Temperature_sensor(Sensor):
+#     def __init__(self):
+#         super(Temperature_sensor, self).__init__(
+#             'temperature', 'I2C', 'C', 0, 255, -55, 125)
+
+
+# class Light_sensor(Sensor):
+#     def __init__(self):
+#         super(Light_sensor, self).__init__(
+#             'light', 'analog', '', 0, 255, 0, 255)
 
 
 # TODO alternatief idee: subclasses kunnen aangemaakt worden als 'Sensor' object op basis van de info uit de DB:

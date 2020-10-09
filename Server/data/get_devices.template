@@ -1,43 +1,43 @@
 {
-    "12345": {
-        "id": null,
-        "added": "2020-09-23 09:56:19",
-        "is_active": "1",
-        "sensors": [
-            {
-                "id": null,
-                "name": null,
-                "type": null,
-                "rawMinVal": null,
-                "rawMaxVal": null,
-                "minVal": null,
-                "maxVal": null
-            }
-        ]
-    },
     "1253624": {
-        "id": null,
-        "added": "2020-09-24 09:42:21",
+        "added": "2020-10-02 13:22:09",
         "is_active": "1",
         "sensors": [
             {
-                "id": null,
-                "name": null,
-                "type": null,
-                "rawMinVal": null,
-                "rawMaxVal": null,
-                "minVal": null,
-                "maxVal": null
+                "link_id": "8",
+                "name": "testAnalog",
+                "type": "analog",
+                "rawMinVal": "0",
+                "rawMaxVal": "1023",
+                "minVal": "0",
+                "maxVal": "100"
+            },
+            {
+                "link_id": "10",
+                "name": "testAnalog",
+                "type": "analog",
+                "rawMinVal": "0",
+                "rawMaxVal": "1023",
+                "minVal": "0",
+                "maxVal": "100"
+            },
+            {
+                "link_id": "11",
+                "name": "testAnalog",
+                "type": "analog",
+                "rawMinVal": "0",
+                "rawMaxVal": "1023",
+                "minVal": "0",
+                "maxVal": "100"
             }
         ]
     },
     "9159476": {
-        "id": null,
-        "added": "2020-09-25 11:09:56",
+        "added": "2020-10-02 13:03:12",
         "is_active": "1",
         "sensors": [
             {
-                "id": null,
+                "link_id": null,
                 "name": null,
                 "type": null,
                 "rawMinVal": null,

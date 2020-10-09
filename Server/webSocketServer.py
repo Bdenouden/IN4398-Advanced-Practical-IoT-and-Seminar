@@ -8,7 +8,8 @@ import sys
 import fnmatch
 from datetime import datetime
 from datetime import timedelta
-from objects import Node, PH_sensor, Soil_moisture_sensor, Battery, API
+from objects import Node, API  # , PH_sensor, Soil_moisture_sensor, Battery, API
+import hashlib
 
 
 current_clients = 0
@@ -18,7 +19,7 @@ threads = []
 timeBeforeReconnect = 30*1000
 
 # seconds between sensor updates to the pwa
-update_delay = 0.5*60
+update_delay = 1*60
 
 
 def get_known_devices():
@@ -31,7 +32,7 @@ def get_known_devices():
     elif response.status_code == 200:
         # print(f"[API] Response code {response.status_code}")
         known_devices = json.loads(response.text)
-        # print(json.dumps(known_devices, indent=4, sort_keys=False))
+
         Node.knownDevices_from_JSON(known_devices)
     else:
         print(
@@ -48,7 +49,8 @@ def HTTP_new_device(node):
 
 # TODO unexpected close of the connection throws an exception
 # TODO sending key chipId instead of chipID throws a keyerror
-# TODO place unknown key-value pairs into a 'extra' column
+
+
 async def eventHandler(websocket, path):
     global current_clients, timeBeforeReconnect, threads
 
@@ -90,6 +92,27 @@ async def eventHandler(websocket, path):
     # see https://websockets.readthedocs.io/en/stable/faq.html
     # await asyncio.sleep(5)
 
+    config = node.getConfig()
+    configString = json.dumps(config)
+    hash = hashlib.md5(configString.encode()).hexdigest()[0:8]
+    print(f"Hash = {hash}")
+
+    print(f"Hash: {hash}, cfg_version: {node.config_version}\n Hash == cfg_version: {hash == node.config_version}")
+
+    if hash != node.config_version:
+
+        dict_out = {
+            "config-version": hash,
+            "config": config
+        }
+
+        msg_out = f"config:{dict_out}"
+        await websocket.send(msg_out)
+
+        # TODO check if update succesfull
+        msg_in = await websocket.recv()
+        print(f"[WSS] msg_in = {msg_in}")
+
     # send exit message
     msg_out = f"bye"
     await websocket.send(msg_out)
@@ -130,9 +153,8 @@ def send_update(knownDevices):
 
         if response is None:
             print(f"[UPDATE] An error occured!")
-            curTime = datetime.now().strftime("%Y%m%d-%H%M%S")
-            with open(sys.path[0] + '/data/'+curTime+'.json', 'w+') as outFile:
-                json.dump(temp_dict, outFile)
+            createBacklogFile(temp_dict)
+
         elif response.status_code == 200:
             print(f"[UPDATE] Sensor values successfully uploaded!")
             print(f"[UPDATE] PWA response: ")
@@ -142,6 +164,17 @@ def send_update(knownDevices):
         else:
             print(
                 f"[UPDATE] An error occured! Response code: {response.status_code}")
+            print(response.text)
+            createBacklogFile(temp_dict)
+
+
+def createBacklogFile(data):
+    '''
+        Write a JSON file containing the information found in the dict `data`
+    '''
+    curTime = datetime.now().strftime("%Y%m%d-%H%M%S")
+    with open(sys.path[0] + '/data/'+curTime+'.json', 'w+') as outFile:
+        json.dump(data, outFile)
 
 
 def sendBacklog():
@@ -172,15 +205,6 @@ def sendBacklog():
 
 
 get_known_devices()
-
-# TODO remove from here after test
-for key in Node.knownDevices:
-    node = Node.knownDevices.get(key)
-    node.add_sensor(Soil_moisture_sensor())
-    node.add_sensor(PH_sensor())
-    node.add_sensor(Battery())
-# Remove up to here
-
 
 start_server = websockets.serve(eventHandler, "", 8765)
 print('[WSS] Server started!')
