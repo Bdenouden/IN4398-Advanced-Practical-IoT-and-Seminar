@@ -5,13 +5,22 @@
 
 */
 
+
+
 #include <Arduino.h>
 
+#ifdef ESP8266
 #include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+#endif
 
+#ifdef ESP32
+#include <WiFi.h>
+#include <WebServer.h>
+#endif
 //needed for wifimanager library
 #include <DNSServer.h>
-#include <ESP8266WebServer.h>
+
 #include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
 /* IMPORTANT
    in order to make the wifimanager work with the webserver, HTTP_HEAD must be renamed to something linke HTTP_HEAD_HTML
@@ -19,7 +28,6 @@
 */
 
 #include <WebSocketsClient.h>
-#include <Hash.h>
 #include "src/sensors/sensors.h"
 
 WebSocketsClient * webSocket;
