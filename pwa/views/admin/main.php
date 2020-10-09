@@ -19,6 +19,9 @@
                         <th>Raw Maximum Value</th>
                         <th>Real Minimum Value</th>
                         <th>Real Maximum Value</th>
+                        <th>Ground Pin</th>
+                        <th>Data Pin</th>
+                        <th>Voltage Pin</th>
                         <th></th>
                     </tr>
                     <?php
@@ -35,6 +38,9 @@
                                 <td><?= $sensor["rawMaxVal"] ?></td>
                                 <td><?= $sensor["minVal"] ?></td>
                                 <td><?= $sensor["maxVal"] ?></td>
+                                <td><?= $sensor["pins"][0] ?></td>
+                                <td><?= $sensor["pins"][1] ?></td>
+                                <td><?= $sensor["pins"][2] ?></td>
                                 <td>
                                     <button class="IIT btn btn-outline-danger" style="width:40px; height:40px" onclick="return removeSensorRow(this)"><i class="far fa-trash-alt"></i></button>
                                 </td>
@@ -267,9 +273,16 @@
         const rawMaxCell = row.insertCell();
         const minCell = row.insertCell();
         const maxCell = row.insertCell();
+        const groundCell = row.insertCell();
+        const dataCell = row.insertCell();
+        const voltageCell = row.insertCell();
         const removeCell = row.insertCell();
 
         nameCell.innerHTML = sensorNameDropdown;
+
+        groundCell.innerHTML = "<input type='number' name='pin' class='form-control' value=0>"
+        dataCell.innerHTML = "<input type='number' name='pin' class='form-control' value=0>"
+        voltageCell.innerHTML = "<input type='number' name='pin' class='form-control' value=0>"
 
         removeCell.innerHTML = "<button class='IIT btn btn-outline-danger' style='width:40px; height:40px' onclick='return removeSensorRow(this)'><i class='far fa-trash-alt'></i></button>";
 
@@ -319,6 +332,14 @@
                 const sensorIdToAdd = table[i].firstChild.firstChild.value;
                 const nodeIdToAdd = table[i].parentNode.parentNode.id.split("_")[1];
 
+                let pinsToAdd = [];
+
+                for (let j = 0; j < table[i].children.length; j++){
+                    if (table[i].children[j].firstChild.name === "pin"){
+                        pinsToAdd.push(parseInt(table[i].children[j].firstChild.value));
+                    }
+                }
+
                 $.ajax({
                     method: "POST",
                     url: "/admin",
@@ -327,12 +348,11 @@
                         ACTION: 'addSensorToNode',
                         sensorId: parseInt(sensorIdToAdd),
                         nodeId: nodeIdToAdd,
+                        pinsToAdd: pinsToAdd,
                         'csrf-token': '<?php echo $_SESSION['csrf-token']?>'
                     }
                 })
                     .done(function (result) {
-
-                        const data = $.parseJSON(result);
 
                         if (result === "true") {
                             window.location.reload();
