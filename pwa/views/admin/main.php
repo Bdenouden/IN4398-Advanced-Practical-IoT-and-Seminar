@@ -19,9 +19,10 @@
                         <th>Raw Maximum Value</th>
                         <th>Real Minimum Value</th>
                         <th>Real Maximum Value</th>
-                        <th>Ground Pin</th>
-                        <th>Data Pin</th>
-                        <th>Voltage Pin</th>
+                        <th class="text-center">Pin</th>
+                        <th class="text-center">SDA</th>
+                        <th class="text-center">SCL</th>
+                        <th class="text-center">CHIPSELECT</th>
                         <th></th>
                     </tr>
                     <?php
@@ -38,9 +39,10 @@
                                 <td><?= $sensor["rawMaxVal"] ?></td>
                                 <td><?= $sensor["minVal"] ?></td>
                                 <td><?= $sensor["maxVal"] ?></td>
-                                <td><?= $sensor["pins"][0] ?></td>
-                                <td><?= $sensor["pins"][1] ?></td>
-                                <td><?= $sensor["pins"][2] ?></td>
+                                <td class="text-center"><?= ($sensor["pins"][0] !== -1) ? $sensor["pins"][0] : "" ?></td>
+                                <td class="text-center"><?= ($sensor["pins"][0] === -1) ? $sensor["pins"][1] : "" ?></td>
+                                <td class="text-center"><?= ($sensor["pins"][0] === -1) ? $sensor["pins"][2] : "" ?></td>
+                                <td class="text-center"><?= ($sensor["pins"][0] === -1) ? $sensor["pins"][3] : "" ?></td>
                                 <td>
                                     <button class="IIT btn btn-outline-danger" style="width:40px; height:40px" onclick="return removeSensorRow(this)"><i class="far fa-trash-alt"></i></button>
                                 </td>
@@ -62,7 +64,7 @@
 
             <h1 class="text-center">Create Triggers</h1>
             <p class="text-center">
-                Here you can determine when you want to receive a push notification on your device(s)!
+                Here you can determine when you want to receive a notification!
                 <br>&nbsp;
             </p>
 
@@ -100,6 +102,8 @@
 <!--                            <option value="0">send a push notification</option>-->
                             <option value="1">send an email</option>
                         </select>
+                        <span class="IIT">TO</span>
+                        <input type="email" placeholder="your@email.com" />
                         <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="return removeTrigger('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
                     </p>
                     <?php
@@ -133,6 +137,8 @@
 <!--                                <option value="0" <?php //echo(0 == $trigger["notification_type"] ? 'selected' : '') ?>>send a push notification</option>-->
                                 <option value="1" <?php echo(1 == $trigger["notification_type"] ? 'selected' : '') ?>>send an email</option>
                             </select>
+                            <span class="IIT">TO</span>
+                            <input type="email" placeholder="your@email.com" />
                             <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="return removeTrigger('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
                         </p>
 
@@ -149,56 +155,6 @@
             ?>
 
         </div>
-        <!--
-        <div class="col-md-6">
-
-            <h1 class="text-center">Manage Sensor Types</h1>
-            <p class="text-justify">
-                Here you can manage your sensor types and their respective settings.
-            </p>
-
-            <table class="table table-responsive-md" id="table_sensortypes">
-
-                <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Raw Minimum Value</th>
-                    <th>Raw Maximum Value</th>
-                    <th>Real Minimum Value</th>
-                    <th>Real Maximum Value</th>
-                    <th></th>
-                </tr>
-
-                <?php
-        foreach ($sensor_types as $sensor_type) {
-            ?>
-                    <tr>
-                        <td>
-                            <input class="form-control" type="text" id="name_<?= $node_id ?>" name="name_<?= $node_id ?>" value="<?= $sensor_type["name"] ?>">
-                        </td>
-                        <td>
-                            <select class="form-control" id="type_<?= $node_id ?>" name="type_<?= $node_id ?>">
-                                <option value="analog" <?php echo("analog" == $sensor_type["type"] ? 'selected' : '') ?>>Analog</option>
-                                <option value="dht11" <?php echo("dht11" == $sensor_type["type"] ? 'selected' : '') ?>>DHT11</option>
-                            </select>
-                        </td>
-                        <td><input type="number" value="<?= $sensor_type["rawMinVal"] ?>" /></td>
-                        <td><input type="number" value="<?= $sensor_type["rawMaxVal"] ?>" /></td>
-                        <td><input type="number" value="<?= $sensor_type["minVal"] ?>" /></td>
-                        <td><input type="number" value="<?= $sensor_type["maxVal"] ?>" /></td>
-                        <td><button class="btn btn-dark" onclick="removeTypeRow(this)">Remove</button></td>
-                    </tr>
-                <?php
-        }
-        ?>
-
-            </table>
-
-            <button class="btn btn-dark" onclick="addNewTypeRowTo('sensortypes')">Add new type</button>
-            <button class="btn btn-dark" onclick="saveSensorTypeData(<?= $node_id ?>)">Save changes</button>
-
-        </div>
-        -->
     </div>
 </div>
 
@@ -269,29 +225,29 @@
 
         const nameCell = row.insertCell();
         const typeCell = row.insertCell();
+
         const rawMinCell = row.insertCell();
         const rawMaxCell = row.insertCell();
         const minCell = row.insertCell();
         const maxCell = row.insertCell();
-        const groundCell = row.insertCell();
-        const dataCell = row.insertCell();
-        const voltageCell = row.insertCell();
+
+        const pinCell = row.insertCell();
+        const SDACell = row.insertCell();
+        const SCLCell = row.insertCell();
+        const CHIPSELECTCell = row.insertCell();
+
         const removeCell = row.insertCell();
 
         nameCell.innerHTML = sensorNameDropdown;
 
-        groundCell.innerHTML = "<input type='number' name='pin' class='form-control' value=0>"
-        dataCell.innerHTML = "<input type='number' name='pin' class='form-control' value=0>"
-        voltageCell.innerHTML = "<input type='number' name='pin' class='form-control' value=0>"
-
         removeCell.innerHTML = "<button class='IIT btn btn-outline-danger' style='width:40px; height:40px' onclick='return removeSensorRow(this)'><i class='far fa-trash-alt'></i></button>";
 
-        initializeRowForId("row_" + count);
+        initializeRowForId("row_" + count, pinCell, SDACell, SCLCell, CHIPSELECTCell);
 
         count++;
     }
 
-    function initializeRowForId(rowId) {
+    function initializeRowForId(rowId, pinCell = null, SDACell = null, SCLCell = null, CHIPSELECTCell = null) {
 
         let row;
 
@@ -322,6 +278,19 @@
                 row.firstChild.nextSibling.nextSibling.nextSibling.innerHTML = data.rawMaxVal;
                 row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = data.minVal;
                 row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = data.maxVal;
+
+                if (data.type === "analog") {
+                    row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = "<input type='number' name='pin' class='form-control' value=0>"
+                    row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ""
+                    row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ""
+                    row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ""
+                }
+                else {
+                    row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ""
+                    row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = "<input type='number' name='pin' class='form-control' value=0>"
+                    row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = "<input type='number' name='pin' class='form-control' value=0>"
+                    row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = "<input type='number' name='pin' class='form-control' value=0>"
+                }
             });
     }
 
@@ -335,9 +304,13 @@
                 let pinsToAdd = [];
 
                 for (let j = 0; j < table[i].children.length; j++){
-                    if (table[i].children[j].firstChild.name === "pin"){
+                    if (table[i].children[j].firstChild !== null && table[i].children[j].firstChild.name === "pin"){
                         pinsToAdd.push(parseInt(table[i].children[j].firstChild.value));
                     }
+                }
+
+                if (pinsToAdd.length === 3){
+                    pinsToAdd.unshift(-1);
                 }
 
                 $.ajax({
