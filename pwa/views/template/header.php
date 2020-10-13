@@ -42,7 +42,7 @@
                 </li>
                 <?php
                 if (User::userMinimalAccessLevel('admin')) { ?>
-                    <li class="nav-item <?= (strpos($_SERVER['REQUEST_URI'], "/admin") !== false) ? "active" : "" ?>">
+                    <li class="nav-item <?= (strpos($_SERVER['REQUEST_URI'], "/link") !== false) ? "active" : "" ?>">
                         <a class="nav-link" href="/link">Link Modules</a>
                     </li>
                     <li class="nav-item <?= (strpos($_SERVER['REQUEST_URI'], "/triggers") !== false) ? "active" : "" ?>">
