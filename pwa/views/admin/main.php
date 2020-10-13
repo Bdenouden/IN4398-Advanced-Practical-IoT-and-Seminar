@@ -39,10 +39,10 @@
                                 <td><?= $sensor["rawMaxVal"] ?></td>
                                 <td><?= $sensor["minVal"] ?></td>
                                 <td><?= $sensor["maxVal"] ?></td>
-                                <td class="text-center"><?= ($sensor["pins"][0] !== -1) ? $sensor["pins"][0] : "" ?></td>
-                                <td class="text-center"><?= ($sensor["pins"][0] === -1) ? $sensor["pins"][1] : "" ?></td>
-                                <td class="text-center"><?= ($sensor["pins"][0] === -1) ? $sensor["pins"][2] : "" ?></td>
-                                <td class="text-center"><?= ($sensor["pins"][0] === -1) ? $sensor["pins"][3] : "" ?></td>
+                                <td class="text-center"><?= (count($sensor["pins"]) === 1) ? $sensor["pins"][0] : "" ?></td>
+                                <td class="text-center"><?= (count($sensor["pins"]) === 3) ? $sensor["pins"][0] : "" ?></td>
+                                <td class="text-center"><?= (count($sensor["pins"]) === 3) ? $sensor["pins"][1] : "" ?></td>
+                                <td class="text-center"><?= (count($sensor["pins"]) === 3) ? $sensor["pins"][2] : "" ?></td>
                                 <td>
                                     <button class="IIT btn btn-outline-danger" style="width:40px; height:40px" onclick="return removeSensorRow(this)"><i class="far fa-trash-alt"></i></button>
                                 </td>
@@ -307,10 +307,6 @@
                     if (table[i].children[j].firstChild !== null && table[i].children[j].firstChild.name === "pin"){
                         pinsToAdd.push(parseInt(table[i].children[j].firstChild.value));
                     }
-                }
-
-                if (pinsToAdd.length === 3){
-                    pinsToAdd.unshift(-1);
                 }
 
                 $.ajax({
