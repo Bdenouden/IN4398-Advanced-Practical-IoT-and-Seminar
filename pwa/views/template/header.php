@@ -42,23 +42,26 @@
                 </li>
                 <?php
                 if (User::userMinimalAccessLevel('admin')) { ?>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/admin">Admin</a>
+                    <li class="nav-item <?= (strpos($_SERVER['REQUEST_URI'], "/admin") !== false) ? "active" : "" ?>">
+                        <a class="nav-link" href="/link">Link Modules</a>
+                    </li>
+                    <li class="nav-item <?= (strpos($_SERVER['REQUEST_URI'], "/triggers") !== false) ? "active" : "" ?>">
+                        <a class="nav-link" href="/triggers">Set Triggers</a>
                     </li>
                 <?php } ?>
                 <?php
                 if (User::userMinimalAccessLevel('user')) { ?>
-                    <li class="nav-item active">
+                    <li class="nav-item <?= (strpos($_SERVER['REQUEST_URI'], "/data") !== false) ? "active" : "" ?>">
                         <a class="nav-link" href="/data">Sensor Data</a>
                     </li>
                 <?php } ?>
                 <?php
                 if (User::session_exists()) { ?>
-                    <li class="nav-item active">
+                    <li class="nav-item <?= (strpos($_SERVER['REQUEST_URI'], "/logout") !== false) ? "active" : "" ?>">
                         <a class="nav-link" href="/logout">Logout</a>
                     </li>
                 <?php } else { ?>
-                    <li class="nav-item active">
+                    <li class="nav-item <?= (strpos($_SERVER['REQUEST_URI'], "/login") !== false) ? "active" : "" ?>">
                         <a class="nav-link" href="/login">Login</a>
                     </li>
                 <?php }

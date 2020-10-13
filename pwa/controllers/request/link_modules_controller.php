@@ -1,6 +1,6 @@
 <?php
 
-class admin_controller extends Controller
+class link_modules_controller extends Controller
 {
 
     private $model;
