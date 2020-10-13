@@ -8,6 +8,7 @@ class Api {
             $sensor_data = [
                 "link_id" => $sensor["link_id"],
                 "name" => $sensor["name"],
+                "alias" => $sensor["alias"],
                 "type" => $sensor["type"],
                 "pins" => json_decode($sensor['pins']),
                 "rawMinVal" => $sensor["rawMinVal"],

@@ -1,6 +1,6 @@
 <div class="container-fluid pt-3 pb-5">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-12">
 
             <h1 class="text-center">Link modules to your node</h1>
             <p class="text-center">
@@ -14,6 +14,7 @@
                 <table class="table table-responsive-md" id="table_<?= $node_id ?>">
                     <tr>
                         <th>Name</th>
+                        <th>Alias</th>
                         <th>Type</th>
                         <th>Raw Minimum Value</th>
                         <th>Raw Maximum Value</th>
@@ -34,6 +35,7 @@
                             ?>
                             <tr id="row_<?= $node_id . '_' . $sensor["link_id"] ?>">
                                 <td><?= $sensor["name"] ?></td>
+                                <td><?= (isset($sensor["alias"])) ? $sensor["alias"] : "" ?></td>
                                 <td><?= $sensor["type"] ?></td>
                                 <td><?= $sensor["rawMinVal"] ?></td>
                                 <td><?= $sensor["rawMaxVal"] ?></td>
@@ -60,7 +62,9 @@
             ?>
 
         </div>
-        <div class="col-md-6">
+    </div>
+    <div class="row">
+        <div class="col-md-12">
 
             <h1 class="text-center">Create Triggers</h1>
             <p class="text-center">
@@ -224,6 +228,7 @@
         row.id = "row_" + count;
 
         const nameCell = row.insertCell();
+        const aliasCell = row.insertCell();
         const typeCell = row.insertCell();
 
         const rawMinCell = row.insertCell();
@@ -239,6 +244,8 @@
         const removeCell = row.insertCell();
 
         nameCell.innerHTML = sensorNameDropdown;
+
+        aliasCell.innerHTML = "<input type='text' name='alias' />";
 
         removeCell.innerHTML = "<button class='IIT btn btn-outline-danger' style='width:40px; height:40px' onclick='return removeSensorRow(this)'><i class='far fa-trash-alt'></i></button>";
 
@@ -273,23 +280,23 @@
 
                 const data = $.parseJSON(result)[0];
 
-                row.firstChild.nextSibling.innerHTML = data.type;
-                row.firstChild.nextSibling.nextSibling.innerHTML = data.rawMinVal;
-                row.firstChild.nextSibling.nextSibling.nextSibling.innerHTML = data.rawMaxVal;
-                row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = data.minVal;
-                row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = data.maxVal;
+                row.firstChild.nextSibling.nextSibling.innerHTML = data.type;
+                row.firstChild.nextSibling.nextSibling.nextSibling.innerHTML = data.rawMinVal;
+                row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = data.rawMaxVal;
+                row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = data.minVal;
+                row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = data.maxVal;
 
                 if (data.type === "analog") {
-                    row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = "<input type='number' name='pin' class='form-control' value=0>"
-                    row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ""
+                    row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = "<input type='number' name='pin' class='form-control' value=0>"
                     row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ""
                     row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ""
+                    row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ""
                 }
                 else {
-                    row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ""
-                    row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = "<input type='number' name='pin' class='form-control' value=0>"
+                    row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ""
                     row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = "<input type='number' name='pin' class='form-control' value=0>"
                     row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = "<input type='number' name='pin' class='form-control' value=0>"
+                    row.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = "<input type='number' name='pin' class='form-control' value=0>"
                 }
             });
     }
@@ -300,6 +307,7 @@
             if ((table[i].id.match(new RegExp("_", "g")) || []).length === 1) {
                 const sensorIdToAdd = table[i].firstChild.firstChild.value;
                 const nodeIdToAdd = table[i].parentNode.parentNode.id.split("_")[1];
+                const linkAlias = table[i].firstChild.nextSibling.firstChild.value;
 
                 let pinsToAdd = [];
 
@@ -309,6 +317,7 @@
                     }
                 }
 
+
                 $.ajax({
                     method: "POST",
                     url: "/admin",
@@ -317,6 +326,7 @@
                         ACTION: 'addSensorToNode',
                         sensorId: parseInt(sensorIdToAdd),
                         nodeId: nodeIdToAdd,
+                        linkAlias: linkAlias,
                         pinsToAdd: pinsToAdd,
                         'csrf-token': '<?php echo $_SESSION['csrf-token']?>'
                     }
@@ -331,6 +341,7 @@
                     });
             }
         }
+
     }
 
     // Right side
