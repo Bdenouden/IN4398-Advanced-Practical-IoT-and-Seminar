@@ -55,8 +55,8 @@
                     ?>
 
                 </table>
-                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="addNewSensorRowTo(<?= $node_id ?>)"><i class="fas fa-plus"></i></button>
-                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="saveNodeData(<?= $node_id ?>)"><i class="far fa-save"></i></button>
+                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="addNewSensorRowTo('<?= $node_id ?>')"><i class="fas fa-plus"></i></button>
+                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="saveNodeData('<?= $node_id ?>')"><i class="far fa-save"></i></button>
                 <?php
             }
             ?>

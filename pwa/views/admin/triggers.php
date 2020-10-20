@@ -19,7 +19,7 @@
                     ?>
                     <p id="trigger_<?= $node_id ?>_<?= $count ?>">
                         <span class="IIT">IF</span>
-                        <select id="linkid_<?= $node_id ?>_<?= $count ?>">
+                        <select style="width:200px" id="linkid_<?= $node_id ?>_<?= $count ?>">
                             <?php
                             foreach ($node_data["sensors"] as $sensor) {
                                 if ($sensor["link_id"] == null) {
@@ -54,7 +54,7 @@
 
                         <p id="trigger_<?= $node_id ?>_<?= $count ?>" trigger_id="<?= $trigger["trigger_id"] ?>">
                             <span class="IIT">IF</span>
-                            <select id="linkid_<?= $node_id ?>_<?= $count ?>" autocomplete="off">
+                            <select style="width:200px" id="linkid_<?= $node_id ?>_<?= $count ?>" autocomplete="off">
                                 <?php
                                 foreach ($node_data["sensors"] as $sensor) {
                                     if ($sensor["link_id"] == null) {
@@ -78,7 +78,7 @@
                                 <option value="1" <?php echo(1 == $trigger["notification_type"] ? 'selected' : '') ?>>send an email</option>
                             </select>
                             <span class="IIT">TO</span>
-                            <input type="email" placeholder="your@email.com" />
+                            <input type="email" placeholder="your@email.com" value="<?= (isset($trigger["recipient"])) ? $trigger["recipient"] : "" ?>" />
                             <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="return removeTrigger('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
                         </p>
 

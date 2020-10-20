@@ -38,6 +38,7 @@ class Api {
                 "trigger_id" => $trigger["trigger_id"],
                 "link_id" => $trigger["link_id"],
                 "lessThan_greaterThan" => $trigger["lessThan_greaterThan"],
+                "recipient" => $trigger["recipient"],
                 "val" => $trigger["val"],
                 "notification_type" => $trigger["notification_type"],
                 "name" => $trigger["name"],
