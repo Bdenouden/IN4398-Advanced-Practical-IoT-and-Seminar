@@ -5,7 +5,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 
-    <link rel="shortcut icon" type="image/png" href="../../images/logo.png"/>
+    <link rel="shortcut icon" type="image/png" href="../../images/logo.svg"/>
 
     <link rel="manifest" href="manifest.webmanifest">
 
@@ -24,7 +24,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="/">
-        <img src="../../images/logo.png" alt="Logo" style="width:40px;">
+        <img src="../../images/logo-ball.svg" alt="Logo" style="width:40px;">
     </a>
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
