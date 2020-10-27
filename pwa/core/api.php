@@ -8,6 +8,7 @@ class Api {
             $sensor_data = [
                 "link_id" => $sensor["link_id"],
                 "name" => $sensor["name"],
+                "alias" => $sensor["alias"],
                 "type" => $sensor["type"],
                 "pins" => json_decode($sensor['pins']),
                 "rawMinVal" => $sensor["rawMinVal"],
@@ -37,6 +38,7 @@ class Api {
                 "trigger_id" => $trigger["trigger_id"],
                 "link_id" => $trigger["link_id"],
                 "lessThan_greaterThan" => $trigger["lessThan_greaterThan"],
+                "recipient" => $trigger["recipient"],
                 "val" => $trigger["val"],
                 "notification_type" => $trigger["notification_type"],
                 "name" => $trigger["name"],

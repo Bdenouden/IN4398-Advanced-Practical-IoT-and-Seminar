@@ -1,5 +1,5 @@
 <?php
-Class admin_controller extends Controller{
+Class link_modules_controller extends Controller{
 
 	private $model;
 	private $api_model;
@@ -9,7 +9,7 @@ Class admin_controller extends Controller{
 		$this->model = $this->loadModel('admin');
 		$this->api_model = $this->loadModel('api');
 
-		$this->loadView('admin/main', array(
+		$this->loadView('admin/link', array(
 		    'sensor_data' => $this->model->getAdminPageSensorData(),
             'nodes' => Api::aggregateSensorsPerNode($this->api_model->getKnownDevices()),
             'sensor_types' => $this->model->getSensorTypes(),

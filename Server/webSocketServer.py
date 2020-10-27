@@ -28,12 +28,12 @@ def get_known_devices():
     response = api.get()
 
     if response is None:
-        print(f"[API] An error occured, could not load known devices")
+        print(f"[API] An error occurred, could not load known devices")
     elif response.status_code == 200:
         # print(f"[API] Response code {response.status_code}")
         known_devices = json.loads(response.text)
 
-        Node.knownDevices_from_JSON(known_devices)
+        Node.known_devices_from_json(known_devices)
     else:
         print(
             f"[API] Response code {response.status_code}, could not load known devices")
@@ -41,25 +41,25 @@ def get_known_devices():
     print(f"[SETUP] {len(Node.knownDevices)} device(s) were found:")
 
 
-def HTTP_new_device(node):
+def http_new_device(node):
     # print(f"[WSS] New device thread started")
-    t = threading.Thread(target=node.saveNewDeviceToDb)
-    threads.append(t)
-    t.start()
+    thread = threading.Thread(target=node.save_new_device_to_db)
+    threads.append(thread)
+    thread.start()
 
 # TODO unexpected close of the connection throws an exception
 # TODO sending key chipId instead of chipID throws a keyerror
 
 
-async def eventHandler(websocket, path):
+async def event_handler(websocket, path):
     global current_clients, timeBeforeReconnect, threads
 
     # update active clients
     current_clients += 1
 
     client = websocket.remote_address
-    curTime = datetime.now().strftime("%Y.%m.%d - %H:%M:%S")
-    print(f'\n[WSS] incomming connection: {client} @ {curTime }')
+    current_time = datetime.now().strftime("%Y.%m.%d - %H:%M:%S")
+    print(f'\n[WSS] incoming connection: {client} @ {current_time }')
     print(f'[WSS] currently connected clients: {current_clients}')
 
     # receive the json containing all required information from the node
@@ -71,14 +71,14 @@ async def eventHandler(websocket, path):
     print(json.dumps(parsed, indent=4, sort_keys=False))
 
     # get/create node object
-    node = Node.from_JSON(parsed)
+    node = Node.from_json(parsed)
     if node.isNew:
-        HTTP_new_device(node)
+        http_new_device(node)
     # TODO version update
     # TODO check which sensor data is received but not used -> alert UI
-    node.sensorDataFromJson(parsed)
+    node.sensor_data_from_json(parsed)
 
-    print(f"[WSS] Node {node.chipId} has succesfully transmitted its data")
+    print(f"[WSS] Node {node.chipId} has successfully transmitted its data")
 
     # print attributes of the node
     # node.print_attributes()
@@ -92,24 +92,24 @@ async def eventHandler(websocket, path):
     # see https://websockets.readthedocs.io/en/stable/faq.html
     # await asyncio.sleep(5)
 
-    config = node.getConfig()
-    configString = json.dumps(config)
-    hash = hashlib.md5(configString.encode()).hexdigest()[0:8]
-    print(f"Hash = {hash}")
+    config = node.get_config()
+    config_string = json.dumps(config)
+    config_hash = hashlib.md5(config_string.encode()).hexdigest()[0:8]
+    print(f"Hash = {config_hash}")
 
-    print(f"Hash: {hash}, cfg_version: {node.config_version}\n Hash == cfg_version: {hash == node.config_version}")
+    print(f"Hash: {config_hash}, cfg_version: {node.config_version}\n Hash == cfg_version: {config_hash == node.config_version}")
 
-    if hash != node.config_version:
+    if config_hash != node.config_version:
 
         dict_out = {
-            "config-version": hash,
+            "config-version": config_hash,
             "config": config
         }
 
         msg_out = f"config:{dict_out}"
         await websocket.send(msg_out)
 
-        # TODO check if update succesfull
+        # TODO check if update successful
         msg_in = await websocket.recv()
         print(f"[WSS] msg_in = {msg_in}")
 
@@ -127,7 +127,7 @@ async def eventHandler(websocket, path):
     # print(f'# known devices: {len(Node.knownDevices)}')
 
 
-def send_update(knownDevices):
+def send_update(known_devices):
     global update_delay
 
     while True:
@@ -141,8 +141,8 @@ def send_update(knownDevices):
         api = API(path='/update')
 
         # FIXME Node.knownDevices is not thread safe: must be converted to argument of the function
-        for _, node in knownDevices.items():
-            temp_dict[node.chipId] = node.getDict()
+        for _, node in known_devices.items():
+            temp_dict[node.chipId] = node.get_dict()
 
         api.json = temp_dict
 
@@ -153,40 +153,43 @@ def send_update(knownDevices):
 
         if response is None:
             print(f"[UPDATE] An error occured!")
-            createBacklogFile(temp_dict)
+            create_backlog_file(temp_dict)
 
         elif response.status_code == 200:
             print(f"[UPDATE] Sensor values successfully uploaded!")
             print(f"[UPDATE] PWA response: ")
             print(response.text)
-            sendBacklog()  # Since there is an established connection now, attempt to transmit the backlog
+            send_backlog()  # Since there is an established connection now, attempt to transmit the backlog
 
         else:
             print(
                 f"[UPDATE] An error occured! Response code: {response.status_code}")
             print(response.text)
-            createBacklogFile(temp_dict)
+            create_backlog_file(temp_dict)
 
 
-def createBacklogFile(data):
-    '''
-        Write a JSON file containing the information found in the dict `data`
-    '''
+def create_backlog_file(data):
+    """
+    Write a JSON file containing the information found in the dict `data`
+    :param data:
+    :return: 
+    """
     curTime = datetime.now().strftime("%Y%m%d-%H%M%S")
     with open(sys.path[0] + '/data/'+curTime+'.json', 'w+') as outFile:
         json.dump(data, outFile)
 
 
-def sendBacklog():
-    '''
-        Cycle through all failed attempts to update and retry to transmit, deleting files if succesfull
-    '''
+def send_backlog():
+    """
+    Cycle through all failed attempts to update and retry to transmit, deleting files if succesfull
+
+    :return:
+    """
     path = sys.path[0] + '/data'
     api = API(path='/update')
 
     files = fnmatch.filter(os.listdir(path), '*.json')
     for file in files:
-        response = None
         with open(path + '/' + file, 'r') as f:
             api.json = json.load(f)
 
@@ -206,10 +209,10 @@ def sendBacklog():
 
 get_known_devices()
 
-start_server = websockets.serve(eventHandler, "", 8765)
+start_server = websockets.serve(event_handler, "", 8765)
 print('[WSS] Server started!')
 
-# TODO possible alternative for web comunication: https://realpython.com/python-concurrency/
+# TODO possible alternative for web communication: https://realpython.com/python-concurrency/
 t = threading.Thread(target=send_update, args=(Node.knownDevices,))
 threads.append(t)
 t.start()

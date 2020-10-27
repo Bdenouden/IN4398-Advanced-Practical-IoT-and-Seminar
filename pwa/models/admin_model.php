@@ -62,17 +62,18 @@ class admin_model extends Model
         }
     }
 
-    public function addSensorToNode(int $sensor_id, string $node_id, array $pins_to_add)
+    public function addSensorToNode(int $sensor_id, string $node_id, array $pins_to_add, ?string $alias)
     {
         try {
             Database::beginTransaction();
             Database::query("
-                INSERT INTO sensor_node_link (node_id, sensor_type_id, pins)
-                VALUES (:node_id, :sensor_id, :pins)
+                INSERT INTO sensor_node_link (node_id, sensor_type_id, pins, alias)
+                VALUES (:node_id, :sensor_id, :pins, :alias)
             ", array(
                 ":node_id" => $node_id,
                 ":sensor_id" => $sensor_id,
-                ":pins" => "[" . implode(",", $pins_to_add) . "]"
+                ":pins" => "[" . implode(",", $pins_to_add) . "]",
+                ":alias" => $alias
             ));
             Database::commit();
             return true;

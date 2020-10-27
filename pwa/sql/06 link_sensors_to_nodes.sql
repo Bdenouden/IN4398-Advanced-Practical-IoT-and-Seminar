@@ -16,6 +16,7 @@ create table sensor_node_link
     id int auto_increment,
     node_id varchar(20) null,
     sensor_type_id int null,
+    alias varchar(40) null,
     constraint sensor_node_link_pk
         primary key (id),
     constraint sensor_node_link_sensor_nodes_id_fk

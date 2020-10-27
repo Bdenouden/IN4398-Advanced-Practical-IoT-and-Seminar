@@ -37,7 +37,7 @@ async def client():
                 print(json_out)
 
                 tbr_string = await websocket.recv()
-                print(f"[WSC] incomming message: {tbr_string}")
+                print(f"[WSC] incoming message: {tbr_string}")
                 tbr = int(tbr_string.split(':')[-1])
 
                 msg = ''
@@ -50,8 +50,6 @@ async def client():
         except:
             print(f"[WSC] Could not connect to {uri}, will attempt again in a few seconds")
             await asyncio.sleep(10)
-
-
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(client())

@@ -6,7 +6,7 @@ class api_model extends Model
     public function getKnownDevices(bool $active = true)
     {
         return Database::select("
-                SELECT sensor_nodes.id AS node_id, sensor_nodes.added, sensor_nodes.is_active, snl.id AS link_id, snl.pins, st.*
+                SELECT sensor_nodes.id AS node_id, sensor_nodes.added, sensor_nodes.is_active, snl.id AS link_id, snl.pins, snl.alias, st.*
                 FROM sensor_nodes
                 LEFT JOIN sensor_node_link snl on sensor_nodes.id = snl.node_id
                 LEFT JOIN sensor_types st on snl.sensor_type_id = st.id
@@ -48,7 +48,17 @@ class api_model extends Model
             return true;
         } catch (SystemException $e) {
             Database::rollBack();
-            return $e->getMessage();
+            if (strpos($e->getMessage(), "foreign key constraint fails") !== false){
+                if ($this->addNewDevice($node_chipid)){
+                    return $this->storeSensorEntry($node_chipid, $sensor_uid, $data_type, $data_value, $data_unit, $measure_time);
+                }
+                else {
+                    return $e->getMessage();
+                }
+            }
+            else{
+                return $e->getMessage();
+            }
         }
     }
 

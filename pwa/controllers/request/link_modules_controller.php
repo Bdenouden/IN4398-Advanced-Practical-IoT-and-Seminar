@@ -1,6 +1,6 @@
 <?php
 
-class admin_controller extends Controller
+class link_modules_controller extends Controller
 {
 
     private $model;
@@ -30,8 +30,8 @@ class admin_controller extends Controller
 
     public function addSensorToNode()
     {
-        if (isset($_POST['nodeId']) && isset($_POST['sensorId']) && is_numeric($_POST['sensorId']) && isset($_POST['pinsToAdd']) && !empty($_POST['csrf-token']) && array_key_exists($_POST['csrf-token'], $_SESSION['csrf-tokens'])) {
-            echo json_encode($this->model->addSensorToNode($_POST['sensorId'], $_POST['nodeId'], $_POST['pinsToAdd']));
+        if (isset($_POST['nodeId']) && isset($_POST['sensorId']) && is_numeric($_POST['sensorId']) && isset($_POST['pinsToAdd']) && !empty($_POST['linkAlias']) && !empty($_POST['csrf-token']) && array_key_exists($_POST['csrf-token'], $_SESSION['csrf-tokens'])) {
+            echo json_encode($this->model->addSensorToNode($_POST['sensorId'], $_POST['nodeId'], $_POST['pinsToAdd'], $_POST['linkAlias']));
         }
     }
 

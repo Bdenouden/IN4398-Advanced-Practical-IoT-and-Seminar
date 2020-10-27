@@ -5,7 +5,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 
-    <link rel="shortcut icon" type="image/png" href="../../images/logo.png"/>
+    <link rel="shortcut icon" type="image/png" href="../../images/logo.svg"/>
 
     <link rel="manifest" href="manifest.webmanifest">
 
@@ -24,7 +24,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="/">
-        <img src="../../images/logo.png" alt="Logo" style="width:40px;">
+        <img src="../../images/logo-ball.svg" alt="Logo" style="width:40px;">
     </a>
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -42,23 +42,26 @@
                 </li>
                 <?php
                 if (User::userMinimalAccessLevel('admin')) { ?>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/admin">Admin</a>
+                    <li class="nav-item <?= (strpos($_SERVER['REQUEST_URI'], "/link") !== false) ? "active" : "" ?>">
+                        <a class="nav-link" href="/link">Link Modules</a>
+                    </li>
+                    <li class="nav-item <?= (strpos($_SERVER['REQUEST_URI'], "/triggers") !== false) ? "active" : "" ?>">
+                        <a class="nav-link" href="/triggers">Set Triggers</a>
                     </li>
                 <?php } ?>
                 <?php
                 if (User::userMinimalAccessLevel('user')) { ?>
-                    <li class="nav-item active">
+                    <li class="nav-item <?= (strpos($_SERVER['REQUEST_URI'], "/data") !== false) ? "active" : "" ?>">
                         <a class="nav-link" href="/data">Sensor Data</a>
                     </li>
                 <?php } ?>
                 <?php
                 if (User::session_exists()) { ?>
-                    <li class="nav-item active">
+                    <li class="nav-item <?= (strpos($_SERVER['REQUEST_URI'], "/logout") !== false) ? "active" : "" ?>">
                         <a class="nav-link" href="/logout">Logout</a>
                     </li>
                 <?php } else { ?>
-                    <li class="nav-item active">
+                    <li class="nav-item <?= (strpos($_SERVER['REQUEST_URI'], "/login") !== false) ? "active" : "" ?>">
                         <a class="nav-link" href="/login">Login</a>
                     </li>
                 <?php }
