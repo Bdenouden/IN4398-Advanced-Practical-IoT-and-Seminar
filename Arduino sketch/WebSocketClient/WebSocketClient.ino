@@ -29,6 +29,7 @@
 
 #include <WebSocketsClient.h>
 #include "src/sensors/sensors.h"
+#include "src/sensors/AM232xSensor.h"
 
 WebSocketsClient * webSocket;
 
@@ -37,15 +38,18 @@ WebSocketsClient * webSocket;
 char config_version[9]; // this represents the first 8 characters of an MD5 hash of the config file
 const uint8_t max_sensors = 8;
 uint8_t attached_sensors = 0;
+size_t additional_array_size = 0;
 Sensor *sensorList[max_sensors];
 
 
-const char *SERVER_ADDR = "laptop-bram.local";
+const char *SERVER_ADDR = "192.168.1.80";
 const uint16_t PORT = 8765;
 
 unsigned int reconnect_interval = 0;
 unsigned int disconnect_timestamp = 0;
 const char * exit_msg = "bye";
+
+uint32_t chipID = 0;
 
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
   String data;
@@ -60,9 +64,9 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
       USE_SERIAL.printf("[WSc] Connected to url: %s\n", payload);
 
       //TODO data collection
-      
+
       // send message to server when Connected
-//      ESP_data = jsonify(1, 2, 3, 4, 5);
+      //      ESP_data = jsonify(1, 2, 3, 4, 5);
       ESP_data = jsonData();
       webSocket->sendTXT(ESP_data);
       break;
@@ -70,16 +74,16 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     case WStype_TEXT:
       data = (char*)payload;
       USE_SERIAL.printf("[WSc] get text: %s\n", payload);
-      
+
       if (data == exit_msg) websocket_disconnect(); // disconnect after transmission
       else if (data.substring(0, 3) == "tbr") { // tbr stand for 'time before reconnect'
         reconnect_interval = data.substring(4).toInt();
         USE_SERIAL.printf("[WSc] new reconnect interval set: %d ms\n", reconnect_interval);
       }
-      else if(data.substring(0,6) == "config"){
-        bool success= false;
+      else if (data.substring(0, 6) == "config") {
+        bool success = false;
         success = parseConfig((char*)&payload[7]);
-        if(success) USE_SERIAL.println("[ESP] RECONFIGURED");
+        if (success) USE_SERIAL.println("[ESP] RECONFIGURED");
         else USE_SERIAL.println("[ESP] Could not reconfigure");
         webSocket->sendTXT("[ESP] RECONFIGURED");
       }
@@ -87,7 +91,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 
     case WStype_BIN:
       USE_SERIAL.printf("[WSc] get binary length: %u\n", length);
-      hexdump(payload, length);
+      //      hexdump(payload, length);
 
       // send data to server
       // webSocket.sendBIN(payload, length);
@@ -105,6 +109,17 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 }
 
 void setup() {
+  #ifdef ESP8266
+  chipID = ESP.getChipId();
+#endif
+
+#ifdef ESP32
+  chipID = 0;
+  for (int i = 0; i < 17; i = i + 8) {
+    chipID |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
+  }
+#endif
+
   USE_SERIAL.begin(115200);
 
   //Serial.setDebugOutput(true);
@@ -124,9 +139,9 @@ void setup() {
   //Local intialization. Once its business is done, there is no need to keep it around
   WiFiManager wifiManager;
   //reset saved settings
-//    wifiManager.resetSettings();
+  //    wifiManager.resetSettings();
 
-  String config_ssid = "ESP_" + String(ESP.getChipId());
+  String config_ssid = "ESP_" + String(chipID);
   char buf[13];
   config_ssid.toCharArray(buf, 13);
   wifiManager.autoConnect(buf);
@@ -151,7 +166,7 @@ void websocket_connect() {
 }
 
 void websocket_disconnect() {
-  USE_SERIAL.printf("[WSc] Disconnected! Next reconnect in %d s\n", reconnect_interval/1000);
+  USE_SERIAL.printf("[WSc] Disconnected! Next reconnect in %d s\n", reconnect_interval / 1000);
   webSocket->disconnect();
   delete webSocket;
   webSocket = NULL;

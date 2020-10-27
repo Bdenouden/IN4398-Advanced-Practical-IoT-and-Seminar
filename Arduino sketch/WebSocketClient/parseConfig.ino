@@ -23,6 +23,8 @@ bool parseConfig(char* json) {
   for (int i = 0; i++; i < max_sensors) {
     delete sensorList[i];
   }
+  additional_array_size = 0;
+
   // allocate new sensors
   for (int i = 0; i < attached_sensors; i++) {
     JsonObject sensor = cfg["config"][i];
@@ -41,6 +43,14 @@ bool parseConfig(char* json) {
       Serial.println("[CONFIG] I2C sensor type found");
       // TODO implement pins
       invalid_sensors++; // remove after I2C is implemented
+    }
+    else if (strcmp("am232x", type) == 0) {
+      additional_array_size += JSON_ARRAY_SIZE(2); // humidity and temperature
+
+    }
+    else if (strcmp("DHTxx", type) == 0) {
+      additional_array_size += JSON_ARRAY_SIZE(2);
+
     }
     else {
       Serial.printf("[CONFIG] Invalid sensor type: %s\n", type);
