@@ -23,7 +23,7 @@
                         <th class="text-center">Pin</th>
                         <th class="text-center">SDA</th>
                         <th class="text-center">SCL</th>
-                        <th class="text-center">CHIPSELECT</th>
+                        <th class="text-center">I2C Address</th>
                         <th></th>
                     </tr>
                     <?php
@@ -140,7 +140,7 @@
         const pinCell = row.insertCell();
         const SDACell = row.insertCell();
         const SCLCell = row.insertCell();
-        const CHIPSELECTCell = row.insertCell();
+        const I2CCell = row.insertCell();
 
         const removeCell = row.insertCell();
 
@@ -150,12 +150,12 @@
 
         removeCell.innerHTML = "<button class='IIT btn btn-outline-danger' style='width:40px; height:40px' onclick='return removeSensorRow(this)'><i class='far fa-trash-alt'></i></button>";
 
-        initializeRowForId("row_" + count, pinCell, SDACell, SCLCell, CHIPSELECTCell);
+        initializeRowForId("row_" + count, pinCell, SDACell, SCLCell, I2CCell);
 
         count++;
     }
 
-    function initializeRowForId(rowId, pinCell = null, SDACell = null, SCLCell = null, CHIPSELECTCell = null) {
+    function initializeRowForId(rowId, pinCell = null, SDACell = null, SCLCell = null, I2CCell = null) {
 
         let row;
 
