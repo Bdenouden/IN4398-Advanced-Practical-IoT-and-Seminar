@@ -6,7 +6,11 @@ header('X-Content-Type-Options: nosniff'); // NoSniff.
 header('X-XSS-Protection: 1; mode=block'); // XSS.
 header('Expires: 0'); // Proxies.
 
-session_start(); 
+define('ROOT', __DIR__);
+
+session_start();
+
+require_once ROOT . '/vendor/autoload.php';
 
 require_once('core/config.php');
 require_once('core/exceptions.php');
@@ -21,6 +25,7 @@ require_once('core/form.php');
 require_once('core/user.php');
 require_once('core/page.php');
 
+require_once('core/mail.php');
 require_once('core/api.php');
 
 require_once('core/helper_functions.php');

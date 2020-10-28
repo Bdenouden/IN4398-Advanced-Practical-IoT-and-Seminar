@@ -83,20 +83,21 @@ class admin_model extends Model
         }
     }
 
-    public function addTriggerToSensor(?int $trigger_id, int $link_id, int $ltGt, int $val, int $notification_type)
+    public function addTriggerToSensor(?int $trigger_id, int $link_id, int $ltGt, int $val, int $notification_type, string $recipient)
     {
         try {
             Database::beginTransaction();
             Database::query("
-                INSERT INTO triggers (id, link_id, lessThan_greaterThan, val, notification_type)
-                VALUES (:id, :link_id, :ltGt, :val, :notification_type)
-                ON DUPLICATE KEY UPDATE link_id=:link_id, lessThan_greaterThan=:ltGt, val=:val, notification_type=:notification_type
+                INSERT INTO triggers (id, link_id, lessThan_greaterThan, val, notification_type, recipient)
+                VALUES (:id, :link_id, :ltGt, :val, :notification_type, :recipient)
+                ON DUPLICATE KEY UPDATE link_id=:link_id, lessThan_greaterThan=:ltGt, val=:val, notification_type=:notification_type, recipient=:recipient
             ", array(
                 ":id" => $trigger_id,
                 ":link_id" => $link_id,
                 ":ltGt" => $ltGt,
                 ":val" => $val,
-                ":notification_type" => $notification_type
+                ":notification_type" => $notification_type,
+                ":recipient" => $recipient
             ));
             Database::commit();
             return true;

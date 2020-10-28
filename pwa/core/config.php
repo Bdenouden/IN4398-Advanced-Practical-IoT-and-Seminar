@@ -4,6 +4,12 @@ date_default_timezone_set('Europe/Amsterdam');
 
 define("WEBSITE_NAME", "ModFarm");
 
+define('WEBSITE_DOMAIN', 'https://' . $_SERVER['HTTP_HOST']);
+define('WEBSITE_MAIL_ADDRESS', '');
+define('WEBSITE_MAIL_PASSWORD', '');
+define('WEBSITE_MAIL_NAME', WEBSITE_NAME . " - Team");
+define('WEBSITE_MAIL_HOST', '');
+
 class Config {
 
 	public static $settings;

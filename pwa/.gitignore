@@ -6,3 +6,6 @@
 
 # exclude migration config
 migrate.cfg
+
+# exclude vendor files
+vendor/

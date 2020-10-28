@@ -43,7 +43,7 @@
                             <option value="1">send an email</option>
                         </select>
                         <span class="IIT">TO</span>
-                        <input type="email" placeholder="your@email.com" />
+                        <input id="email__<?= $node_id ?>_<?= $count ?>" type="email" placeholder="your@email.com" />
                         <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="return removeTrigger('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
                     </p>
                     <?php
@@ -78,7 +78,7 @@
                                 <option value="1" <?php echo(1 == $trigger["notification_type"] ? 'selected' : '') ?>>send an email</option>
                             </select>
                             <span class="IIT">TO</span>
-                            <input type="email" placeholder="your@email.com" value="<?= (isset($trigger["recipient"])) ? $trigger["recipient"] : "" ?>" />
+                            <input id="email__<?= $node_id ?>_<?= $count ?>" type="email" placeholder="your@email.com" value="<?= (isset($trigger["recipient"])) ? $trigger["recipient"] : "" ?>" />
                             <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="return removeTrigger('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
                         </p>
 
@@ -87,8 +87,8 @@
                     }
                 }
                 ?>
-                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="addNewTriggerRow(<?= $node_id ?>)"><i class="fas fa-plus"></i></button>
-                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="saveTriggerData(<?= $node_id ?>)"><i class="far fa-save"></i></button>
+                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="addNewTriggerRow('<?= $node_id ?>')"><i class="fas fa-plus"></i></button>
+                <button class="IIT btn btn-outline-success" style="width:40px; height:40px" onclick="saveTriggerData('<?= $node_id ?>')"><i class="far fa-save"></i></button>
 
                 <?php
             }
@@ -150,6 +150,7 @@
             const ltGt = dataArray[1];
             const triggerVal = dataArray[2];
             const notificationChoice = dataArray[3];
+            const recipient = dataArray[4];
 
             $.ajax({
                 method: "POST",
@@ -161,6 +162,7 @@
                     ltGt: parseInt(ltGt),
                     triggerVal: parseInt(triggerVal),
                     notificationChoice: parseInt(notificationChoice),
+                    recipient: recipient,
                     triggerId: parseInt(possibleElements[i].getAttribute("trigger_id")),
                     'csrf-token': '<?php echo $_SESSION['csrf-token']?>'
                 }

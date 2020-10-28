@@ -62,6 +62,17 @@ class api_model extends Model
         }
     }
 
+    public function getTriggersWithRecentData(){
+        return Database::select("
+            SELECT *
+            FROM triggers AS t
+            LEFT JOIN sensor_node_link AS snl ON snl.id = t.link_id
+            LEFT JOIN sensor_data AS sd ON sd.node_id = snl.node_id
+            WHERE sd.measure_time >= DATE_SUB(NOW(), INTERVAL 30 MINUTE)
+            ORDER BY sd.measure_time DESC
+        ");
+    }
+
 }
 
 
