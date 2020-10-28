@@ -64,7 +64,7 @@ class Auth {
 
             if ($password == $user_row['user_password']) {
 
-                if ($user_row['user_type'] == 'admin') {
+                if ($user_row['user_type'] == 'api') {
                     return true;
                 } else {
                     return false;

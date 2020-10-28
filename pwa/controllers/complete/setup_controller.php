@@ -18,7 +18,15 @@ class setup_controller extends Controller
             Auth::redirect('/setup');
         }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register-account'])) {
+        if (isset($_GET['setup_success']) && $_GET['setup_success'] == "false") {
+
+            $error = "Something went wrong in the setup process, please try again";
+
+            $this->loadView('setup/main', array('error' => $error));
+
+        }
+
+        else if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register-account'])) {
 
             try {
 
@@ -27,7 +35,10 @@ class setup_controller extends Controller
                     $salt = Auth::createCode(13);
                     $password = Auth::hash_password($_POST['password'], $salt);
 
-                    $this->model->requestAccountConfirmation(Auth::esc($_POST['username']), $password);
+                    $api_salt = Auth::createCode(13);
+                    $api_password = Auth::hash_password($_POST['api_password'], $api_salt);
+
+                    $this->model->initialAccountSetup(Auth::esc($_POST['username']), $password, Auth::esc($_POST['api_username']), $api_password);
 
                 }
 
@@ -84,6 +95,39 @@ class setup_controller extends Controller
                     ),
                     'notEmpty' => array(
                         'error_message' => 'Confirm password may not be empty'
+                    )
+                )
+            ),
+            'api_username' => array(
+                'default_error_message' => 'Invalid API username',
+                'validators' => array(
+                    'alphaNumeric' => array(
+                        'error_message' => 'API username contains invalid characters'
+                    ),
+                    'notEmpty' => array(
+                        'error_message' => 'API username may not be empty'
+                    )
+                )
+            ),
+            'api_password' => array(
+                'default_error_message' => 'Invalid API password',
+                'validators' => array(
+                    'alphaNumericExtra' => array(
+                        'error_message' => 'Invalid characters in API password'
+                    ),
+                    'notEmpty' => array(
+                        'error_message' => 'API password may not be empty'
+                    )
+                )
+            ),
+            'api_password_confirm' => array(
+                'default_error_message' => 'Invalid confirm API password',
+                'validators' => array(
+                    'alphaNumericExtra' => array(
+                        'error_message' => 'Invalid characters in confirm API password'
+                    ),
+                    'notEmpty' => array(
+                        'error_message' => 'Confirm API password may not be empty'
                     )
                 )
             )

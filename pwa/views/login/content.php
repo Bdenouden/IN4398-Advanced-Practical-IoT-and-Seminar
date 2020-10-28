@@ -6,26 +6,23 @@
 
             <?php echo(isset($notification) && strlen($notification) > 0 ? '<div class="alert alert-info" role="alert">' . $notification . '</div>' : NULL); ?>
 
-            <h1>Log in</h1>
+            <h1>Login</h1>
             <form action="" id="frmLogin" method="POST">
                 <input type="hidden" name="csrf-token" value="<?php echo $_SESSION['csrf-token']; ?>">
 
                 <div class="form-group">
                     <label>Username</label>
-                    <input id="user" type="text" class="form-control" placeholder="Username ..." name="username"
-                           autofocus>
+                    <input id="user" type="text" class="form-control" placeholder="username" name="username" autofocus required>
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input id="pass" type="password" class="form-control" placeholder="Password ..."
-                           name="password">
+                    <input id="pass" type="password" class="form-control" placeholder="password" name="password" required>
                 </div>
                 <button class="btn" type="submit">
                     <span>Log in</span>
                 </button>
                 <div class="clearfix"></div>
             </form>
-            <p><a class="small pull-right" href="/forgotpassword">Forgot your password?</a></p>
         </div>
     </div>
 </div>

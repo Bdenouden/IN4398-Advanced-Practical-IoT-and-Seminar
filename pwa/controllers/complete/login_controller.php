@@ -106,7 +106,7 @@ class login_controller extends Controller
         $salt = Auth::getSalt($user_row['user_password']);
         $password = Auth::hash_password($_POST['password'], $salt);
 
-        if ($password == $user_row['user_password']) {
+        if ($password == $user_row['user_password'] && $user_row['user_type'] !== "api") {
 
             $token = Auth::createCode(64);
 
@@ -121,6 +121,10 @@ class login_controller extends Controller
             } else {
                 return false;
             }
+
+        } else if($user_row['user_type'] == "api") {
+
+            throw new UserException('Not allowed to login with your API user!');
 
         } else {
 
