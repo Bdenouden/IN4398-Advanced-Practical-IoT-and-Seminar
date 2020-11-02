@@ -48,5 +48,5 @@ services:
   composer:
     image: "composer"
     volumes:
-        - "./:/app"
+        - "./pwa:/app"
     command: install
