@@ -44,3 +44,9 @@ services:
         TZ: Europe/Amsterdam
     ports:
         - "8889:3306"
+  
+  composer:
+    image: "composer"
+    volumes:
+        - "./:/app"
+    command: install
