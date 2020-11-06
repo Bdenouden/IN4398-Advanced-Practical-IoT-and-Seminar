@@ -160,6 +160,8 @@ def send_update(known_devices):
             print(f"[UPDATE] PWA response: ")
             print(response.text)
             send_backlog()  # Since there is an established connection now, attempt to transmit the backlog
+            Node.knownDevices = {} # clear known devices to get new config
+            get_known_devices()
 
         else:
             print(
