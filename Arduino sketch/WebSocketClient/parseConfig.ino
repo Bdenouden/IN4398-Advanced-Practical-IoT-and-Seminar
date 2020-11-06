@@ -46,11 +46,16 @@ bool parseConfig(char* json) {
     }
     else if (strcmp("am232x", type) == 0) {
       additional_array_size += JSON_ARRAY_SIZE(2); // humidity and temperature
-
+      sensorList[i] = new AM232xSensor(
+        linkId,
+        type,
+        22,
+        21
+        );
     }
     else if (strcmp("DHTxx", type) == 0) {
       additional_array_size += JSON_ARRAY_SIZE(2);
-
+      invalid_sensors++;
     }
     else {
       Serial.printf("[CONFIG] Invalid sensor type: %s\n", type);
