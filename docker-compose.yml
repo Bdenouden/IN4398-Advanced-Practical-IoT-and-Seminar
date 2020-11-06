@@ -1,0 +1,52 @@
+version: "3.8"
+services: 
+  web:
+    image: php:7.3-apache
+    restart: unless-stopped
+    environment:
+      - ALLOW_OVERRIDE=true
+    ports:
+      - 80:80
+    links:
+      - db
+    volumes:
+      - ./pwa:/var/www/html/
+    command: > 
+      sh -c "
+      a2enmod rewrite &&
+      docker-php-ext-install pdo_mysql mysqli &&
+      cp /usr/share/zoneinfo/Europe/Amsterdam /etc/localtime &&
+      apache2-foreground"
+
+  myadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: advanced_iot_phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+        - PMA_ARBITRARY=1
+        - PMA_HOST=advanced_iot_mariadb
+    restart: unless-stopped
+    links: 
+        - db    
+
+  db:
+    image: mariadb
+    container_name: advanced_iot_mariadb
+    restart: unless-stopped
+    volumes:
+        - ./pwa/mysql:/var/lib/mysql
+    environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_USER: iot
+        MYSQL_PASSWORD: 2Cm&&G0CKKkt2@vL
+        MYSQL_DATABASE: iot
+        TZ: Europe/Amsterdam
+    ports:
+        - "8889:3306"
+  
+  composer:
+    image: "composer"
+    volumes:
+        - "./pwa:/app"
+    command: install

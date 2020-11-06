@@ -1,0 +1,46 @@
+// analog: [<A0>], I2C: [<SDA>, <SCL>, <CHIPSEL>]
+{
+    "config-version": "12345678",
+    "config": [
+        {
+            "link-id": 8,
+            "type": "analog",
+            "pins": [0] 
+        },
+        {
+            "link-id": 9,
+            "type": "analog",
+            "pins": [17] 
+        },
+        {
+            "link-id": 10,
+            "type": "analog",
+            "pins": [1,4,6] 
+        },
+        {
+            "link-id": 11,
+            "type": "analog",
+            "pins": [1,4,6] 
+        },
+        {
+            "link-id": 12,
+            "type": "analog",
+            "pins": [1,4,6] 
+        },
+        {
+            "link-id": 13,
+            "type": "analog",
+            "pins": [1,4,6] 
+        },
+        {
+            "link-id": 14,
+            "type": "analog",
+            "pins": [1,4,6] 
+        },
+        {
+            "link-id": 15,
+            "type": "analog",
+            "pins": [1,4,6] 
+        }
+    ]
+}

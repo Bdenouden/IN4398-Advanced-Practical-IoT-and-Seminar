@@ -1,0 +1,23 @@
+#
+# Display errors
+#
+php_flag display_startup_errors on
+php_flag display_errors on
+php_flag html_errors on
+
+Options -Indexes
+
+#
+# start rewriting
+#
+RewriteEngine on
+
+#
+# 1. check whether its a direct link to a file (like .css, .png of .js files)
+# 2. if not, send everything to index.php (our page parser)
+#
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([A-Za-z0-9@\.\+\-_/]+)((.*))?$ index.php
+

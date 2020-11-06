@@ -1,0 +1,50 @@
+{
+    "1253624": {
+        "added": "2020-10-02 13:22:09",
+        "is_active": "1",
+        "sensors": [
+            {
+                "link_id": "8",
+                "name": "testAnalog",
+                "type": "analog",
+                "rawMinVal": "0",
+                "rawMaxVal": "1023",
+                "minVal": "0",
+                "maxVal": "100"
+            },
+            {
+                "link_id": "10",
+                "name": "testAnalog",
+                "type": "analog",
+                "rawMinVal": "0",
+                "rawMaxVal": "1023",
+                "minVal": "0",
+                "maxVal": "100"
+            },
+            {
+                "link_id": "11",
+                "name": "testAnalog",
+                "type": "analog",
+                "rawMinVal": "0",
+                "rawMaxVal": "1023",
+                "minVal": "0",
+                "maxVal": "100"
+            }
+        ]
+    },
+    "9159476": {
+        "added": "2020-10-02 13:03:12",
+        "is_active": "1",
+        "sensors": [
+            {
+                "link_id": null,
+                "name": null,
+                "type": null,
+                "rawMinVal": null,
+                "rawMaxVal": null,
+                "minVal": null,
+                "maxVal": null
+            }
+        ]
+    }
+}

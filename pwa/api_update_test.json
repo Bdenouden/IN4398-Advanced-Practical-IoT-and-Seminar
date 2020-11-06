@@ -1,0 +1,27 @@
+{
+  "API_KEY": 123,
+  "kIqcAcyGWqDPrGgw": {
+    "tIsTy": {
+      "name": "temperature",
+      "value": 25,
+      "unit": "°C"
+    },
+    "cruIT": {
+      "name": "humidity",
+      "value": 40,
+      "unit": "%"
+    }
+  },
+  "SWUbbFivvIqteELW": {
+    "BDabI": {
+      "name": "temperature",
+      "value": 27,
+      "unit": "°C"
+    },
+    "rAGen": {
+      "name": "soil moisture",
+      "value": 39,
+      "unit": "%"
+    }
+  }
+}

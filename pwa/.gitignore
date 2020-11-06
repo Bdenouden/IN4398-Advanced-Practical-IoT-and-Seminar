@@ -1,0 +1,11 @@
+.idea/
+*.lock
+
+# exclude data from the db 
+/mysql
+
+# exclude migration config
+migrate.cfg
+
+# exclude vendor files
+vendor/
