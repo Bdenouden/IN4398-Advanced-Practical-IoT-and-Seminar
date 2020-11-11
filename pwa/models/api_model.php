@@ -31,34 +31,38 @@ class api_model extends Model
         }
     }
 
-    public function storeSensorEntry(string $node_chipid, string $sensor_uid, string $data_type, ?float $data_value, string $data_unit, ?string $measure_time)
-    {
-
+    public function storeSensorEntry(string $node_chipid, string $link_id, string $value, ?string $measure_time) {
         try {
             Database::beginTransaction();
-            Database::query("INSERT INTO sensor_data (node_id, sensor_id, type, value, unit, measure_time) VALUES (:node_id, :sensor_id, :type, :value, :unit, IFNULL(:measure_time, DEFAULT(measure_time)))", array(
-                ":node_id" => $node_chipid,
-                ":sensor_id" => $sensor_uid,
-                ":type" => $data_type,
-                ":value" => $data_value,
-                ":unit" => $data_unit,
-                ":measure_time" => $measure_time
+
+            $sensor = Database::select("
+                SELECT *
+                FROM sensor_node_link as snl
+                LEFT JOIN sensor_types st on snl.sensor_type_id = st.id
+                WHERE snl.id = :link_id", array(
+                    ":link_id" => $link_id
             ));
-            Database::commit();
-            return true;
+
+            if (count($sensor) > 0){
+                Database::query("INSERT INTO sensor_data (value, node_id, type, measure_time) VALUES (:value, :node_id, :type, IFNULL(:measure_time, DEFAULT(measure_time)))", array(
+                    ":value" => $value,
+                    ":node_id" => $sensor['node_id'],
+                    ":type" => $sensor['name'],
+                    ":measure_time" => $measure_time
+                ));
+                Database::commit();
+                return true;
+            }
+            else {
+                throw new SystemException("foreign key constraint fails");
+            }
+
         } catch (SystemException $e) {
             Database::rollBack();
             if (strpos($e->getMessage(), "foreign key constraint fails") !== false){
                 if ($this->addNewDevice($node_chipid)){
                     try {
-                        return $this->storeSensorEntry(
-                            $node_chipid,
-                            $sensor_uid,
-                            $data_type,
-                            $data_value,
-                            $data_unit,
-                            $measure_time
-                        );
+                        return $this->storeSensorEntry($node_chipid, $link_id, $value, $measure_time);
                     }
                     catch (Exception $e) {
                         return $e->getMessage();

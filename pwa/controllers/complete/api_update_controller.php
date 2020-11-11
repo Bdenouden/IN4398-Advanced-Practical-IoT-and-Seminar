@@ -36,9 +36,9 @@ class api_update_controller extends Controller
                             else {
                                 $measure_time = null;
                             }
-                            foreach ($entry as $sensor_uid => $sensor_data) {
+                            foreach ($entry as $sensor_link_id => $sensor_data) {
                                 try {
-                                    $query_result = $this->model->storeSensorEntry($node_chipid, $sensor_uid, $sensor_data['name'], $sensor_data['value'], $sensor_data['unit'], $measure_time);
+                                    $query_result = $this->model->storeSensorEntry($node_chipid, $sensor_link_id, $sensor_data['value'], $measure_time);
                                     if ($query_result !== true) {
                                         $failures[] = [$node_chipid, $query_result];
                                     }
