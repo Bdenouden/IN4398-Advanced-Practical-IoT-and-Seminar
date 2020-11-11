@@ -146,7 +146,7 @@
 
         nameCell.innerHTML = sensorNameDropdown;
 
-        aliasCell.innerHTML = "<input type='text' name='alias' />";
+        aliasCell.innerHTML = "<input type='text' name='alias' class='form-control' autocomplete='off' />";
 
         removeCell.innerHTML = "<button class='IIT btn btn-outline-danger' style='width:40px; height:40px' onclick='return removeSensorRow(this)'><i class='far fa-trash-alt'></i></button>";
 
