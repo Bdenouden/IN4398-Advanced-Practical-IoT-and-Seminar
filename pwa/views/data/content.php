@@ -109,10 +109,11 @@ if (User::g('user_id')){
                 $units = [];
                 for ($i = 0; $i < count($sensor_data); $i++) {
                     $unit = $sensor_data[$i]["unit"];
+                    $name = (!is_null($sensor_data[$i]["alias"])) ? $sensor_data[$i]["alias"] : $sensor_data[$i]["node_id"];
                     if ($unit !== "") {
-                        $label = "[" . $sensor_data[$i]["node_id"] . "] " . $sensor_data[$i]["type"] . " (" . $unit . ")";
+                        $label = "[" . $name . "] " . $sensor_data[$i]["type"] . " (" . $unit . ")";
                     } else {
-                        $label = "[" . $sensor_data[$i]["node_id"] . "] " . $sensor_data[$i]["type"];
+                        $label = "[" . $name . "] " . $sensor_data[$i]["type"];
                     }
                     if (!in_array($unit, $units)) {
                         $units[] = $unit;
