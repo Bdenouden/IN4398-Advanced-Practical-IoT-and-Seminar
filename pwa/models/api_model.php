@@ -50,7 +50,19 @@ class api_model extends Model
             Database::rollBack();
             if (strpos($e->getMessage(), "foreign key constraint fails") !== false){
                 if ($this->addNewDevice($node_chipid)){
-                    return $this->storeSensorEntry($node_chipid, $sensor_uid, $data_type, $data_value, $data_unit, $measure_time);
+                    try {
+                        return $this->storeSensorEntry(
+                            $node_chipid,
+                            $sensor_uid,
+                            $data_type,
+                            $data_value,
+                            $data_unit,
+                            $measure_time
+                        );
+                    }
+                    catch (Exception $e) {
+                        return $e->getMessage();
+                    }
                 }
                 else {
                     return $e->getMessage();
