@@ -15,9 +15,6 @@ class Sensor:
         :param max_val: is the maximum raw value as transmitted by the node
         """
         self.link_id = link_id
-        # self.name = name                # e.g. 'temperature'
-        # self.linkId = linkId            # ID for board-sensor combi in pwa database
-        # defines the sensor class used at the arduino e.g. 'analog'
         self.type = sensor_type
         self.rawMinVal = int(raw_min_val)      # e.g. 0
         self.rawMaxVal = int(raw_max_val)      # e.g. 255
@@ -89,7 +86,6 @@ class Sensor:
     def sensors_from_list(cls, sensor_list):
         output = []
 
-        # TODO rewrite this to work for different sensor types
         for sensor in sensor_list:
             # sensor is a dict, sensorObj is the sensor object
             output.append(cls(
@@ -108,47 +104,3 @@ class Sensor:
 
         return output
 
-
-# class PH_sensor(Sensor):
-#     def __init__(self):
-#         super(PH_sensor, self).__init__('pH', 'I2C', '', 0, 255, 0, 14)
-
-
-# class Soil_moisture_sensor(Sensor):
-#     def __init__(self):
-#         super(Soil_moisture_sensor, self).__init__(
-#             'soil_moisture', 'analog', '%', 0, 255, 0, 100)
-
-
-# class Battery(Sensor):
-#     def __init__(self):
-#         super(Battery, self).__init__('battery', 'analog', '%', 0, 255, 0, 100)
-
-
-# class Humidity_sensor(Sensor):
-#     def __init__(self):
-#         super(Humidity_sensor, self).__init__(
-#             'humidity', 'I2C', '%', 0, 255, 0, 100)
-
-
-# class Temperature_sensor(Sensor):
-#     def __init__(self):
-#         super(Temperature_sensor, self).__init__(
-#             'temperature', 'I2C', 'C', 0, 255, -55, 125)
-
-
-# class Light_sensor(Sensor):
-#     def __init__(self):
-#         super(Light_sensor, self).__init__(
-#             'light', 'analog', '', 0, 255, 0, 255)
-
-
-# TODO alternatief idee: subclasses kunnen aangemaakt worden als 'Sensor' object op basis van de info uit de DB:
-# bij begin executie wordt uit de sensor table alle info geplukt zoals:
-# - [type]
-# - [siUnit]
-# - [rawMinVal]
-# - [rawMaxVal]
-# - [math] This column contains the mathematical logic to convert the raw data into the required values
-# - [createn_at]
-# - [updated_at]

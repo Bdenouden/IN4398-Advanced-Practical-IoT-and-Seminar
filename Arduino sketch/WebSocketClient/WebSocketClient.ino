@@ -109,7 +109,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 }
 
 void setup() {
-  #ifdef ESP8266
+#ifdef ESP8266
   chipID = ESP.getChipId();
 #endif
 
@@ -141,7 +141,7 @@ void setup() {
   //reset saved settings
   //    wifiManager.resetSettings();
 
-  String config_ssid = "ESP_" + String(chipID);
+  String config_ssid = "NODE_" + String(chipID);
   char buf[13];
   config_ssid.toCharArray(buf, 13);
   wifiManager.autoConnect(buf);
@@ -152,7 +152,7 @@ void setup() {
 }
 
 void websocket_connect() {
-  USE_SERIAL.printf("[WSc] New connection initiated\n");
+  USE_SERIAL.printf("\n[WSc] New connection initiated\n");
   webSocket = new WebSocketsClient();
   // server address, port and URL
   webSocket->begin(SERVER_ADDR, PORT, "/");

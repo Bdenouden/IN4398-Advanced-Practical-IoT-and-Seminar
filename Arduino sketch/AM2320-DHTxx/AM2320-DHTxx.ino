@@ -46,9 +46,13 @@ void loop()
       break;
   }
   // DISPLAY DATA, sensor only returns one decimal.
-  Serial.print(AM2320.getHumidity(), 1);
+//  Serial.print(AM2320.getHumidity(), 1);
+//  Serial.print(",\t\t");
+//  Serial.println(AM2320.getTemperature(), 1);
+
+  Serial.print((uint16_t)AM2320.getHumidity());
   Serial.print(",\t\t");
-  Serial.println(AM2320.getTemperature(), 1);
+  Serial.println((uint16_t)AM2320.getTemperature());
 
   Serial.print("DHT");
   Serial.print(mySensor.getType());

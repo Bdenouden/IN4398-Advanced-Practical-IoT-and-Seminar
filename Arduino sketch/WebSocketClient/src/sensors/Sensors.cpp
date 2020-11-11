@@ -11,7 +11,6 @@ Sensor::Sensor(unsigned int linkId, const char *type)
 unsigned int Sensor::getLinkId()
 {
     return this->_linkId;
-    // return 42;
 }
 
 uint8_t Sensor::getNOValues()
@@ -28,16 +27,9 @@ AnalogSensor::AnalogSensor(
     this->_pin = pin;
 }
 
-void AnalogSensor::echo()
-{
-    Serial.println("analog - echo");
-}
-
 uint16_t AnalogSensor::getValue(uint8_t number)
 {
-    return analogRead(this->_pin);
+    uint16_t val = analogRead(this->_pin);
+    // Serial.printf("Analog value of pin %d is %d", this->_pin, val);
+    return val;
 }
-
-
-
-// TODO dit afmaken maar eerst goed uitdenken

@@ -71,8 +71,6 @@ async def event_handler(websocket, path):
     node = Node.from_json(parsed)
     if node.isNew:
         http_new_device(node)
-    # TODO version update
-    # TODO check which sensor data is received but not used -> alert UI
     node.sensor_data_from_json(parsed)
 
     print(f"[WSS] Node {node.chipId} has successfully transmitted its data")
@@ -92,12 +90,9 @@ async def event_handler(websocket, path):
     config = node.get_config()
     config_string = json.dumps(config)
     config_hash = hashlib.md5(config_string.encode()).hexdigest()[0:8]
-    print(f"Hash = {config_hash}")
-
-    print(f"Hash: {config_hash}, cfg_version: {node.config_version}\n Hash == cfg_version: {config_hash == node.config_version}")
 
     if config_hash != node.config_version:
-
+        print(f"[WSS] New config available")
         dict_out = {
             "config-version": config_hash,
             "config": config
@@ -109,6 +104,8 @@ async def event_handler(websocket, path):
         # check if update successful
         msg_in = await websocket.recv()
         print(f"[WSS] msg_in = {msg_in}")
+    else:
+        print(f"[WSS] Node config up to date!")
 
     # send exit message
     msg_out = f"bye"
@@ -157,7 +154,7 @@ def send_update(known_devices):
             print(f"[UPDATE] PWA response: ")
             print(response.text)
             send_backlog()  # Since there is an established connection now, attempt to transmit the backlog
-            Node.knownDevices = {} # clear known devices to get new config
+            Node.knownDevices = {}  # clear known devices to get new config
             get_known_devices()
 
         else:
