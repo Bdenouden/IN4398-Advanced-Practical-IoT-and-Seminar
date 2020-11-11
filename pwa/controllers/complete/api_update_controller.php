@@ -47,7 +47,10 @@ class api_update_controller extends Controller
                                     }
                                 }
                                 catch (Exception $e) {
-                                    $failures[] = [$node_chipid, $e];
+                                    $failures[] = [$node_chipid, $e->getMessage()];
+                                }
+                                catch (TypeError $e) {
+                                    $failures[] = [$node_chipid, $e->getMessage()];
                                 }
                             }
                         }
