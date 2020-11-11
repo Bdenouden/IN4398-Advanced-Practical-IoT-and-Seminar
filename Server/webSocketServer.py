@@ -47,9 +47,6 @@ def http_new_device(node):
     threads.append(thread)
     thread.start()
 
-# TODO unexpected close of the connection throws an exception
-# TODO sending key chipId instead of chipID throws a keyerror
-
 
 async def event_handler(websocket, path):
     global current_clients, timeBeforeReconnect, threads
@@ -109,7 +106,7 @@ async def event_handler(websocket, path):
         msg_out = f"config:{dict_out}"
         await websocket.send(msg_out)
 
-        # TODO check if update successful
+        # check if update successful
         msg_in = await websocket.recv()
         print(f"[WSS] msg_in = {msg_in}")
 

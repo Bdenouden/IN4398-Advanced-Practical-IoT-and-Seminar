@@ -3,10 +3,8 @@ class Sensor:
     raw_value = None    # raw sensor data (minValue - maxValue)
     value = None        # meaningful data (e.g. 10 degrees C)
     _communication_method = None  # I2C, analog
-    # dict of pins connected <name>:<pin> (e.g. 'SCL':'D5', 'SDA':'D6')
-    _pin = {}
 
-    def __init__(self, link_id, sensor_type, raw_min_val, raw_max_val, min_val, max_val):
+    def __init__(self, link_id, sensor_type, raw_min_val, raw_max_val, min_val, max_val, pins):
         """
 
         :param link_id:
@@ -25,6 +23,7 @@ class Sensor:
         self.rawMaxVal = int(raw_max_val)      # e.g. 255
         self.minVal = int(min_val)            # e.g. -55
         self.maxVal = int(max_val)            # e.g. 125
+        self.pins = pins
 
         print(f"[SENSOR] Link ID: {self.link_id}")
 
@@ -83,7 +82,7 @@ class Sensor:
         return {
             "link_id": self.link_id,
             "type": self.type,
-            "pins": [0]             # TODO
+            "pins": self.pins
         }
 
     @classmethod
@@ -99,7 +98,8 @@ class Sensor:
                 sensor.get('rawMinVal', ''),
                 sensor.get('rawMaxVal', ''),
                 sensor.get('minVal', ''),
-                sensor.get('maxVal', '')
+                sensor.get('maxVal', ''),
+                sensor.get('pins',[0])
             ))
 
             # print(sensor)
