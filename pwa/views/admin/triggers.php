@@ -17,9 +17,9 @@
                 <?php
                 if (is_array($node_data["sensors"]) && count($node_data["sensors"]) > 0 && $node_data["sensors"][0]["link_id"] !== null && !isset($triggers[$node_id])) {
                     ?>
-                    <p id="trigger_<?= $node_id ?>_<?= $count ?>">
+                    <p class="form-inline" id="trigger_<?= $node_id ?>_<?= $count ?>">
                         <span class="IIT">IF</span>
-                        <select style="width:200px" id="linkid_<?= $node_id ?>_<?= $count ?>">
+                        <select class="form-control" style="width:200px" id="linkid_<?= $node_id ?>_<?= $count ?>">
                             <?php
                             foreach ($node_data["sensors"] as $sensor) {
                                 if ($sensor["link_id"] == null) {
@@ -32,18 +32,18 @@
                             ?>
                         </select>
                         <span class="IIT">IS</span>
-                        <select id="ltgt_<?= $node_id ?>_<?= $count ?>">
+                        <select class="form-control" id="ltgt_<?= $node_id ?>_<?= $count ?>">
                             <option value="0">less than</option>
                             <option value="1">greater than</option>
                         </select>
-                        <input id="number_<?= $node_id ?>_<?= $count ?>" type="number" placeholder="20" size="5"/>
+                        <input class="form-control" id="number_<?= $node_id ?>_<?= $count ?>" type="number" placeholder="20" size="5"/>
                         <span class="IIT">THEN</span>
-                        <select id="action_<?= $node_id ?>_<?= $count ?>">
+                        <select class="form-control" id="action_<?= $node_id ?>_<?= $count ?>">
                             <!--<option value="0">send a push notification</option>-->
                             <option value="1">send an email</option>
                         </select>
                         <span class="IIT">TO</span>
-                        <input id="email__<?= $node_id ?>_<?= $count ?>" type="email" placeholder="your@email.com" />
+                        <input class="form-control" id="email__<?= $node_id ?>_<?= $count ?>" type="email" placeholder="your@email.com" />
                         <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="return removeTrigger('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
                     </p>
                     <?php
@@ -52,9 +52,9 @@
                     foreach ($triggers[$node_id] as $trigger){
                         ?>
 
-                        <p id="trigger_<?= $node_id ?>_<?= $count ?>" trigger_id="<?= $trigger["trigger_id"] ?>">
+                        <p class="form-inline" id="trigger_<?= $node_id ?>_<?= $count ?>" trigger_id="<?= $trigger["trigger_id"] ?>">
                             <span class="IIT">IF</span>
-                            <select style="width:200px" id="linkid_<?= $node_id ?>_<?= $count ?>" autocomplete="off">
+                            <select class="form-control" style="width:200px" id="linkid_<?= $node_id ?>_<?= $count ?>" autocomplete="off">
                                 <?php
                                 foreach ($node_data["sensors"] as $sensor) {
                                     if ($sensor["link_id"] == null) {
@@ -67,18 +67,18 @@
                                 ?>
                             </select>
                             <span class="IIT">IS</span>
-                            <select id="ltgt_<?= $node_id ?>_<?= $count ?>" autocomplete="off">
+                            <select class="form-control" id="ltgt_<?= $node_id ?>_<?= $count ?>" autocomplete="off">
                                 <option value="0" <?php echo(0 == $trigger["lessThan_greaterThan"] ? 'selected' : '') ?>>less than</option>
                                 <option value="1" <?php echo(1 == $trigger["lessThan_greaterThan"] ? 'selected' : '') ?>>greater than</option>
                             </select>
-                            <input id="number_<?= $node_id ?>_<?= $count ?>" type="number" placeholder="20" size="5" value="<?= $trigger["val"] ?>"  autocomplete="off" />
+                            <input class="form-control" id="number_<?= $node_id ?>_<?= $count ?>" type="number" placeholder="20" size="5" value="<?= $trigger["val"] ?>"  autocomplete="off" />
                             <span class="IIT">THEN</span>
-                            <select id="action_<?= $node_id ?>_<?= $count ?>" autocomplete="off">
+                            <select class="form-control" id="action_<?= $node_id ?>_<?= $count ?>" autocomplete="off">
                                 <!--                                <option value="0" <?php //echo(0 == $trigger["notification_type"] ? 'selected' : '') ?>>send a push notification</option>-->
                                 <option value="1" <?php echo(1 == $trigger["notification_type"] ? 'selected' : '') ?>>send an email</option>
                             </select>
                             <span class="IIT">TO</span>
-                            <input id="email__<?= $node_id ?>_<?= $count ?>" type="email" placeholder="your@email.com" value="<?= (isset($trigger["recipient"])) ? $trigger["recipient"] : "" ?>" />
+                            <input class="form-control" id="email__<?= $node_id ?>_<?= $count ?>" type="email" placeholder="your@email.com" value="<?= (isset($trigger["recipient"])) ? $trigger["recipient"] : "" ?>" />
                             <button class="IIT btn btn-outline-danger ml-1" style="width:40px; height:40px" onclick="return removeTrigger('trigger_<?= $node_id ?>_<?= $count ?>')"><i class="far fa-trash-alt"></i></button>
                         </p>
 
@@ -119,6 +119,7 @@
         let count = parseInt(paragraph.id.split("_")[paragraph.id.split("_").length - 1]);
 
         const newParagraph = document.createElement("p");
+        newParagraph.classList.add("form-inline");
         newParagraph.id = "trigger_".concat(nodeId, "_", count + 1);
 
         newParagraph.innerHTML = paragraph.innerHTML.replace(paragraph.id, newParagraph.id);
