@@ -37,7 +37,7 @@ WebSocketsClient * webSocket;
 #define USE_SERIAL Serial
 
 char config_version[9]; // this represents the first 8 characters of an MD5 hash of the config file
-const uint8_t max_sensors = 8;
+const uint8_t max_sensors = 16;
 uint8_t attached_sensors = 0;
 size_t additional_array_size = 0;
 Sensor *sensorList[max_sensors];
