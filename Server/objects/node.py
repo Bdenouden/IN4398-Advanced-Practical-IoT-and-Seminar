@@ -21,8 +21,8 @@ class Node:
             self.sensorList = sensor_list
         Node.knownDevices[self.chipId] = self
 
-        print(f"[NODE] ChipId: {self.chipId}, Sensorlist: ", end='')
-        print(sensor_list)
+        # print(f"[NODE] ChipId: {self.chipId}, Sensorlist: ", end='')
+        # print(sensor_list)
 
     def sensor_data_from_json(self, json):
         # print(f"[NODE] sensordataformjson json = {json}")
@@ -65,6 +65,9 @@ class Node:
             print(f"    ]")
 
     def get_dict(self):
+        if not self.sensorList: # return empty dict if no sensor is attached (awaiting new config)
+            return {}
+
         temp_dict = {'measure_time': datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
         for sensor in self.sensorList:
             temp_dict[sensor.link_id] = sensor.get_dict()
@@ -111,9 +114,10 @@ class Node:
             if node is None:
                 # get sensor list
                 # print(json[chipId]['sensors'])
-                print(f"[Node] chipid = {chipId}, ", end='')
+                print(f"[Node] chipid = {chipId}:")
                 sensor_list = Sensor.sensors_from_list(json[chipId]['sensors'])
-
+                if not sensor_list:
+                    print("\t -- No sensors attached --")
                 # generate new node object
                 node = Node(int(chipId), 'unknown', '', sensor_list)  # FIXME version
                 # print(f"Device with id {item['id']} is now known")

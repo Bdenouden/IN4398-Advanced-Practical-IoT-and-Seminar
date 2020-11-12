@@ -22,8 +22,6 @@ class Sensor:
         self.maxVal = int(max_val)            # e.g. 125
         self.pins = pins
 
-        print(f"[SENSOR] Link ID: {self.link_id}")
-
     def is_valid(self, raw_value):
         """
         Used to determine if the transmitted value is within the specified range
@@ -50,6 +48,8 @@ class Sensor:
 
         self.raw_value = raw_value
         self.value = self.calc_value()
+
+        print(f"[SENSOR] raw value: {self.raw_value}, value: {self.value}")
         return True
 
     def calc_value(self):
@@ -70,6 +70,8 @@ class Sensor:
 
         :return:
         """
+        print(
+            f"[UPDATE][SENSOR] raw value: {self.raw_value}, value: {self.value}")
         return {
             "link_id": self.link_id,
             "value": self.value,
@@ -86,21 +88,20 @@ class Sensor:
     def sensors_from_list(cls, sensor_list):
         output = []
 
-        for sensor in sensor_list:
+        for i, sensor in enumerate(sensor_list):
             # sensor is a dict, sensorObj is the sensor object
             output.append(cls(
-                sensor.get('link_id',''),
+                sensor.get('link_id', ''),
                 sensor.get('type', ''),
                 sensor.get('rawMinVal', ''),
                 sensor.get('rawMaxVal', ''),
                 sensor.get('minVal', ''),
                 sensor.get('maxVal', ''),
-                sensor.get('pins',[0])
+                sensor.get('pins', [0])
             ))
 
-            # print(sensor)
+            print(f"\t[{i}] Link ID: {sensor.get('link_id', 'UNSET')}, type: {sensor.get('type', 'UNSET')}")
 
-        print(f"[SENSOR] {len(output)} sensors created from list")
+        # print(f"[SENSOR] {len(output)} sensors created from list")
 
         return output
-

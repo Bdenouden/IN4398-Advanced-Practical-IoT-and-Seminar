@@ -19,7 +19,7 @@ threads = []
 timeBeforeReconnect = 30*1000
 
 # seconds between sensor updates to the pwa
-update_delay = 1*60
+update_delay = 0.8*60
 
 
 def get_known_devices():
@@ -38,7 +38,7 @@ def get_known_devices():
         print(
             f"[API] Response code {response.status_code}, could not load known devices")
 
-    print(f"[SETUP] {len(Node.knownDevices)} device(s) were found:")
+    print(f"[SETUP] {len(Node.knownDevices)} device(s) were initialised")
 
 
 def http_new_device(node):
@@ -121,7 +121,7 @@ async def event_handler(websocket, path):
     # print(f'# known devices: {len(Node.knownDevices)}')
 
 
-def send_update(known_devices):
+def send_update():
     global update_delay
 
     while True:
@@ -134,8 +134,7 @@ def send_update(known_devices):
         temp_dict = {}
         api = API(path='/update')
 
-        # FIXME Node.knownDevices is not thread safe: must be converted to argument of the function
-        for _, node in known_devices.items():
+        for _, node in Node.knownDevices.items():
             temp_dict[node.chipId] = node.get_dict()
 
         api.json = temp_dict
@@ -208,8 +207,8 @@ get_known_devices()
 start_server = websockets.serve(event_handler, "", 8765)
 print('[WSS] Server started!')
 
-# TODO possible alternative for web communication: https://realpython.com/python-concurrency/
-t = threading.Thread(target=send_update, args=(Node.knownDevices,))
+# possible alternative for web communication: https://realpython.com/python-concurrency/
+t = threading.Thread(target=send_update)
 threads.append(t)
 t.start()
 
