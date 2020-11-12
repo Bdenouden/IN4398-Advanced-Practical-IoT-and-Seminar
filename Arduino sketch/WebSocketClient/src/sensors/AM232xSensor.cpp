@@ -28,11 +28,11 @@ uint16_t AM232xSensor::getValue(uint8_t number)
     switch (number)
     {
     case 0:
-        return (uint16_t)(this->AM232x.getHumidity() + 0.5); // 0.5 added for rounding
+        return (uint16_t)(this->AM232x.getHumidity() * 10); // 10x for rounding
         break;
 
     default:
-        return (uint16_t)(this->AM232x.getTemperature() + 0.5); // 0.5 added for rounding
+        return (uint16_t)(this->AM232x.getTemperature() * 10); // 10x added for rounding
         break;
     }
 }

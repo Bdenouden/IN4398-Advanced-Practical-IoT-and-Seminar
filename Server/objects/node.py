@@ -1,7 +1,6 @@
 from datetime import datetime
 from .api import API
 from .sensor import Sensor
-import threading
 
 
 class Node:

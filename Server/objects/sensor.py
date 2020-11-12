@@ -29,6 +29,7 @@ class Sensor:
         :param raw_value:
         :return:
         """
+
         if (raw_value is not None and isinstance(raw_value, int) and self.rawMinVal <= raw_value <= self.rawMaxVal):
             return True
         return False
@@ -41,7 +42,6 @@ class Sensor:
         :param raw_value:
         :return:
         """
-
         # Return false if invalid raw value
         if not self.is_valid(raw_value):
             return False
@@ -49,7 +49,7 @@ class Sensor:
         self.raw_value = raw_value
         self.value = self.calc_value()
 
-        print(f"[SENSOR] raw value: {self.raw_value}, value: {self.value}")
+        # print(f"[SENSOR] raw value: {self.raw_value}, value: {self.value}")
         return True
 
     def calc_value(self):
@@ -89,19 +89,61 @@ class Sensor:
         output = []
 
         for i, sensor in enumerate(sensor_list):
-            # sensor is a dict, sensorObj is the sensor object
-            output.append(cls(
-                sensor.get('link_id', ''),
-                sensor.get('type', ''),
-                sensor.get('rawMinVal', ''),
-                sensor.get('rawMaxVal', ''),
-                sensor.get('minVal', ''),
-                sensor.get('maxVal', ''),
-                sensor.get('pins', [0])
-            ))
+            stype = sensor.get('type', '')
+            if stype in MultiSensor.types:
+                # type of multisensor
+                output.append(MultiSensor(
+                    sensor.get('link_id', ''),
+                    stype,
+                    sensor.get('rawMinVal', ''),
+                    sensor.get('rawMaxVal', ''),
+                    sensor.get('minVal', ''),
+                    sensor.get('maxVal', ''),
+                    sensor.get('pins', [22, 21])
+                ))
+            else:
 
-            print(f"\t[{i}] Link ID: {sensor.get('link_id', 'UNSET')}, type: {sensor.get('type', 'UNSET')}")
+                # sensor is a dict, sensorObj is the sensor object
+                output.append(cls(
+                    sensor.get('link_id', ''),
+                    stype,
+                    sensor.get('rawMinVal', ''),
+                    sensor.get('rawMaxVal', ''),
+                    sensor.get('minVal', ''),
+                    sensor.get('maxVal', ''),
+                    sensor.get('pins', [0])
+                ))
+
+            print(
+                f"\t[{i}] Link ID: {sensor.get('link_id', 'UNSET')}, type: {sensor.get('type', 'UNSET')}")
 
         # print(f"[SENSOR] {len(output)} sensors created from list")
+
+        return output
+
+
+# class for sensors outputting more nore than 1 value
+class MultiSensor (Sensor):
+    types = ['am232x', 'dhtxx']
+
+    def is_valid(self, raw_value):
+        """
+        Used to determine if the transmitted value is within the specified range
+
+        :param raw_value:
+        :return:
+        """
+        if raw_value is None :
+            return False
+
+        for val in raw_value:
+            if val is None or not isinstance(val, int):
+                return False
+        return True
+
+    def calc_value(self):
+        output = []
+        for val in self.raw_value:
+            output.append(val/10)
 
         return output
