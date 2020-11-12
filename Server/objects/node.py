@@ -29,7 +29,6 @@ class Node:
         self.config_version = json.get('config_version')
         for sensor in self.sensorList:
             sensor.set_value(json.get(sensor.link_id))  # FIXME
-            print(sensor)
             print(f"[NODE] [sensorDataFromJson] Sensor link id: {sensor.link_id}, Value: {json.get(sensor.link_id)}")
 
     def add_sensor(self, sensor):
