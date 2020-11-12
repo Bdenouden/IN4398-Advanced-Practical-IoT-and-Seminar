@@ -54,6 +54,9 @@
                     <li class="nav-item <?= (strpos($_SERVER['REQUEST_URI'], "/data") !== false) ? "active" : "" ?>">
                         <a class="nav-link" href="/data">Sensor Data</a>
                     </li>
+                    <li class="nav-item <?= (strpos($_SERVER['REQUEST_URI'], "/grid") !== false) ? "active" : "" ?>">
+                        <a class="nav-link" href="/grid">Sensor Grid</a>
+                    </li>
                 <?php } ?>
                 <?php
                 if (User::session_exists()) { ?>
