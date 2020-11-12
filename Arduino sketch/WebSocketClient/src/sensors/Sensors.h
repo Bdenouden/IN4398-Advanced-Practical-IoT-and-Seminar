@@ -15,6 +15,7 @@ class Sensor
 {
 public:
 	Sensor();
+	~Sensor();
 	Sensor(unsigned int linkId, const char *type);
 	unsigned int getLinkId();
 	virtual uint16_t getValue(uint8_t number) = 0;
@@ -36,13 +37,6 @@ private:
 	uint8_t _pin; // pin where the analog sensor is connected
 };
 
-class DHTxxSensor : public Sensor
-{
-	public:
-		DHTxxSensor(unsigned int linkId, const char *type, uint8_t pin);
-		uint16_t getValue();
-		
-};
 
 
 #endif

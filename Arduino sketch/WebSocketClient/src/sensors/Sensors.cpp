@@ -8,6 +8,10 @@ Sensor::Sensor(unsigned int linkId, const char *type)
     this->_type = type;
 }
 
+Sensor::~Sensor(){
+    delete[] this->_type;
+}
+
 unsigned int Sensor::getLinkId()
 {
     return this->_linkId;

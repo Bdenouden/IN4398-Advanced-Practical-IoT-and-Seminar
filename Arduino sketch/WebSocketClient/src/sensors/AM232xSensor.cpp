@@ -19,11 +19,12 @@ AM232xSensor::AM232xSensor(
 
 uint16_t AM232xSensor::getValue(uint8_t number)
 {
-    Serial.print(this->AM232x.read());
-    Serial.print("\t\t");
-    Serial.print(this->AM232x.getHumidity());
-    Serial.print(",\t\t");
-    Serial.println(this->AM232x.getTemperature());
+    // Serial.print("AM232X\t\t");
+    // Serial.print(this->AM232x.read());
+    // Serial.print("\t\t");
+    // Serial.print(this->AM232x.getHumidity());
+    // Serial.print(",\t\t");
+    // Serial.println(this->AM232x.getTemperature());
 
     switch (number)
     {

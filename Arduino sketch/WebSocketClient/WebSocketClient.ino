@@ -30,6 +30,7 @@
 #include <WebSocketsClient.h>
 #include "src/sensors/sensors.h"
 #include "src/sensors/AM232xSensor.h"
+#include "src/sensors/DHTxxSensor.h"
 
 WebSocketsClient * webSocket;
 

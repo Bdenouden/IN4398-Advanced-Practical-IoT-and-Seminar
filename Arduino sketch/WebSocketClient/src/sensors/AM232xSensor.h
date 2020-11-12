@@ -13,7 +13,7 @@ public:
     uint16_t getValue(uint8_t number);
 
 private:
-    uint8_t _SDA; // pin where the analog sensor is connected
+    uint8_t _SDA; // pins where the sensor is connected
     uint8_t _SCL;
     AM232X AM232x;
 };
