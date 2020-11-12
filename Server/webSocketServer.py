@@ -16,9 +16,10 @@ current_clients = 0
 threads = []
 
 # time between the current and next interaction, in ms, as send to the ESP
-timeBeforeReconnect = 30*1000
+baseTimeBeforeReconnect = 30*1000
+timeBeforeReconnect = baseTimeBeforeReconnect
 
-# seconds between sensor updates to the pwa
+# seconds between sensor updates to the pwa, increase for a larger number of nodes 
 update_delay = 0.8*60
 
 
@@ -38,7 +39,12 @@ def get_known_devices():
         print(
             f"[API] Response code {response.status_code}, could not load known devices")
 
-    print(f"[SETUP] {len(Node.knownDevices)} device(s) were initialised")
+    numberOfNodes = len(Node.knownDevices)
+    # increase the time before reconnect by half of the base TBR for each 100 additional nodes configures
+    timeBeforeReconnect = baseTimeBeforeReconnect + \
+        int((round(numberOfNodes, -2) / 100) * (baseTimeBeforeReconnect / 2))
+    print(
+        f"[SETUP] {numberOfNodes} device(s) were initialised, TBR set to {timeBeforeReconnect}")
 
 
 def http_new_device(node):
@@ -131,31 +137,46 @@ def send_update():
 
         time.sleep(update_delay)
 
+        # -----  wakeup time -----
+        # collect data from all nodes and sensors into a single dictionary
         temp_dict = {}
-        api = API(path='/update')
-
         for _, node in Node.knownDevices.items():
-            temp_dict[node.chipId] = node.get_dict()
+            nodeDict = node.get_dict()
+            if not nodeDict:  # skip node data if node has no sensor data to offer
+                continue
+            else:
+                temp_dict[node.chipId] = nodeDict
 
-        api.json = temp_dict
-
+        # print content of update to terminal for verification
         print("[UPDATE] /update JSON output: ")
         print(json.dumps(temp_dict, indent=4, sort_keys=False))
 
+        # make POST request to pwa containing the collected data, save response into `response` variable
+        api = API(path='/update')
+        api.json = temp_dict
         response = api.post()
 
+        # connection to pwa could not be established
         if response is None:
-            print(f"[UPDATE] An error occured!")
+            print("[UPDATE] An error occured!")
             create_backlog_file(temp_dict)
 
+        # upload of data was succesfull
         elif response.status_code == 200:
-            print(f"[UPDATE] Sensor values successfully uploaded!")
-            print(f"[UPDATE] PWA response: ")
+            print("[UPDATE] Sensor values successfully uploaded!")
+            print("[UPDATE] PWA response: ")
             print(response.text)
-            send_backlog()  # Since there is an established connection now, attempt to transmit the backlog
-            Node.knownDevices = {}  # clear known devices to get new config
-            get_known_devices()
 
+            # Since there is an established connection now, attempt to transmit the backlog
+            send_backlog()
+
+            # clear known devices and reload configured sensors from pwa
+            print("[UPDATE] Reloading configuration from pwa...")
+            Node.knownDevices = {}
+            get_known_devices()
+            print("[UPDATE] Done!")
+
+        # connection to pwa was established but something went wrong afterwards
         else:
             print(
                 f"[UPDATE] An error occured! Response code: {response.status_code}")
@@ -166,8 +187,6 @@ def send_update():
 def create_backlog_file(data):
     """
     Write a JSON file containing the information found in the dict `data`
-    :param data:
-    :return: 
     """
     curTime = datetime.now().strftime("%Y%m%d-%H%M%S")
     with open(sys.path[0] + '/data/'+curTime+'.json', 'w+') as outFile:
@@ -177,8 +196,6 @@ def create_backlog_file(data):
 def send_backlog():
     """
     Cycle through all failed attempts to update and retry to transmit, deleting files if succesfull
-
-    :return:
     """
     path = sys.path[0] + '/data'
     api = API(path='/update')
@@ -202,15 +219,18 @@ def send_backlog():
                 f'[UPDATE] Could not transmit backlog file {file} due to a network error')
 
 
+# get configured devices from pwa
 get_known_devices()
-
-start_server = websockets.serve(event_handler, "", 8765)
-print('[WSS] Server started!')
 
 # possible alternative for web communication: https://realpython.com/python-concurrency/
 t = threading.Thread(target=send_update)
 threads.append(t)
 t.start()
 
+# configure and start the websocket server
+start_server = websockets.serve(event_handler, "", 8765)
 asyncio.get_event_loop().run_until_complete(start_server)
+
+# run the client handler loop continuously
 asyncio.get_event_loop().run_forever()
+print('[WSS] Server started!')
