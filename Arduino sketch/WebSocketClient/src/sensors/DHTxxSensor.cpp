@@ -24,6 +24,7 @@ uint16_t DHTxxSensor::getValue(uint8_t number)
     // Serial.print(this->dht->getHumidity());
     // Serial.print(",\t\t");
     // Serial.println(this->dht->getTemperature());
+    this->dht->read(); // dummy read to sync the sensor
     switch (number)
     {
     case 0:

@@ -6,12 +6,12 @@ class admin_model extends Model
     public function getAdminPageSensorData()
     {
         return Database::select("
-            SELECT alias, snl.node_id, sd.type, st.unit, ROUND(AVG(value), 2) as value, DATE(measure_time) AS date, HOUR(measure_time) AS hour, FLOOR(MINUTE(measure_time) / 6) AS minute_window_id
+            SELECT name, alias, type, snl.node_id, sd.link_id, st.unit, value, DATE(measure_time) AS date, HOUR(measure_time) AS hour, FLOOR(MINUTE(measure_time) / 6) AS minute_window_id
             FROM sensor_node_link snl
-            LEFT JOIN sensor_data sd on snl.node_id = sd.node_id
+            LEFT JOIN sensor_data sd on snl.id = sd.link_id
             LEFT JOIN sensor_types st on snl.sensor_type_id = st.id
             WHERE measure_time BETWEEN DATE_SUB(NOW(), INTERVAL 2 HOUR) AND NOW()
-            GROUP BY snl.id, type, date, hour, minute_window_id
+            GROUP BY sd.link_id, name, date, hour, minute_window_id
             ORDER BY MIN(measure_time)
         ");
     }

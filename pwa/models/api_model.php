@@ -31,7 +31,7 @@ class api_model extends Model
         }
     }
 
-    public function storeSensorEntry(string $node_chipid, string $link_id, ?string $value, ?string $measure_time) {
+    public function storeSensorEntry(string $node_chipid, string $link_id, $value, ?string $measure_time) {
         try {
             Database::beginTransaction();
 
@@ -54,11 +54,10 @@ class api_model extends Model
 
                 if (count($links) > 0) {
                     Database::query(
-                        "INSERT INTO sensor_data (value, node_id, type, measure_time) VALUES (:value, :node_id, :type, IFNULL(:measure_time, DEFAULT(measure_time)))",
+                        "INSERT INTO sensor_data (value, link_id, measure_time) VALUES (:value, :link_id, IFNULL(:measure_time, DEFAULT(measure_time)))",
                         array(
-                            ":value" => $value,
-                            ":node_id" => $links[0]['node_id'],
-                            ":type" => $links[0]['name'],
+                            ":value" => json_encode($value),
+                            ":link_id" => $link_id,
                             ":measure_time" => $measure_time
                         )
                     );

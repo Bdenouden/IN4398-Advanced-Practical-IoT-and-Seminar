@@ -26,6 +26,8 @@ uint16_t AM232xSensor::getValue(uint8_t number)
     // Serial.print(",\t\t");
     // Serial.println(this->AM232x.getTemperature());
 
+
+    this->AM232x.read(); // dummy read to sync the sensor
     switch (number)
     {
     case 0:
