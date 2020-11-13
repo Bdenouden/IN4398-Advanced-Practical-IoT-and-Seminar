@@ -68,6 +68,8 @@
     }
 </style>
 
+<pre><?php var_dump($loc_data) ?></pre>
+
 
 <div class="container" style="text-align: center;">
     <h1 class="text-center">Node map</h1>
