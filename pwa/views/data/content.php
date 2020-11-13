@@ -49,12 +49,12 @@ if (User::g('user_id')){
     $unique_sensors = [];
 
     for ($i = 0; $i < count($sensor_data); $i++) {
-        if (array_key_exists($sensor_data[$i]["node_id"], $unique_sensors)) {
-            if (!in_array($sensor_data[$i]["type"], $unique_sensors[$sensor_data[$i]["node_id"]])) {
-                $unique_sensors[$sensor_data[$i]["node_id"]][] = $sensor_data[$i]["type"];
+        if (array_key_exists($sensor_data[$i]["link_id"], $unique_sensors)) {
+            if (!in_array($sensor_data[$i]["type"], $unique_sensors[$sensor_data[$i]["link_id"]])) {
+                $unique_sensors[$sensor_data[$i]["link_id"]][] = $sensor_data[$i]["type"];
             }
         } else {
-            $unique_sensors[$sensor_data[$i]["node_id"]] = [$sensor_data[$i]["type"]];
+            $unique_sensors[$sensor_data[$i]["link_id"]] = [$sensor_data[$i]["type"]];
         }
     }
 
@@ -109,11 +109,11 @@ if (User::g('user_id')){
                 $units = [];
                 for ($i = 0; $i < count($sensor_data); $i++) {
                     $unit = $sensor_data[$i]["unit"];
-                    $name = (!is_null($sensor_data[$i]["alias"])) ? $sensor_data[$i]["alias"] : $sensor_data[$i]["node_id"];
+                    $name = (!is_null($sensor_data[$i]["alias"])) ? $sensor_data[$i]["alias"] : $sensor_data[$i]["name"];
                     if ($unit !== "") {
-                        $label = "[" . $name . "] " . $sensor_data[$i]["type"] . " (" . $unit . ")";
+                        $label = "[" . $sensor_data[$i]["node_id"] . "] " . $name . " (" . $unit . ")";
                     } else {
-                        $label = "[" . $name . "] " . $sensor_data[$i]["type"];
+                        $label = "[" . $sensor_data[$i]["node_id"] . "] " . $name;
                     }
                     if (!in_array($unit, $units)) {
                         $units[] = $unit;
@@ -124,12 +124,25 @@ if (User::g('user_id')){
                         <?php
                         $data_string = 'data: [';
 
-                        for ($j = 0; $j < 13; $j++) {
+                        for ($j = 0; $j <= 12; $j++) {
                             $added = false;
                             foreach ($sensor_data as $data) {
-                                if ($timestamps[$j]->format("H") == $data["hour"] && inTimeBracket($timestamps, $j, $data["minute_window_id"]) && $data["type"] == $sensor_data[$i]["type"] && $data["node_id"] == $sensor_data[$i]["node_id"]) {
-                                    $data_string .= $data['value'] . ",";
-                                    $added = true;
+                                $data['value'] = json_decode($data['value']);
+                                if (!is_array($data['value'])) {
+                                    if ($timestamps[$j]->format("H") == $data["hour"] && inTimeBracket($timestamps, $j, $data["minute_window_id"])
+                                        && $data["type"] == $sensor_data[$i]["type"] && $data["link_id"] == $sensor_data[$i]["link_id"]) {
+                                        $data_string .= $data['value'] . ",";
+                                        $added = true;
+                                    }
+                                }
+                                else {
+                                    foreach($data['value'] as $data_val){
+                                        if ($timestamps[$j]->format("H") == $data["hour"] && inTimeBracket($timestamps, $j, $data["minute_window_id"])
+                                            && $data["type"] == $sensor_data[$i]["type"] && $data["link_id"] == $sensor_data[$i]["link_id"]) {
+                                            $data_string .= $data_val . ",";
+                                            $added = true;
+                                        }
+                                    }
                                 }
                             }
                             if (!$added) {
