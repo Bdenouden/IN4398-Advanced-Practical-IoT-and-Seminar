@@ -21,4 +21,25 @@ class grid_model extends Model
         ");
     }
 
+    public function setSnlLoc(int $id, int $x, int $y)
+    {
+        try {
+            Database::beginTransaction();
+            Database::query("
+                UPDATE snl_location_link
+                SET x=:x, y=:y
+                WHERE id=:id
+            ", array(
+                ":id" => $id,
+                ":x" => $x,
+                ":y" => $y,
+            ));
+            Database::commit();
+            return true;
+        } catch (SystemException $e) {
+            Database::rollBack();
+            return $e->getMessage();
+        }
+    }
+
 }

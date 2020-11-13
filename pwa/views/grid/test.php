@@ -105,6 +105,12 @@
         </div>
 
     </div>
+
+    <div class="apply-btn">
+        <div class="row">
+            <button class="btn btn-success col-md-2 offset-md-5" onclick="location.reload()">Apply new location</button>
+        </div>
+    </div>
 </div>
 
 
@@ -203,7 +209,8 @@
             // send ajax to update position in db
             if (selectedElement) {
                 $.ajax({
-                    url: "/test",
+                    url: "/grid",
+                    method: "post",
                     data: {
                         id: selectedElement.getAttributeNS(null, "node_id"),
                         x: evt.target.getAttributeNS(null, "cx"),
