@@ -63,12 +63,12 @@
         display: inline-block;
     }
 
-    .grid-legend .heatmap-canvas{
+    .grid-legend .heatmap-canvas {
         border: solid 1px #a5a5a5;
     }
 </style>
 
-<pre><?php var_dump($loc_data) ?></pre>
+<!-- <pre><?php var_dump($loc_data) ?></pre> -->
 
 
 <div class="container" style="text-align: center;">
@@ -89,21 +89,16 @@
 
                 <rect width="100%" height="100%" fill="url(#grid)" />
 
-                <circle node_id="12345123" class="draggable" cx="70" cy="100" r="10" fill="#555" stroke=#fff />
-                <circle node_id="23345123" class="draggable" cx="420" cy="250" r="10" fill="#555" stroke=#fff />
-                <circle node_id="34345123" class="draggable" cx="200" cy="30" r="10" fill="#555" stroke=#fff />
-                <circle node_id="45345123" class="draggable" cx="100" cy="250" r="10" fill="#555" stroke=#fff />
-                <circle node_id="56345123" class="draggable" cx="400" cy="100" r="10" fill="#555" stroke=#fff />
-                <circle node_id="67345123" class="draggable" cx="300" cy="150" r="10" fill="#555" stroke=#fff />
-                <circle node_id="78345123" class="draggable" cx="230" cy="280" r="10" fill="#555" stroke=#fff />
-
+                <?php foreach ($loc_data as $loc) : ?>
+                    <circle node_id="<?= $loc["id"] ?>" class="draggable" cx="<?= $loc['x'] ? $loc['x'] : 10 ?>" cy="<?= $loc['y'] ? $loc['y'] : 10 ?>" r="10" fill="#555" stroke=#fff />
+                <?php endforeach ?>
             </svg>
         </div>
 
         <div class="grid-legend">
             <div id="legend-bar_1"></div>
             <div class="legend-text">
-                <p class="max" >100%</p>
+                <p class="max">100%</p>
                 <p class="middle">50%</p>
                 <p class="min">0%</p>
             </div>
@@ -831,34 +826,14 @@
 
     heatmap.setData({
         max: 100,
-        data: [{
-            x: 70,
-            y: 100,
-            value: 100
-        }, {
-            x: 420,
-            y: 250,
-            value: 80
-        }, {
-            x: 200,
-            y: 30,
-            value: 60
-        }, {
-            x: 100,
-            y: 250,
-            value: 100
-        }, {
-            x: 400,
-            y: 100,
-            value: 40
-        }, {
-            x: 300,
-            y: 150,
-            value: 60
-        }, {
-            x: 230,
-            y: 280,
-            value: 60
-        }]
+        data: [
+            <?php foreach($loc_data as $loc):?>
+            {
+                x: <?=$loc['x']?>,
+                y:<?=$loc['y']?>,
+                value:<?=$loc['value']?>
+            },
+            <?php endforeach?>
+    ]
     })
 </script>
