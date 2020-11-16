@@ -45,7 +45,7 @@
 
 <?php
 
-if (User::g('user_id')){
+if (User::g('user_id')) {
     $unique_sensors = [];
 
     for ($i = 0; $i < count($sensor_data); $i++) {
@@ -91,11 +91,15 @@ if (User::g('user_id')){
         }
         return $in_bracket;
     }
-
+}
 
 ?>
 
 <script type="text/javascript">
+
+    <?php
+    if (User::g('user_id')){
+        ?>
 
     const chartConfig = {
         type: 'line',
