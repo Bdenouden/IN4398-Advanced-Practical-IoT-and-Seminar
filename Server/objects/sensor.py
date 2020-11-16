@@ -133,11 +133,11 @@ class MultiSensor (Sensor):
         :param raw_value:
         :return:
         """
-        if raw_value is None :
+        if raw_value is None:
             return False
 
         for val in raw_value:
-            if val is None or not isinstance(val, int):
+            if val is None or not isinstance(val, int) or val >= self.rawMaxVal*10 or val <= self.rawMinVal*10:
                 return False
         return True
 
