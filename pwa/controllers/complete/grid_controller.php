@@ -14,7 +14,7 @@ class grid_controller extends Controller
             return json_encode(["success" => true, "message" => "Successfully stored all sensor data entries!"]);
         }
 
-        return $this->loadView('grid/test',array(
+        return $this->loadView('grid/index',array(
             'loc_data' => $this->model->getSnlLocData()
         ));
     }

@@ -24,6 +24,10 @@
         display: inline-block;
     }
 
+    #heatmap_1>canvas {
+        z-index: -1;
+    }
+
     .static {
         cursor: not-allowed;
     }
@@ -65,6 +69,48 @@
 
     .grid-legend .heatmap-canvas {
         border: solid 1px #a5a5a5;
+    }
+
+    .slider {
+        margin: 10px 0;
+        -webkit-appearance: none;
+        width: 200px;
+        height: 15px;
+        border-radius: 5px;
+        background: #d3d3d3;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+    }
+
+    .slider:hover {
+        opacity: 1;
+    }
+
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #4CAF50;
+        cursor: pointer;
+    }
+
+    .slider::-moz-range-thumb {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #4CAF50;
+        cursor: pointer;
+    }
+
+    .valueContainer {
+        display: inline-block;
+        width: 120px;
+        text-align: left;
+        margin-left: 10px;
     }
 </style>
 
@@ -111,6 +157,28 @@
             <button class="btn btn-success col-md-2 offset-md-5" onclick="location.reload()">Apply new location</button>
         </div>
     </div>
+
+    <div class="settings-container" style="text-align:left;border:solid 2px gray; border-radius:25px; padding:30px">
+        <div class="form-group">
+
+            <input type="range" min="1" max="200" value="100" class="slider" id="radiusSlider">
+            <p class="valueContainer"><span id="radiusValue">100</span> px</p>
+        </div>
+        <div class="form-group">
+            <input type="checkbox" class="form-check-input" id="snapToGrid">
+            <label class="form-check-label" for="snapToGrid">snap to grid</label>
+        </div>
+        <div class="card" style="width: 18rem;max-height:400px; overflow-y:auto">
+            <div class="card-header">
+                Added nodes
+            </div>
+            <ul class="list-group list-group-flush">
+                <?php foreach ($loc_data as $loc) : ?>
+                    <li class="list-group-item" item_id="<?= $loc['id'] ?>"><?= $loc['alias'] ? $loc['alias'] : 'unnamed node' ?> <a style="right: 10px; position: absolute;" href="">x</a></li>
+                <?php endforeach ?>
+            </ul>
+        </div>
+    </div>
 </div>
 
 
@@ -128,10 +196,14 @@
 
     function makeDraggable(evt) {
 
-        const snapToGrid = false;
+        let snapToGrid = false;
         var svg = evt.target;
         svgpar = svg.parentNode
 
+        snaptogridcb = document.getElementById("snapToGrid");
+        snaptogridcb.addEventListener("change", function() {
+            snapToGrid = snaptogridcb.checked
+        })
 
         // computer
         svgpar.addEventListener('mousedown', startDrag);
@@ -823,24 +895,56 @@
     });
 
 
+    let slider = document.getElementById("radiusSlider")
+
     var heatmap = h337.create({
         container: document.getElementById("heatmap_1"),
         radius: 100
     });
 
+    slider.addEventListener('input', function() {
+        document.getElementById("radiusValue").innerText = slider.value;
 
-    document.getElementsByClassName("heatmap-canvas")[0].style.zIndex = -1;
+        // heatmap.configure({
+        //     container: document.getElementById("heatmap_1"),
+        //     radius: slider.value
+        // })
+        // heatmap.repaint
+
+
+        // console.log(heatmap.repaint())
+        heatmap.setData({
+            max: 100,
+            data: [
+                <?php foreach ($loc_data as $loc) : ?> {
+                        x: <?= $loc['x'] ?>,
+                        y: <?= $loc['y'] ?>,
+                        value: <?= $loc['value'] ?>,
+                        radius: slider.value
+                    },
+                <?php endforeach ?>
+            ]
+        })
+
+    })
+
+
 
     heatmap.setData({
         max: 100,
         data: [
-            <?php foreach($loc_data as $loc):?>
-            {
-                x: <?=$loc['x']?>,
-                y:<?=$loc['y']?>,
-                value:<?=$loc['value']?>
-            },
-            <?php endforeach?>
-    ]
+            <?php foreach ($loc_data as $loc) : ?> {
+                    x: <?= $loc['x'] ?>,
+                    y: <?= $loc['y'] ?>,
+                    value: <?= $loc['value'] ?>
+                },
+            <?php endforeach ?>
+        ]
     })
+
+    heatmap.configure({
+        container: document.getElementById("heatmap_1"),
+        radius: 200
+    })
+    heatmap.repaint
 </script>
