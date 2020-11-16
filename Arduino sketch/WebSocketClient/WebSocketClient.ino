@@ -30,13 +30,14 @@
 #include <WebSocketsClient.h>
 #include "src/sensors/sensors.h"
 #include "src/sensors/AM232xSensor.h"
+#include "src/sensors/DHTxxSensor.h"
 
 WebSocketsClient * webSocket;
 
 #define USE_SERIAL Serial
 
 char config_version[9]; // this represents the first 8 characters of an MD5 hash of the config file
-const uint8_t max_sensors = 8;
+const uint8_t max_sensors = 16;
 uint8_t attached_sensors = 0;
 size_t additional_array_size = 0;
 Sensor *sensorList[max_sensors];
@@ -109,7 +110,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 }
 
 void setup() {
-  #ifdef ESP8266
+#ifdef ESP8266
   chipID = ESP.getChipId();
 #endif
 
@@ -141,7 +142,7 @@ void setup() {
   //reset saved settings
   //    wifiManager.resetSettings();
 
-  String config_ssid = "ESP_" + String(chipID);
+  String config_ssid = "NODE_" + String(chipID);
   char buf[13];
   config_ssid.toCharArray(buf, 13);
   wifiManager.autoConnect(buf);
@@ -152,7 +153,7 @@ void setup() {
 }
 
 void websocket_connect() {
-  USE_SERIAL.printf("[WSc] New connection initiated\n");
+  USE_SERIAL.printf("\n[WSc] New connection initiated\n");
   webSocket = new WebSocketsClient();
   // server address, port and URL
   webSocket->begin(SERVER_ADDR, PORT, "/");

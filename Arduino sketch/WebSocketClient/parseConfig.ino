@@ -53,9 +53,13 @@ bool parseConfig(char* json) {
         21
         );
     }
-    else if (strcmp("DHTxx", type) == 0) {
+    else if (strcmp("dhtxx", type) == 0) {
       additional_array_size += JSON_ARRAY_SIZE(2);
-      invalid_sensors++;
+      sensorList[i] = new DHTxxSensor(
+        linkId,
+        type,
+        sensor["pins"][0] // first number in pin list
+      );
     }
     else {
       Serial.printf("[CONFIG] Invalid sensor type: %s\n", type);

@@ -3,10 +3,6 @@ import json
 
 
 class API:
-    url = 'http://bram-ubuntu.local/api'
-    path = '/get_devices'
-    params = {'API_KEY': 123}
-
     def __init__(
             self,
             url='http://bram-ubuntu.local/api',

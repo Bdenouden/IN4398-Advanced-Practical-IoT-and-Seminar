@@ -45,16 +45,16 @@
 
 <?php
 
-if (User::g('user_id')){
+if (User::g('user_id')) {
     $unique_sensors = [];
 
     for ($i = 0; $i < count($sensor_data); $i++) {
-        if (array_key_exists($sensor_data[$i]["node_id"], $unique_sensors)) {
-            if (!in_array($sensor_data[$i]["type"], $unique_sensors[$sensor_data[$i]["node_id"]])) {
-                $unique_sensors[$sensor_data[$i]["node_id"]][] = $sensor_data[$i]["type"];
+        if (array_key_exists($sensor_data[$i]["link_id"], $unique_sensors)) {
+            if (!in_array($sensor_data[$i]["type"], $unique_sensors[$sensor_data[$i]["link_id"]])) {
+                $unique_sensors[$sensor_data[$i]["link_id"]][] = $sensor_data[$i]["type"];
             }
         } else {
-            $unique_sensors[$sensor_data[$i]["node_id"]] = [$sensor_data[$i]["type"]];
+            $unique_sensors[$sensor_data[$i]["link_id"]] = [$sensor_data[$i]["type"]];
         }
     }
 
@@ -93,12 +93,13 @@ if (User::g('user_id')){
     }
 }
 
-
 ?>
 
 <script type="text/javascript">
 
-    <?php if (User::g('user_id')){ ?>
+    <?php
+    if (User::g('user_id')){
+        ?>
 
     const chartConfig = {
         type: 'line',
@@ -107,47 +108,99 @@ if (User::g('user_id')){
             datasets: [
                 <?php
                 $units = [];
+                $reserves = [];
                 for ($i = 0; $i < count($sensor_data); $i++) {
-                $unit = $sensor_data[$i]["unit"];
-                if ($unit !== "") {
-                    $label = "[" . $sensor_data[$i]["node_id"] . "] " . $sensor_data[$i]["type"] . " (" . $unit . ")";
-                } else {
-                    $label = "[" . $sensor_data[$i]["node_id"] . "] " . $sensor_data[$i]["type"];
-                }
-                if (!in_array($unit, $units)) {
-                    $units[] = $unit;
-                }
-                ?>
-                {
-                    label: "<?= $label ?>",
-                    <?php
-                    $data_string = 'data: [';
-
-                    for ($j = 0; $j < 13; $j++) {
-                        $added = false;
-                        foreach ($sensor_data as $data) {
-                            if ($timestamps[$j]->format("H") == $data["hour"] && inTimeBracket($timestamps, $j, $data["minute_window_id"]) && $data["type"] == $sensor_data[$i]["type"] && $data["node_id"] == $sensor_data[$i]["node_id"]) {
-                                $data_string .= $data['value'] . ",";
-                                $added = true;
+                    $unit = json_decode($sensor_data[$i]["unit"]);
+                    $name = (!is_null($sensor_data[$i]["alias"])) ? $sensor_data[$i]["alias"] : $sensor_data[$i]["name"];
+                    if (is_null($unit)){
+                        $unit = $sensor_data[$i]["unit"];
+                    }
+                    if ($unit !== "" && !is_array($unit)) {
+                        $label = "[" . $sensor_data[$i]["node_id"] . "] " . $name . " (" . $unit . ")";
+                    } else if (is_array($unit)) {
+                        for ($l = 0; $l < count($unit); $l++){
+                            if ($l == 0){
+                                $label = "[" . $sensor_data[$i]["node_id"] . "] " . $name . " (" . $unit[$l] . ")";
+                            }
+                            else {
+                                $reserves[$sensor_data[$i]["node_id"]]["label"] = "[" . $sensor_data[$i]["node_id"] . "] " . $name . " (" . $unit[$l] . ")";
                             }
                         }
-                        if (!$added) {
-                            $data_string .= ",";
-                        }
+                    }else {
+                        $label = "[" . $sensor_data[$i]["node_id"] . "] " . $name;
                     }
-
-                    $data_string = rtrim($data_string, ", ") . "], fill: false,";
-
-                    echo $data_string;
-
-                    if ($i == $unique_sensor_count - 1) {
-                        echo "}";
-                        break;
+                    if (!in_array($unit, $units)) {
+                        $units[] = $unit;
                     }
                     ?>
-                },
+                    {
+                        label: "<?= $label ?>",
+                        <?php
+                        $data_string = 'data: [';
+
+                        for ($j = 0; $j <= 12; $j++) {
+                            $added = false;
+                            foreach ($sensor_data as $data) {
+                                $data['value'] = json_decode($data['value']);
+                                if (!is_array($data['value'])) {
+                                    if ($timestamps[$j]->format("H") == $data["hour"] && inTimeBracket($timestamps, $j, $data["minute_window_id"])
+                                        && $data["type"] == $sensor_data[$i]["type"] && $data["link_id"] == $sensor_data[$i]["link_id"]) {
+                                        $data_string .= $data['value'] . ",";
+                                        $added = true;
+                                    }
+                                } else if (is_array($data['value'])){
+                                    for ($k = 0; $k < count($data["value"]); $k++) {
+                                        if ($timestamps[$j]->format("H") == $data["hour"] && inTimeBracket($timestamps, $j, $data["minute_window_id"])
+                                            && $data["type"] == $sensor_data[$i]["type"] && $data["link_id"] == $sensor_data[$i]["link_id"]) {
+                                            if ($k == 0) {
+                                                $data_string .= $data["value"][$k] . ",";
+                                            } else {
+                                                if (array_key_exists("data_string", $reserves[$sensor_data[$i]["node_id"]])) {
+                                                    $reserves[$sensor_data[$i]["node_id"]]["data_string"] .= $data["value"][$k] . ",";
+                                                } else {
+                                                    $reserves[$sensor_data[$i]["node_id"]]["data_string"] = $data["value"][$k] . ",";
+                                                }
+                                            }
+                                            $added = true;
+                                        }
+                                    }
+                                }
+                            }
+                            if (!$added) {
+                                $data_string .= ",";
+                                if (array_key_exists($sensor_data[$i]["node_id"], $reserves) && array_key_exists("data_string", $reserves[$sensor_data[$i]["node_id"]])) {
+                                    $reserves[$sensor_data[$i]["node_id"]]["data_string"] .= ",";
+                                } else {
+                                    $reserves[$sensor_data[$i]["node_id"]]["data_string"] = ",";
+                                }
+                            }
+                        }
+
+                        $data_string = rtrim($data_string, ", ") . "], fill: false,";
+
+                        echo $data_string;
+
+                        if ($i == $unique_sensor_count - 1) {
+                            echo "}";
+                            break;
+                        }
+                        ?>
+                    },
                 <?php
-                } ?>
+                }
+                foreach($reserves as $key => $reserve) {
+                    if (array_key_exists("label", $reserves[$key])){
+                        ?>, { label: "<?= $reserves[$key]["label"] ?>", <?php
+
+                        $data_string = 'data: [' . $reserves[$key]["data_string"];
+
+                        $data_string = rtrim($data_string, ", ") . "], fill: false,";
+
+                        echo $data_string;
+                    ?> }, <?php
+                    }
+                }
+                ?>
             ],
         },
         options: {
@@ -383,3 +436,4 @@ if (User::g('user_id')){
         getWeather("Delft, The Netherlands");
     };
 </script>
+
