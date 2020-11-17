@@ -112,15 +112,46 @@
         text-align: left;
         margin-left: 10px;
     }
+
+    .inline-box {
+        display: inline-block;
+    }
+
+    #snl_search {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        right: 5px;
+        position: absolute;
+    }
+
+    .settings-container {
+        border: solid 2px gray;
+        border-radius: 25px;
+        padding: 10px 30px 30px 30px;
+        margin: 30px;
+        position: relative;
+    }
+
+    .settingsIcon {
+        font-size: 30pt;
+        color: #777;
+        display: inline-block;
+        position: absolute;
+        right: 10px;
+        top: 5px;
+    }
+
+    .highlight {
+        background: #28A745;
+        fill: #28A745;
+        stroke: black;
+    }
 </style>
-
-<!-- <pre><?php var_dump($loc_data) ?></pre> -->
-
 
 <div class="container" style="text-align: center;">
     <h1 class="text-center">Node map</h1>
     <div id="grid-container">
-        <h3 class="text-center">Temperature</h3>
+        <h3 class="text-center"><?= $settings['mapName'] ?></h3>
         <div id="heatmap_1">
             <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" onload="makeDraggable(evt)">
                 <defs>
@@ -136,7 +167,7 @@
                 <rect width="100%" height="100%" fill="url(#grid)" />
 
                 <?php foreach ($loc_data as $loc) : ?>
-                    <circle node_id="<?= $loc["id"] ?>" class="draggable" cx="<?= $loc['x'] ? $loc['x'] : 10 ?>" cy="<?= $loc['y'] ? $loc['y'] : 10 ?>" r="10" fill="#555" stroke=#fff />
+                    <circle item_id="<?= $loc["id"] ?>" class="draggable" cx="<?= $loc['x'] ? $loc['x'] : 10 ?>" cy="<?= $loc['y'] ? $loc['y'] : 10 ?>" r="10" fill="#555" stroke=#fff />
                 <?php endforeach ?>
             </svg>
         </div>
@@ -154,27 +185,58 @@
 
     <div class="apply-btn">
         <div class="row">
-            <button class="btn btn-success col-md-2 offset-md-5" onclick="location.reload()">Apply new location</button>
+            <button class="btn btn-success col-md-2 offset-md-5" onclick="location.reload()">Refresh map</button>
         </div>
     </div>
 
-    <div class="settings-container" style="text-align:left;border:solid 2px gray; border-radius:25px; padding:30px">
+    <div class="settings-container">
+        <h2>
+            Settings
+        </h2>
+        <div class="settingsIcon">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-gear" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M8.837 1.626c-.246-.835-1.428-.835-1.674 0l-.094.319A1.873 1.873 0 0 1 4.377 3.06l-.292-.16c-.764-.415-1.6.42-1.184 1.185l.159.292a1.873 1.873 0 0 1-1.115 2.692l-.319.094c-.835.246-.835 1.428 0 1.674l.319.094a1.873 1.873 0 0 1 1.115 2.693l-.16.291c-.415.764.42 1.6 1.185 1.184l.292-.159a1.873 1.873 0 0 1 2.692 1.116l.094.318c.246.835 1.428.835 1.674 0l.094-.319a1.873 1.873 0 0 1 2.693-1.115l.291.16c.764.415 1.6-.42 1.184-1.185l-.159-.291a1.873 1.873 0 0 1 1.116-2.693l.318-.094c.835-.246.835-1.428 0-1.674l-.319-.094a1.873 1.873 0 0 1-1.115-2.692l.16-.292c.415-.764-.42-1.6-1.185-1.184l-.291.159A1.873 1.873 0 0 1 8.93 1.945l-.094-.319zm-2.633-.283c.527-1.79 3.065-1.79 3.592 0l.094.319a.873.873 0 0 0 1.255.52l.292-.16c1.64-.892 3.434.901 2.54 2.541l-.159.292a.873.873 0 0 0 .52 1.255l.319.094c1.79.527 1.79 3.065 0 3.592l-.319.094a.873.873 0 0 0-.52 1.255l.16.292c.893 1.64-.902 3.434-2.541 2.54l-.292-.159a.873.873 0 0 0-1.255.52l-.094.319c-.527 1.79-3.065 1.79-3.592 0l-.094-.319a.873.873 0 0 0-1.255-.52l-.292.16c-1.64.893-3.433-.902-2.54-2.541l.159-.292a.873.873 0 0 0-.52-1.255l-.319-.094c-1.79-.527-1.79-3.065 0-3.592l.319-.094a.873.873 0 0 0 .52-1.255l-.16-.292c-.892-1.64.902-3.433 2.541-2.54l.292.159a.873.873 0 0 0 1.255-.52l.094-.319z" />
+                <path fill-rule="evenodd" d="M8 5.754a2.246 2.246 0 1 0 0 4.492 2.246 2.246 0 0 0 0-4.492zM4.754 8a3.246 3.246 0 1 1 6.492 0 3.246 3.246 0 0 1-6.492 0z" />
+            </svg>
+        </div>
         <div class="form-group">
 
-            <input type="range" min="1" max="200" value="100" class="slider" id="radiusSlider">
-            <p class="valueContainer"><span id="radiusValue">100</span> px</p>
+            <div class="inline-box">
+                <label for="mapNameInput">Name: </label>
+                <input type="text" id="mapNameInput" placeholder="<?= $settings['mapName'] ?>" style="margin: 0 40px;">
+            </div>
+            <div class="inline-box">
+                <label for="radiusSlider">Radius:</label>
+                <input type="range" min="1" max="200" value="<?= $settings['radius'] ?>" class="slider" id="radiusSlider">
+                <p class="valueContainer"><span id="radiusValue"><?= $settings['radius'] ?></span> px</p>
+            </div>
+            <div class="inline-box" style="margin:0  40px;">
+                <input type="checkbox" class="form-check-input" id="snapToGrid" <?= $settings['snapToGrid'] == '1' ? 'checked' : '' ?>>
+                <label class="form-check-label" for="snapToGrid">snap to grid</label>
+            </div>
+
+            <button class="btn-success btn" onclick="saveUserSettings()">Save settings</button>
         </div>
-        <div class="form-group">
-            <input type="checkbox" class="form-check-input" id="snapToGrid">
-            <label class="form-check-label" for="snapToGrid">snap to grid</label>
-        </div>
-        <div class="card" style="width: 18rem;max-height:400px; overflow-y:auto">
+
+        <div class="card inline-box" style="width: 18rem;height:400px; overflow-y:auto; margin:0 20px; text-align:left">
             <div class="card-header">
-                Added nodes
+                Added sensors
             </div>
             <ul class="list-group list-group-flush">
                 <?php foreach ($loc_data as $loc) : ?>
-                    <li class="list-group-item" item_id="<?= $loc['id'] ?>"><?= $loc['alias'] ? $loc['alias'] : 'unnamed node' ?> <a style="right: 10px; position: absolute;" href="">x</a></li>
+                    <li class="list-group-item added-sensor" item_id="<?= $loc['id'] ?>" onclick="highlightSelectedNode(this)"><?= $loc['alias'] ? $loc['alias'] : 'unnamed node' ?> <a style="right: 10px; position: absolute;" href="" onclick="deleteSensorFromLoc(this.parentNode)">x</a></li>
+                <?php endforeach ?>
+            </ul>
+        </div>
+
+        <div class="card inline-box" style="width: 25rem;height:400px; overflow-y:auto;margin:0 20px; text-align:left ">
+            <div class="card-header">
+                Available sensors
+                <input type="text" id="snl_search" onkeyup="searchBar(this)" placeholder="Search for alias..">
+            </div>
+            <ul class="list-group list-group-flush" id="available_sensors">
+                <?php foreach ($snl_list as $snl) : ?>
+                    <li class="list-group-item available-sensor" item_id="<?= $snl['id'] ?>"><?= $snl['alias'] ? $snl['alias'] : 'unnamed node' ?> <a style="right: 10px; position: absolute;" href="" onclick="addSensorToLoc(this.parentNode)">Add</a></li>
                 <?php endforeach ?>
             </ul>
         </div>
@@ -184,6 +246,91 @@
 
 
 <script>
+    function saveUserSettings() {
+        let name = document.getElementById("mapNameInput").value;
+        let reload = name ? true : false; // only reload if name has changed
+
+        $.ajax({
+            url: "/grid",
+            method: "get",
+            data: {
+                action: 'settings',
+                radius: document.getElementById("radiusSlider").value,
+                snap: document.getElementById("snapToGrid").checked,
+                mapName: name || "<?= $settings['mapName'] ?>"
+            }
+        }).done(function(result) {
+            if (reload) {
+                location.reload();
+            }
+        })
+    }
+
+    function addSensorToLoc(el) {
+        $.ajax({
+            url: "/grid",
+            method: "get",
+            data: {
+                action: 'add',
+                snl_id: el.getAttribute('item_id'),
+            }
+        }).done(function(result) {
+            location.reload();
+        })
+    }
+
+    function deleteSensorFromLoc(el) {
+        $.ajax({
+            url: "/grid",
+            method: "get",
+            data: {
+                action: 'delete',
+                id: el.getAttribute('item_id'),
+            }
+        }).done(function() {
+            location.reload();
+        })
+    }
+
+    function searchBar(el) {
+        let ul = document.getElementById("available_sensors");
+        let filter = el.value.toUpperCase();
+        let items = ul.querySelectorAll('li');
+        let alias;
+
+        items.forEach(i => {
+            alias = i.textContent || i.innerText;
+            if (alias.toUpperCase().indexOf(filter) > -1) {
+                i.style.display = "";
+            } else {
+                i.style.display = "none";
+            }
+        });
+    }
+
+    function highlightSelectedNode(el) {
+        var items = document.querySelectorAll(".added-sensor");
+
+        var blobs = document.querySelectorAll(".draggable");
+
+        items.forEach(item => {
+            if (item == el) {
+                item.classList.toggle("highlight");
+            } else {
+                item.classList.remove("highlight");
+            }
+        })
+
+        blobs.forEach(blob => {
+            if (blob.getAttribute('item_id') == el.getAttribute('item_id')) {
+                blob.classList.toggle('highlight');
+            } else {
+                blob.classList.remove('highlight');
+            }
+        })
+
+    }
+
     document.querySelectorAll('.draggable').forEach(item => {
         item.addEventListener('contextmenu', event => {
             event.preventDefault();
@@ -191,14 +338,13 @@
         }, false);
     })
 
-
     // https://www.petercollingridge.co.uk/tutorials/svg/interactive/dragging/
 
     function makeDraggable(evt) {
 
-        let snapToGrid = false;
+        let snapToGrid = <?= $settings['snapToGrid'] ? 'true' : 'false' ?>;
         var svg = evt.target;
-        svgpar = svg.parentNode
+        var svgpar = svg.parentNode
 
         snaptogridcb = document.getElementById("snapToGrid");
         snaptogridcb.addEventListener("change", function() {
@@ -284,7 +430,7 @@
                     url: "/grid",
                     method: "post",
                     data: {
-                        id: selectedElement.getAttributeNS(null, "node_id"),
+                        id: selectedElement.getAttributeNS(null, "item_id"),
                         x: evt.target.getAttributeNS(null, "cx"),
                         y: selectedElement.getAttributeNS(null, "cy")
                     }
@@ -899,20 +1045,11 @@
 
     var heatmap = h337.create({
         container: document.getElementById("heatmap_1"),
-        radius: 100
+        radius: <?= $settings['radius'] ?>
     });
 
     slider.addEventListener('input', function() {
         document.getElementById("radiusValue").innerText = slider.value;
-
-        // heatmap.configure({
-        //     container: document.getElementById("heatmap_1"),
-        //     radius: slider.value
-        // })
-        // heatmap.repaint
-
-
-        // console.log(heatmap.repaint())
         heatmap.setData({
             max: 100,
             data: [
@@ -941,10 +1078,4 @@
             <?php endforeach ?>
         ]
     })
-
-    heatmap.configure({
-        container: document.getElementById("heatmap_1"),
-        radius: 200
-    })
-    heatmap.repaint
 </script>
