@@ -218,9 +218,9 @@
             <button class="btn-success btn" onclick="saveUserSettings()">Save settings</button>
         </div>
 
-        <div class="card inline-box" style="width: 18rem;height:400px; overflow-y:auto; margin:0 20px; text-align:left">
+        <div class="card inline-box" style="width: 25rem;height:400px; overflow-y:auto; margin:0 20px; text-align:left">
             <div class="card-header">
-                Added sensors
+               Added sensors <small style="position: absolute; right:5px"><i> (Click to highlight on the map)</i></small>
             </div>
             <ul class="list-group list-group-flush">
                 <?php foreach ($loc_data as $loc) : ?>
