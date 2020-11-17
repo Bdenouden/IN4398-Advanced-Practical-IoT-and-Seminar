@@ -146,8 +146,8 @@ class grid_model extends Model
             ";
         } else {
             $query = "
-                INSERT INTO grid_settings ( user_id, radius, snapToGrid)
-                VALUES (:user_id, :radius, :snap)
+                INSERT INTO grid_settings ( user_id, radius, snapToGrid, mapName)
+                VALUES (:user_id, :radius, :snap, :mapName)
             ";
         }
 
