@@ -102,3 +102,16 @@ footer * {
     text-align: center;
     margin: 55px auto auto auto;
 }
+
+code {
+    background-color: #eee;
+    border-radius: 3px;
+    font-family: courier, monospace;
+    padding: 0 3px;
+    text-align: left;
+    display: inline-block;
+}
+pre .caption{
+    color: tomato;
+    /* font-family: courier, monospace; */
+}

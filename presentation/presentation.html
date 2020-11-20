@@ -28,7 +28,9 @@
 
     <div id="page_1" class="page" pageName="Intro">
         <p class="title">Introduction</p>
-        <iframe style="max-width: 100%; height: 80%;"  src="https://www.youtube.com/embed/cRuT58PRIdY" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <iframe style="max-width: 100%; height: 80%;" src="https://www.youtube.com/embed/cRuT58PRIdY" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
         <a href="https://www.youtube.com/embed/cRuT58PRIdY">https://www.youtube.com/embed/cRuT58PRIdY</a>
     </div>
 
@@ -40,6 +42,28 @@
     <div id="page_2" class="page" pagename="Node">
         <p class="title">Sensor node</p>
         <img src="">
+        <pre>
+            <code>
+{
+    "config-version": "12345678",
+    "config": 
+    [
+        {
+            "link-id": 8,
+            "type": "analog",
+            "pins": [0] 
+        },
+        {
+            "link-id": 26,
+            "type": "am232x",
+            "pins": [22,21,0] 
+        }
+    ]
+}
+</code>
+<span class="caption" >Config message as received by sensor node</span>
+
+        </pre>
     </div>
 
     <div id="page_3" class="page" pageName="Controller">
@@ -54,7 +78,7 @@
 
     <div id="page_5" class="page" pageName="Enclosure">
         <p class="title">Enclosure</p>
-        <img src="../enclosure/Screenshot-exploded-str.jpg" >
+        <img src="../enclosure/Screenshot-exploded-str.jpg">
 
     </div>
 
