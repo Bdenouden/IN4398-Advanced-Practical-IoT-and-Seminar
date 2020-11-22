@@ -10,6 +10,17 @@ body {
     font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+a {
+    font-size: 1.2em;
+    text-decoration: none;
+    font-family: sans-serif;
+    color: #333;
+}
+
+a:hover {
+    color: #666;
+}
+
 .title {
     color: #929191;
     font-size: 3rem;
@@ -105,13 +116,17 @@ footer * {
 
 code {
     background-color: #eee;
-    border-radius: 3px;
+    border-radius: 5px;
     font-family: courier, monospace;
-    padding: 0 3px;
+    padding: 20px;
     text-align: left;
     display: inline-block;
+    width: 500px;
+    white-space: pre;
+    margin: 1em 0;
 }
-pre .caption{
+
+.caption{
     color: tomato;
-    /* font-family: courier, monospace; */
+     font-family: courier, monospace;
 }
