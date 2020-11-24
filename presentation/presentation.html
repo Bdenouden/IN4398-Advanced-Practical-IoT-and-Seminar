@@ -9,41 +9,69 @@
 </head>
 
 <body>
-<div id="index" class="index">
-    <div class="title-container">
-        <p class="title">ModFarm</p>
-        <p class="subtitle">A modular approach to professional and home plant monitoring</p>
-    </div>
-    <span class="author" style="text-align: left;">
+    <div id="index" class="index">
+        <div class="title-container">
+            <p class="title">ModFarm</p>
+            <p class="subtitle">A modular approach to professional and home plant monitoring</p>
+        </div>
+        <span class="author" style="text-align: left;">
             Bram den Ouden
             <br>
             Maarten de Jong
         </span>
-    <template>
-        <a class="btn-index" pageNumber="">
-            <div class="btn-text"></div>
-        </a>
-    </template>
-</div>
+        <template>
+            <a class="btn-index" pageNumber="">
+                <div class="btn-text"></div>
+            </a>
+        </template>
+    </div>
 
-<div id="page_1" class="page" pageName="Introduction">
-    <p class="title">Introduction</p>
-    <iframe style="max-width: 100%; height: 80%; border: none;"
-            src="https://www.youtube.com/embed/cRuT58PRIdY?vq=hd1080"
-            allow="autoplay"
+    <div id="page_1" class="page" pageName="Introduction">
+        <p class="title">Introduction</p>
+        <iframe style="max-width: 100%; height: 80%; border: none;"
+            src="https://www.youtube.com/embed/cRuT58PRIdY?vq=hd1080" allow="autoplay" allowfullscreen>
+        </iframe>
+        <a href="https://www.youtube.com/cRuT58PRIdY">https://www.youtube.com/cRuT58PRIdY</a>
+    </div>
+
+    <div id="page_2" class="page" pageName="Structure">
+        <p class="title">Structure</p>
+        <img src="tree.svg" />
+    </div>
+
+
+    <div id="page_3" class="page" pageName="Node">
+        <p class="title">Sensor Node</p>
+        <img src="../enclosure/Screenshot-exploded-str.jpg">
+    </div>
+
+    <div id="page_4" class="page" pagename="Controller Node">
+        <p class="title">Node Controller</p>
+        <img src="controller_node.svg" style="height: 70%;">
+        <p style="font-size: large;">Connection between the sensor nodes and controller</p>
+    </div>
+
+    <div id="page_5" class="page" pagename="Controller PWA">
+        <p class="title">Node Controller</p>
+        <img src="controller_pwa.svg" style="height: 60%;">
+        <p style="font-size: large;">Connection between the sensor nodes and PWA</p>
+    </div>
+
+    <div id="page_6" class="page" pageName="PWA">
+        <p class="title">Progressive Web App</p>
+        <iframe style="max-width: 100%; height: 80%; border: none;" src="https://practical-iot.local/" allow="autoplay"
             allowfullscreen>
-    </iframe>
-    <a href="https://www.youtube.com/cRuT58PRIdY">https://www.youtube.com/cRuT58PRIdY</a>
-</div>
+        </iframe>
+    </div>
 
-<div id="page_2" class="page" pageName="Structure">
-    <p class="title">Structure</p>
-    <img src="tree.svg"/>
-</div>
+    <div id="page_7" class="page" pageName="Conclusion" style="overflow: hidden;">
+        <img src="cover.jpg" style="margin:-40px; height: 110vh;width: 100vw; overflow-x: hidden;">
+    </div>
 
-<div id="page_3" class="page" pagename="Node">
-    <p class="title">Sensor node</p>
-        <code>
+    <!-- Uncomment page when backup is needed -->
+    <!-- <div id="page_8" class="page" pageName="n2c talk">
+        <div class="code-container">
+            <code>
 {
     "config-version": "12345678",
     "config":
@@ -60,59 +88,54 @@
         }
     ]
 }
-        </code>
-    <br />
-    <span class="caption">Config message as received by sensor node</span>
-</div>
+            </code>
+            <br />
+            <span class="caption">Config message as received by sensor node</span>
+        </div>
 
-<div id="page_4" class="page" pageName="Controller">
-    <p class="title">Node controller</p>
-    <img src="">
-</div>
+        <div class="code-container">
+            <code>
+{
+    "chipID": 915947,
+    "version": "V1 Oct 7 2020 16:47:51",
+    "config_version": "12345678",
+    "8": 1130,
+    "26": [605, 249]
+}
+            </code>
+            <br>
+            <span class="caption">Data message transmitted by the sensor node</span>
+        </div>
+    </div> -->
 
-<div id="page_5" class="page" pageName="PWA">
-    <p class="title">Progressive Web App</p>
-    <iframe style="max-width: 100%; height: 80%; border: none;"
-            src="https://practical-iot.local/"
-            allow="autoplay"
-            allowfullscreen>
-    </iframe>
-</div>
+    <footer>
+        <a href="?page=1" id="previousPage" class="nav icon" style="left: 20px;">
+            <svg width="100%" height="100%" viewBox="0 0 16 16" class="bi bi-arrow-left" fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                    d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+            </svg>
+        </a>
 
-<div id="page_6" class="page" pageName="Enclosure">
-    <p class="title">Enclosure</p>
-    <img src="../enclosure/Screenshot-exploded-str.jpg">
+        <a href="presentation.html" class="nav icon" style="left: calc(50vw - 20px);">
+            <svg width="100%" height="100%" viewBox="0 0 16 16" class="bi bi-house" fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                    d="M2 13.5V7h1v6.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V7h1v6.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5zm11-11V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z" />
+                <path fill-rule="evenodd"
+                    d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z" />
+            </svg>
+            <!-- <img src="../logo/plant/plant.svg" style="height:100%"> -->
+        </a>
 
-</div>
-
-<footer>
-    <a href="?page=1" id="previousPage" class="nav icon" style="left: 20px;">
-        <svg width="100%" height="100%" viewBox="0 0 16 16" class="bi bi-arrow-left" fill="currentColor"
-             xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd"
-                  d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
-        </svg>
-    </a>
-
-    <a href="presentation.html" class="nav icon" style="left: calc(50vw - 20px);">
-        <svg width="100%" height="100%" viewBox="0 0 16 16" class="bi bi-house" fill="currentColor"
-             xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd"
-                  d="M2 13.5V7h1v6.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V7h1v6.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5zm11-11V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z"/>
-            <path fill-rule="evenodd"
-                  d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z"/>
-        </svg>
-        <!-- <img src="../logo/plant/plant.svg" style="height:100%"> -->
-    </a>
-
-    <a href="?page=2" id="nextPage" class="nav icon" style="right: 20px;">
-        <svg width="100%" height="100%" viewBox="0 0 16 16" class="bi bi-arrow-right" fill="currentColor"
-             xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd"
-                  d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
-        </svg>
-    </a>
-</footer>
+        <a href="?page=2" id="nextPage" class="nav icon" style="right: 20px;">
+            <svg width="100%" height="100%" viewBox="0 0 16 16" class="bi bi-arrow-right" fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                    d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+            </svg>
+        </a>
+    </footer>
 </body>
 
 </html>

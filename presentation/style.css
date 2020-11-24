@@ -53,6 +53,7 @@ a:hover {
     display: none;
     min-height: calc(100% - 100px);
     text-align: center;
+    position: relative;
 }
 
 .page img {
@@ -129,4 +130,8 @@ code {
 .caption{
     color: tomato;
      font-family: courier, monospace;
+}
+
+.code-container{
+    margin-bottom: 20px;
 }
